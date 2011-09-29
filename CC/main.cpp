@@ -1,5 +1,6 @@
 #include <cstdio>
 #include <cstdlib>
+#include <string>
 #include "test.h"
 #include "tokenizer.h"
 
@@ -10,7 +11,7 @@ int main(int argc, char *argv[])
     else if(argc > 1)
     {
         if(argv[1] == "--test")
-            RunTests;
+            RunTests();
     }
     return 0;
 }

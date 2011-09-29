@@ -1,5 +1,6 @@
 #include <cstdio>
 #include <iostream>
+#include <string>
 #include <fstream>
 #include "test.h"
 

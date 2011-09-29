@@ -1,7 +1,7 @@
 #ifndef TOKEN_H
 #define TOKEN_H
 
-#include <iostream>
+#include <string>
 
 enum TOKEN_TYPE
 {
@@ -12,7 +12,7 @@ enum TOKEN_TYPE
     TOK_SEP,
     TOK_OPER,
     TOK_EOF,
-    TOK_UNDEF
+    TOK_UNDEF,
 };
 
 class Token

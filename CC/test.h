@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <fstream>
 #include <iostream>
+#include <string>
 #include <vector>
 
 class Tester
