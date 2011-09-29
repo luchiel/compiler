@@ -17,7 +17,7 @@ void RunTests()
 {
 // there will be some selection between tests, some input parameter etc
 // log to the text file? arg!
-    Tester t = Tester();
+    Tester t;
     for(int i = 0; i < TOKENIZER_TESTS_NUM; ++i)
         t.RunFile(TEST_DIR + TOKENIZER_TESTS[i]);
 }
@@ -25,7 +25,7 @@ void RunTests()
 void Tester::RunFile(std::string filename)
 {
     streambuf *file, *backup;
-    outStream.open(OUTPUT);
+    outStream.open(OUTPUT.c_str());
 
     backup = cout.rdbuf();     // back up cout's streambuf
     file = outStream.rdbuf();   // get file's streambuf

@@ -3,17 +3,19 @@
 
 Token& Tokenizer::get()
 {
-    if(buffer == "")
+    if(buffer.size() == 0)
         source >> buffer;
     int i = index;
     while(i < buffer.size())
     {
         
     }
+    return current;
 }
 
 Token& Tokenizer::next()
 {
+    return current;
 }
 
 Tokenizer::~Tokenizer()
@@ -24,5 +26,5 @@ Tokenizer::~Tokenizer()
 
 void Tokenizer::bind(string filename)
 {
-    source.open(filename);
+    source.open(filename.c_str());
 }
