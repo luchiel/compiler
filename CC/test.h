@@ -1,3 +1,6 @@
+#ifndef TEST_H
+#define TEST_H
+
 #include <cstdio>
 #include <fstream>
 #include <iostream>
@@ -15,3 +18,5 @@ public:
 };
 
 void RunTests();
+
+#endif

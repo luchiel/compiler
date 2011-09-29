@@ -1,3 +1,6 @@
+#ifndef TOKENIZER_H
+#define TOKENIZER_H
+
 #include <cstdio>
 #include <iostream>
 #include <fstream>
@@ -26,3 +29,5 @@ public:
 
     void bind(string filename);
 };
+
+#endif

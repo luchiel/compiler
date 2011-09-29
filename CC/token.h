@@ -1,3 +1,6 @@
+#ifndef TOKEN_H
+#define TOKEN_H
+
 #include <iostream>
 
 enum TOKEN_TYPE
@@ -23,3 +26,5 @@ public:
 
     Token(): type(TOK_UNDEF), text(""), value(NULL) {}
 };
+
+#endif
