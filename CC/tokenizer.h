@@ -16,8 +16,10 @@ private:
     ifstream source;
     int index;
 
+    void read();
+
 public:
-    TOKEN_TYPE getType() { return current.type; }
+    TokenType getType() { return current.type; }
     string& getText() { return current.text; }
     void* getValue() { return current.value; }
 
@@ -27,7 +29,7 @@ public:
     Tokenizer(): current(Token()), buffer("") {}
     ~Tokenizer();
 
-    void bind(string filename);
+    void bind(const string& filename);
 };
 
 #endif

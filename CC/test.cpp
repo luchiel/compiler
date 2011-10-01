@@ -16,8 +16,8 @@ const string TOKENIZER_TESTS[1] = { "empty.c" };
 
 void RunTests()
 {
-// there will be some selection between tests, some input parameter etc
-// log to the text file? arg!
+    // there will be some selection between tests, some input parameter etc
+    // log to the text file? arg!
     Tester t;
     for(int i = 0; i < TOKENIZER_TESTS_NUM; ++i)
         t.RunFile(TEST_DIR + TOKENIZER_TESTS[i]);
