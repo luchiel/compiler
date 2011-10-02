@@ -3,10 +3,9 @@
 
 using namespace std;
 
-string& Token::asString()
+string Token::asString()
 {
-    char* cresult = "";
+    char cresult[255];
     sprintf(cresult, "%s\t(%d, %d)\t%s\t%s\n", text, line, col, TOKEN_TYPE_NAME[type], value);
-    string& sresult = string(cresult);
-    return sresult;
+    return string(cresult);
 }

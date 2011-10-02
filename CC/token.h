@@ -16,11 +16,17 @@ enum TokenType
     TOK_OPER,
     TOK_EOF,
     TOK_UNDEF,
+
+    TOK_L_BRACE,
+    TOK_R_BRACE,
+    TOK_L_BRACKET,
+    TOK_R_BRACKET,
+    TOK_COMMA,
 };
 
-const string TOKEN_TYPE_NAME[9] =
+const string TOKEN_TYPE_NAME[14] =
 {
-    "IDENTIFICATOR",
+    "IDENTIFIER",
     "INTEGER",
     "FLOAT",
     "CHARACTER",
@@ -29,6 +35,12 @@ const string TOKEN_TYPE_NAME[9] =
     "OPERATION",
     "EOF",
     "UNKNOWN",
+
+    "LEFT BRACE",
+    "RIGHT BRACE",
+    "LEFT BRACKET",
+    "RIGHT BRACKET",
+    "COMMA",
 };
 
 class Token
@@ -41,7 +53,7 @@ public:
     void* value;
 
     Token(): type(TOK_UNDEF), text(""), value(NULL) {}
-    string& asString();
+    string asString();
 };
 
 #endif
