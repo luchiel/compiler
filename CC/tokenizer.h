@@ -11,25 +11,42 @@ using namespace std;
 class Tokenizer
 {
 private:
-    Token current;
-    string buffer;
-    ifstream source;
-    int index;
+    enum InnerState
+    {
+        IS_NONE,
+        IS_READ,
+        IS_LCOMMENT,
+        IS_COMMENT,
+        IS_EOL,
+    };
+
+    InnerState _state;
+    Token _current;
+    string _buffer;
+
+    int _index;
+    int _currentLine;
+
+    ifstream _source;
 
     void read();
+    bool tryGetLine();
 
 public:
-    TokenType getType() { return current.type; }
-    string& getText() { return current.text; }
-    void* getValue() { return current.value; }
+    TokenType getType() { return _current.type; }
+    string& getText() { return _current.text; }
+    void* getValue() { return _current.value; }
 
     Token& get();
     Token& next();
 
-    Tokenizer(): current(Token()), buffer("") {}
+    Tokenizer(): _state(IS_NONE), _current(Token()), _buffer(""), _index(0), _currentLine(0) {}
     ~Tokenizer();
 
     void bind(const string& filename);
+
+    class ReadError: public std::exception {};
+    class UnexpectedEOFInComment: public std::exception {};
 };
 
 #endif
