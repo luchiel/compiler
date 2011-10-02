@@ -3,9 +3,7 @@
 
 using namespace std;
 
-string Token::asString()
+void Token::outputAsString(ostream& outStream)
 {
-    char cresult[255];
-    sprintf(cresult, "%s\t(%d, %d)\t%s\t%s\n", text, line, col, TOKEN_TYPE_NAME[type], value);
-    return string(cresult);
+    printf("%s\t(%d, %d)\t%s\t%s\n", text.c_str(), line, col, TOKEN_TYPE_NAME[type].c_str(), "");//value);
 }

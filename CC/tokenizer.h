@@ -45,7 +45,6 @@ public:
 
     void bind(const string& filename);
 
-    class ReadError: public std::exception {};
     class UnexpectedEOFInComment: public std::exception {};
 };
 

@@ -46,14 +46,15 @@ const string TOKEN_TYPE_NAME[14] =
 class Token
 {
 public:
-    int line;
-    int col;
     TokenType type;
     std::string text;
     void* value;
 
-    Token(): type(TOK_UNDEF), text(""), value(NULL) {}
-    string asString();
+    int line;
+    int col;
+
+    Token(): type(TOK_UNDEF), text(""), value(NULL), line(0), col(0) {}
+    void outputAsString(ostream& outStream);
 };
 
 #endif

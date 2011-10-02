@@ -10,20 +10,21 @@ const string OPERATIONS = "+-=/*><%&^|!~.?:[]";
 
 bool Tokenizer::tryGetLine()
 {
-    getline(_source, _buffer);
-    _currentLine++;
-    if(_source.eofbit || _source.failbit)
+    //process prev eof
+    do
     {
-        _current.type = TOK_EOF;
-        _current.line = _currentLine;
-        _current.col = 0;
-        _state = IS_READ;
-        return false;
+        getline(_source, _buffer);
+        _currentLine++;
+        if(_source.eof())
+        {
+            _current.type = TOK_EOF;
+            _current.line = _currentLine;
+            _current.col = 0;
+            _state = IS_READ;
+            return false;
+        }
     }
-    else if(_source.badbit)
-    {
-        throw ReadError();
-    }
+    while(_buffer.size() == 0);
     return true;
 }
 
@@ -43,14 +44,13 @@ void Tokenizer::read()
     _current = Token();
 
     unsigned int cloneOfIndex = _index;
+    int j = _index;
     while(_state != IS_READ)
     {
-        unsigned int i = _index;
-
         switch(_current.type)
         {
             case TOK_UNDEF:
-                switch(_buffer[i])
+                switch(_buffer[j])
                 {
                     case '{':   _current.type = TOK_L_BRACE;     _state = IS_READ; break;
                     case '}':   _current.type = TOK_R_BRACE;     _state = IS_READ; break;
@@ -61,19 +61,19 @@ void Tokenizer::read()
                     case ';':   _current.type = TOK_SEP;         _state = IS_READ; break;
                     case ',':   _current.type = TOK_COMMA;       _state = IS_READ; break;
                     default:
-                        if(isalpha(_buffer[i]) || _buffer[i] == '_')
+                        if(isalpha(_buffer[j]) || _buffer[j] == '_')
                             _current.type = TOK_IDENT;
-                        else if(isspace(_buffer[i]))
+                        else if(isspace(_buffer[j]))
                             break;
-                        else if(isdigit(_buffer[i]))
+                        else if(isdigit(_buffer[j]))
                             _current.type = TOK_INT;
-                        else if(_buffer[i] == '/' && i < _buffer.size() - 1)
+                        else if(_buffer[j] == '/' && j < _buffer.size() - 1)
                         {
-                            _state = _buffer[i + 1] == '/' ? IS_LCOMMENT : _buffer[i + 1] == '*' ? IS_COMMENT : IS_NONE;
+                            _state = _buffer[j + 1] == '/' ? IS_LCOMMENT : _buffer[j + 1] == '*' ? IS_COMMENT : IS_NONE;
                             if(_state == IS_NONE)
                                 _current.type = TOK_OPER;
                         }
-                        else if(ops.find(_buffer[i]) != ops.end())
+                        else if(ops.find(_buffer[j]) != ops.end())
                             _current.type = TOK_OPER;
                 };
                 break;
@@ -96,49 +96,51 @@ void Tokenizer::read()
         }
         switch(_state)
         {
-            case IS_NONE: break;
+            case IS_NONE:
+                break;
             case IS_READ:
-                _current.text.assign(_buffer, _index, i - _index + 1) ;
+                _current.text.assign(_buffer, _index, j - _index + 1) ;
                 _current.line = _currentLine;
                 _current.col = _index;
-                _index = i + 1;
+                _index = j + 1;
                 break;
             case IS_LCOMMENT:
                 if(!tryGetLine())
                     return;
-                i = -1;
+                j = -1;
                 _state = IS_NONE;
                 break;
             case IS_COMMENT:
-                i += 1;
+                j += 1;
                 while(_state == IS_COMMENT)
                 {
-                    while(i < _buffer.size())
+                    while(j < _buffer.size())
                     {
-                        if(_buffer[i] == '*' && i < _buffer.size() - 1 && _buffer[i + 1] == '/')
+                        if(_buffer[j] == '*' && j < _buffer.size() - 1 && _buffer[j + 1] == '/')
                         {
-                            i += 1;
+                            j += 2; // sure? 2, not 1?
                             _state = IS_NONE;
                             break;
                         }
-                        i++;
+                        j++;
                     }
                     if(_state == IS_COMMENT)
                     {
                         if(!tryGetLine())
                             throw UnexpectedEOFInComment();
-                        i = 0;
+                        j = 0;
                     }
                 }
                 break;
-            case IS_EOL: break;
+            case IS_EOL:
+                break;
         }
-        i++;
-        if(i >= _buffer.size())
+        j++;
+        if(j >= _buffer.size())
         {
             if(!tryGetLine())
                 return;
-            i = 0;
+            j = 0;
         }
     }
 
