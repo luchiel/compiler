@@ -9,7 +9,7 @@ void Tokenize()
     Tokenizer t;
     t.bind("first.c");
 
-    printf("Text\t(line, col)\tType\tValue\n");
+    printf("(line, col)\tType\t\tText, Value\n");
 
     while(t.get().type != TOK_EOF)
     {
@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
             Tokenizer t;
             t.bind(argv[1]);
 
-            printf("Text\t(line, col)\tType\tValue\n");
+            printf("(line, col)\tType\t\tText, Value\n");
 
             while(t.get().type != TOK_EOF)
             {
