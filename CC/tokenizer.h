@@ -15,6 +15,7 @@ private:
     {
         IS_NONE,
         IS_READ,
+        IS_MADE,
         IS_LCOMMENT,
         IS_COMMENT,
         IS_EOL,
@@ -32,6 +33,12 @@ private:
     void read();
     bool tryGetLine();
 
+    void readStr(int idx);
+    void readChar(int idx);
+
+    void setTypeAndReadState(TokenType tt) { _current.type = tt; _state = IS_READ; }
+    void makeEOFToken();
+
 public:
     TokenType getType() { return _current.type; }
     string& getText() { return _current.text; }
@@ -46,6 +53,8 @@ public:
     void bind(const string& filename);
 
     class UnexpectedEOFInComment: public std::exception {};
+    class UnexpectedEOFInString: public std::exception {};
+    class NewlineInConstantString: public std::exception {};
 };
 
 #endif

@@ -8,21 +8,68 @@ void dd() {}
 
 const string OPERATIONS = "+-=/*><%&^|!~.?:[]";
 
+void Tokenizer::readStr(int idx)
+{
+    _current.col = idx;
+    _current.line = _currentLine;
+
+    bool isOpened = true;
+    int startText = idx;
+
+    while(idx < _buffer.size())
+    {
+        if(_buffer[idx] == '"')
+        {
+            isOpened = !isOpened;
+            if(!isOpened)
+            {
+                string tmp;
+                tmp.assign(_buffer, startText + 1, idx - startText - 1);
+                _current.value = _current.value + tmp;
+            }
+            else
+                startText = idx;
+        }
+        else if(!isOpened && !isspace(_buffer[idx]))
+            break;
+        idx++;
+        if(idx == _buffer.size())
+        {
+            if(isOpened)
+                throw NewlineInConstantString();
+            else
+                if(!tryGetLine())
+                    break;
+                else
+                    idx = 0;
+        }
+    }
+
+    _current.text = '"' + _current.value + '"';
+    _index = idx;
+    _state = IS_MADE;
+}
+
+void Tokenizer::readChar(int idx)
+{
+}
+
+void Tokenizer::makeEOFToken()
+{
+    _current.type = TOK_EOF;
+    _current.line = _currentLine;
+    _current.col = 0;
+    //_state = IS_READ;
+}
+
 bool Tokenizer::tryGetLine()
 {
-    //process prev eof
     do
     {
+        if(_source.eof())
+            return false;
         getline(_source, _buffer);
         _currentLine++;
-        if(_source.eof())
-        {
-            _current.type = TOK_EOF;
-            _current.line = _currentLine;
-            _current.col = 0;
-            _state = IS_READ;
-            return false;
-        }
     }
     while(_buffer.size() == 0);
     return true;
@@ -33,11 +80,15 @@ void Tokenizer::read()
     set<char> ops;
     for(unsigned int i = 0; i < OPERATIONS.size(); ++i)
         ops.insert(OPERATIONS[i]);
+    //to the create
 
     if(_buffer.size() == 0 || _index >= _buffer.size())
     {
         if(!tryGetLine())
+        {
+            makeEOFToken();
             return;
+        }
         _index = 0;
     }
 
@@ -52,14 +103,14 @@ void Tokenizer::read()
             case TOK_UNDEF:
                 switch(_buffer[j])
                 {
-                    case '{':   _current.type = TOK_L_BRACE;     _state = IS_READ; break;
-                    case '}':   _current.type = TOK_R_BRACE;     _state = IS_READ; break;
-                    case '(':   _current.type = TOK_L_BRACKET;   _state = IS_READ; break;
-                    case ')':   _current.type = TOK_R_BRACKET;   _state = IS_READ; break;
-                    case '"':   _current.type = TOK_STR;         _state = IS_READ; break;
-                    case '\'':  _current.type = TOK_CHAR;        _state = IS_READ; break;
-                    case ';':   _current.type = TOK_SEP;         _state = IS_READ; break;
-                    case ',':   _current.type = TOK_COMMA;       _state = IS_READ; break;
+                    case '{':   setTypeAndReadState(TOK_L_BRACE); break;
+                    case '}':   setTypeAndReadState(TOK_R_BRACE); break;
+                    case '(':   setTypeAndReadState(TOK_L_BRACKET); break;
+                    case ')':   setTypeAndReadState(TOK_R_BRACKET); break;
+                    case '"':   readStr(j); setTypeAndReadState(TOK_STR); break;
+                    case '\'':  readChar(j + 1); setTypeAndReadState(TOK_CHAR); break;
+                    case ';':   setTypeAndReadState(TOK_SEP); break;
+                    case ',':   setTypeAndReadState(TOK_COMMA); break;
                     default:
                         if(isalpha(_buffer[j]) || _buffer[j] == '_')
                             _current.type = TOK_IDENT;
@@ -83,10 +134,6 @@ void Tokenizer::read()
                 break;
             case TOK_FLOAT:
                 break;
-            case TOK_CHAR:
-                break;
-            case TOK_STR:
-                break;
             case TOK_SEP:
                 break;
             case TOK_OPER:
@@ -99,14 +146,18 @@ void Tokenizer::read()
             case IS_NONE:
                 break;
             case IS_READ:
-                _current.text.assign(_buffer, _index, j - _index + 1) ;
+                _current.text.assign(_buffer, _index, j - _index + 1);
                 _current.line = _currentLine;
+                //works for 1-line only. How 'bout strings?
                 _current.col = _index;
                 _index = j + 1;
                 break;
             case IS_LCOMMENT:
                 if(!tryGetLine())
+                {
+                    makeEOFToken();
                     return;
+                }
                 j = -1;
                 _state = IS_NONE;
                 break;
@@ -139,7 +190,10 @@ void Tokenizer::read()
         if(j >= _buffer.size())
         {
             if(!tryGetLine())
+            {
+                makeEOFToken();
                 return;
+            }
             j = 0;
         }
     }
