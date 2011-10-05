@@ -10,6 +10,7 @@ const string OPERATIONS = "+-=/*><%&^|!~.?:[]";
 
 void Tokenizer::readStr(int idx)
 {
+    _current.type = TOK_STR;
     _current.col = idx;
     _current.line = _currentLine;
 
@@ -107,7 +108,7 @@ void Tokenizer::read()
                     case '}':   setTypeAndReadState(TOK_R_BRACE); break;
                     case '(':   setTypeAndReadState(TOK_L_BRACKET); break;
                     case ')':   setTypeAndReadState(TOK_R_BRACKET); break;
-                    case '"':   readStr(j); setTypeAndReadState(TOK_STR); break;
+                    case '"':   readStr(j); break;
                     case '\'':  readChar(j + 1); setTypeAndReadState(TOK_CHAR); break;
                     case ';':   setTypeAndReadState(TOK_SEP); break;
                     case ',':   setTypeAndReadState(TOK_COMMA); break;
