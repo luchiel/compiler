@@ -1,14 +1,11 @@
 #include <string>
-#include <set>
 #include <cctype>
 #include "token.h"
 #include "tokenizer.h"
 
 void dd() {}
 
-const string OPERATIONS = "+-=/*><%&^|!~.?:[]";
-
-void Tokenizer::readStr(int idx)
+void Tokenizer::readStr(unsigned int idx)
 {
     _current.type = TOK_STR;
     _current.value.strValue = new string("");
@@ -16,7 +13,7 @@ void Tokenizer::readStr(int idx)
     _current.line = _currentLine;
 
     bool isOpened = false;
-    int startText = idx;
+    unsigned int startText = idx;
 
     while(idx < _buffer.size())
     {
@@ -52,7 +49,7 @@ void Tokenizer::readStr(int idx)
     _state = IS_MADE;
 }
 
-void Tokenizer::readChar(int idx)
+void Tokenizer::readChar(unsigned int idx)
 {
 }
 
@@ -62,7 +59,7 @@ void Tokenizer::makeEOFToken()
     _current.type = TOK_EOF;
     _current.line = _currentLine;
     _current.col = 0;
-    //_state = IS_READ;
+    //_state = IS_MADE;
 }
 
 bool Tokenizer::tryGetLine()
@@ -78,13 +75,16 @@ bool Tokenizer::tryGetLine()
     return true;
 }
 
+Tokenizer::Tokenizer(): _state(IS_NONE), _current(Token()), _buffer(""), _index(0), _currentLine(0)
+{
+    const string OPERATIONS = "+-=/*><%&^|!~.?:[]";
+
+    for(unsigned int i = 0; i < OPERATIONS.size(); ++i)
+        operations.insert(OPERATIONS[i]);
+}
+
 void Tokenizer::read()
 {
-    set<char> ops;
-    for(unsigned int i = 0; i < OPERATIONS.size(); ++i)
-        ops.insert(OPERATIONS[i]);
-    //to the create
-
     if(_buffer.size() == 0 || _index >= _buffer.size())
     {
         if(!tryGetLine())
@@ -98,7 +98,7 @@ void Tokenizer::read()
     _current = Token();
 
     unsigned int cloneOfIndex = _index;
-    int j = _index;
+    unsigned int j = _index;
     while(_state != IS_MADE)
     {
         if(j >= _buffer.size())
@@ -136,7 +136,7 @@ void Tokenizer::read()
                             if(_state == IS_NONE)
                                 _current.type = TOK_OPER;
                         }
-                        else if(ops.find(_buffer[j]) != ops.end())
+                        else if(operations.find(_buffer[j]) != operations.end())
                             _current.type = TOK_OPER;
                 };
                 break;
@@ -155,8 +155,6 @@ void Tokenizer::read()
         }
         switch(_state)
         {
-            case IS_NONE:
-                break;
             case IS_READ:
                 _current.text.assign(_buffer, _index, j - _index + 1);
                 _current.line = _currentLine;
@@ -194,8 +192,6 @@ void Tokenizer::read()
                         j = 0;
                     }
                 }
-                break;
-            case IS_EOL:
                 break;
         }
         j++;

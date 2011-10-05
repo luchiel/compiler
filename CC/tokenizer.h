@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <string>
 #include <fstream>
+#include <set>
 #include "token.h"
 
 using namespace std;
@@ -18,23 +19,24 @@ private:
         IS_MADE,
         IS_LCOMMENT,
         IS_COMMENT,
-        IS_EOL,
     };
+
+    set<char> operations;
 
     InnerState _state;
     Token _current;
     string _buffer;
 
-    int _index;
-    int _currentLine;
+    unsigned int _index;
+    unsigned int _currentLine;
 
     ifstream _source;
 
     void read();
     bool tryGetLine();
 
-    void readStr(int idx);
-    void readChar(int idx);
+    void readStr(unsigned int idx);
+    void readChar(unsigned int idx);
 
     void setTypeAndReadState(TokenType tt) { _current.type = tt; _state = IS_READ; }
     void makeEOFToken();
@@ -46,7 +48,7 @@ public:
     Token& get();
     Token& next();
 
-    Tokenizer(): _state(IS_NONE), _current(Token()), _buffer(""), _index(0), _currentLine(0) {}
+    Tokenizer();
     ~Tokenizer();
 
     void bind(const string& filename);
