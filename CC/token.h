@@ -48,12 +48,20 @@ class Token
 public:
     TokenType type;
     std::string text;
-    void* value;
 
     int line;
     int col;
 
-    Token(): type(TOK_UNDEF), text(""), value(NULL), line(0), col(0) {}
+    union
+    {
+        double floatValue;
+        int intValue;
+        char charValue;
+        string* strValue;
+    }
+    value;
+
+    Token(): type(TOK_UNDEF), text(""), line(0), col(0) {}
     void outputAsString(ostream& outStream);
 };
 

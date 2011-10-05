@@ -42,7 +42,6 @@ private:
 public:
     TokenType getType() { return _current.type; }
     string& getText() { return _current.text; }
-    void* getValue() { return _current.value; }
 
     Token& get();
     Token& next();

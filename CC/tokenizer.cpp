@@ -11,10 +11,11 @@ const string OPERATIONS = "+-=/*><%&^|!~.?:[]";
 void Tokenizer::readStr(int idx)
 {
     _current.type = TOK_STR;
+    _current.value.strValue = new string("");
     _current.col = idx;
     _current.line = _currentLine;
 
-    bool isOpened = true;
+    bool isOpened = false;
     int startText = idx;
 
     while(idx < _buffer.size())
@@ -26,7 +27,7 @@ void Tokenizer::readStr(int idx)
             {
                 string tmp;
                 tmp.assign(_buffer, startText + 1, idx - startText - 1);
-                _current.value = _current.value + tmp;
+                *(_current.value.strValue) = *(_current.value.strValue) + tmp;
             }
             else
                 startText = idx;
@@ -46,7 +47,7 @@ void Tokenizer::readStr(int idx)
         }
     }
 
-    _current.text = '"' + _current.value + '"';
+    _current.text = '"' + *(_current.value.strValue) + '"';
     _index = idx;
     _state = IS_MADE;
 }
@@ -57,6 +58,7 @@ void Tokenizer::readChar(int idx)
 
 void Tokenizer::makeEOFToken()
 {
+    _current.text = "";
     _current.type = TOK_EOF;
     _current.line = _currentLine;
     _current.col = 0;
@@ -97,7 +99,7 @@ void Tokenizer::read()
 
     unsigned int cloneOfIndex = _index;
     int j = _index;
-    while(_state != IS_READ)
+    while(_state != IS_MADE)
     {
         switch(_current.type)
         {
@@ -152,6 +154,7 @@ void Tokenizer::read()
                 //works for 1-line only. How 'bout strings?
                 _current.col = _index;
                 _index = j + 1;
+                _state = IS_MADE;
                 break;
             case IS_LCOMMENT:
                 if(!tryGetLine())
