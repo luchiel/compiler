@@ -5,6 +5,9 @@
 
 void dd() {}
 
+//const string a = "dsdg\
+//                 dsfdf";
+
 void Tokenizer::readStr(unsigned int idx)
 {
     _current.type = TOK_STR;
@@ -14,11 +17,17 @@ void Tokenizer::readStr(unsigned int idx)
 
     bool isOpened = false;
     unsigned int startText = idx;
+    //int backslashes = 0;
 
     while(idx < _buffer.size())
     {
-        if(_buffer[idx] == '"')
+        //if(_buffer[idx] == '\\')
+        //{
+        //    backslashes = backslashes == 1 ? 0 : 1;
+        //}
+        if(_buffer[idx] == '"')// && backslashes == 0)
         {
+            //forgot about \"
             isOpened = !isOpened;
             if(!isOpened)
             {
@@ -33,15 +42,12 @@ void Tokenizer::readStr(unsigned int idx)
             break;
         idx++;
         if(idx == _buffer.size())
-        {
             if(isOpened)
                 throw NewlineInConstantString();
+            else if(tryGetLine())
+                idx = 0;
             else
-                if(!tryGetLine())
-                    break;
-                else
-                    idx = 0;
-        }
+                break;
     }
 
     _current.text = '"' + *(_current.value.strValue) + '"';
