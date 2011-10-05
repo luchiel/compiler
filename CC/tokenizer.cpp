@@ -101,6 +101,15 @@ void Tokenizer::read()
     int j = _index;
     while(_state != IS_MADE)
     {
+        if(j >= _buffer.size())
+        {
+            if(!tryGetLine())
+            {
+                makeEOFToken();
+                return;
+            }
+            j = 0;
+        }
         switch(_current.type)
         {
             case TOK_UNDEF:
@@ -151,7 +160,6 @@ void Tokenizer::read()
             case IS_READ:
                 _current.text.assign(_buffer, _index, j - _index + 1);
                 _current.line = _currentLine;
-                //works for 1-line only. How 'bout strings?
                 _current.col = _index;
                 _index = j + 1;
                 _state = IS_MADE;
@@ -191,15 +199,6 @@ void Tokenizer::read()
                 break;
         }
         j++;
-        if(j >= _buffer.size())
-        {
-            if(!tryGetLine())
-            {
-                makeEOFToken();
-                return;
-            }
-            j = 0;
-        }
     }
 
     _state = IS_NONE;
