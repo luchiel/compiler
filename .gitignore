@@ -1,3 +1,6 @@
 CC/debug
 CC/CC.*
 CC/ipch
+.ssh/*
+.gitconfig
+CC/first.c
