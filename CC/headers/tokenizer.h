@@ -5,7 +5,7 @@
 #include <string>
 #include <fstream>
 #include <set>
-#include "token.h"
+#include "../headers/token.h"
 
 using namespace std;
 
@@ -40,6 +40,8 @@ private:
 
     void setTypeAndReadState(TokenType tt) { _current.type = tt; _state = IS_READ; }
     void makeEOFToken();
+
+    char trySymbol(unsigned int pos);
 
 public:
     TokenType getType() { return _current.type; }

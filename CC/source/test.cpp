@@ -2,7 +2,7 @@
 #include <iostream>
 #include <string>
 #include <fstream>
-#include "test.h"
+#include "../headers/test.h"
 
 using namespace std;
 

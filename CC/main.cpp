@@ -1,8 +1,8 @@
 #include <cstdio>
 #include <cstdlib>
 #include <string>
-#include "test.h"
-#include "tokenizer.h"
+#include "headers/test.h"
+#include "headers/tokenizer.h"
 
 void Tokenize()
 {

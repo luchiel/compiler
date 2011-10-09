@@ -1,5 +1,5 @@
 #include <string>
-#include "token.h"
+#include "../headers/token.h"
 
 using namespace std;
 

@@ -1,7 +1,7 @@
 #include <string>
 #include <cctype>
-#include "token.h"
-#include "tokenizer.h"
+#include "../headers/token.h"
+#include "../headers/tokenizer.h"
 
 void dd() {}
 
@@ -81,9 +81,15 @@ bool Tokenizer::tryGetLine()
     return true;
 }
 
+char Tokenizer::trySymbol(unsigned int pos)
+{
+    //returns ' ' if EOL
+    return pos < _buffer.size() ? _buffer[pos] : ' ';
+}
+
 Tokenizer::Tokenizer(): _state(IS_NONE), _current(Token()), _buffer(""), _index(0), _currentLine(0)
 {
-    const string OPERATIONS = "+-=/*><%&^|!~.?:[]";
+    const string OPERATIONS = "+-=/*><%&^|!~.?[]";
 
     for(unsigned int i = 0; i < OPERATIONS.size(); ++i)
         operations.insert(OPERATIONS[i]);
@@ -116,49 +122,128 @@ void Tokenizer::read()
             }
             j = 0;
         }
-        switch(_current.type)
+        switch(_buffer[j])
         {
-            case TOK_UNDEF:
-                switch(_buffer[j])
+            case '{':   setTypeAndReadState(TOK_L_BRACE); break;
+            case '}':   setTypeAndReadState(TOK_R_BRACE); break;
+            case '(':   setTypeAndReadState(TOK_L_BRACKET); break;
+            case ')':   setTypeAndReadState(TOK_R_BRACKET); break;
+            case '"':   readStr(j); break;
+            case '\'':  readChar(j + 1); setTypeAndReadState(TOK_CHAR); break;
+            case ';':   setTypeAndReadState(TOK_SEP); break;
+            case ':':   setTypeAndReadState(TOK_COLON); break;
+            case ',':   setTypeAndReadState(TOK_COMMA); break;
+            default:
+                if(isalpha(_buffer[j]) || _buffer[j] == '_')
+                    _current.type = TOK_IDENT;
+                else if(isspace(_buffer[j]))
+                    break;
+                else if(isdigit(_buffer[j]))
+                    _current.type = TOK_INT;
+                else if(_buffer[j] == '/' && j < _buffer.size() - 1)
                 {
-                    case '{':   setTypeAndReadState(TOK_L_BRACE); break;
-                    case '}':   setTypeAndReadState(TOK_R_BRACE); break;
-                    case '(':   setTypeAndReadState(TOK_L_BRACKET); break;
-                    case ')':   setTypeAndReadState(TOK_R_BRACKET); break;
-                    case '"':   readStr(j); break;
-                    case '\'':  readChar(j + 1); setTypeAndReadState(TOK_CHAR); break;
-                    case ';':   setTypeAndReadState(TOK_SEP); break;
-                    case ',':   setTypeAndReadState(TOK_COMMA); break;
-                    default:
-                        if(isalpha(_buffer[j]) || _buffer[j] == '_')
-                            _current.type = TOK_IDENT;
-                        else if(isspace(_buffer[j]))
-                            break;
-                        else if(isdigit(_buffer[j]))
-                            _current.type = TOK_INT;
-                        else if(_buffer[j] == '/' && j < _buffer.size() - 1)
-                        {
-                            _state = _buffer[j + 1] == '/' ? IS_LCOMMENT : _buffer[j + 1] == '*' ? IS_COMMENT : IS_NONE;
-                            if(_state == IS_NONE)
-                                _current.type = TOK_OPER;
-                        }
-                        else if(operations.find(_buffer[j]) != operations.end())
-                            _current.type = TOK_OPER;
-                };
-                break;
-            case TOK_IDENT:
-                break;
-            case TOK_INT:
-                break;
-            case TOK_FLOAT:
-                break;
-            case TOK_SEP:
-                break;
-            case TOK_OPER:
-                break;
-            case TOK_EOF:
-                break;
+                    _state = _buffer[j + 1] == '/' ? IS_LCOMMENT : _buffer[j + 1] == '*' ? IS_COMMENT : IS_NONE;
+                    if(_state == IS_NONE)
+                        _current.type = TOK_OPER;
+                }
+                else if(operations.find(_buffer[j]) != operations.end())
+                    _current.type = TOK_OPER;
+        };
+        if(_current.type == TOK_OPER)
+        {
+            char next = trySymbol(j + 1);
+            switch(_buffer[j])
+            {
+                case '-':
+                    switch(next)
+                    {
+                        case '-': _current.type = TOK_DEC; break;
+                        case '=': _current.type = TOK_SUB_ASSIGN; break;
+                        case '>': _current.type = TOK_ARROW; break;
+                        default: _current.type = TOK_MINUS; break;
+                    };
+                    break;
+                case '+':
+                    _current.type =
+                        next == '+' ? TOK_INC :
+                        next == '=' ? TOK_ADD_ASSIGN :
+                        TOK_PLUS;
+                    break;
+                case '=':
+                    _current.type = next == '=' ? TOK_EQUAL : TOK_ASSIGN;
+                    break;
+                case '!':
+                    _current.type =
+                        trySymbol(j + 1) == '=' ?
+                        TOK_NOT_EQUAL : TOK_NOT;
+                    break;
+                case '|':
+                    _current.type =
+                        next == '||' ? TOK_LOGICAL_OR :
+                        next == '=' ? TOK_OR_ASSIGN :
+                        TOK_OR;
+                    break;
+                case '^':
+                    _current.type = next == '=' ? TOK_XOR_ASSIGN : TOK_XOR;
+                    break;
+                case '<':
+                    if(next == '<')
+                        if(trySymbol(j + 2) == '=')
+                            _current.type = TOK_SHL_ASSIGN;
+                        else
+                            _current.type = TOK_SHL;
+                    else if(next == '=')
+                        _current.type = TOK_LE;
+                    else
+                        _current.type = TOK_L;
+                    break;
+                case '>':
+                    if(next == '<')
+                        if(trySymbol(j + 2) == '=')
+                            _current.type = TOK_SHR_ASSIGN;
+                        else
+                            _current.type = TOK_SHR;
+                    else if(next == '=')
+                        _current.type = TOK_GE;
+                    else
+                        _current.type = TOK_G;
+                    break;
+                case '%':
+                    _current.type =
+                        next == '=' ? TOK_MOD_ASSIGN :
+                        TOK_MOD;
+                    break;
+                case '/':
+                    _current.type =
+                        next == '=' ? TOK_DIV_ASSIGN :
+                        TOK_DIV;
+                    break;
+                case '*':
+                    _current.type =
+                        next == '=' ? TOK_MUL_ASSIGN :
+                        TOK_STAR;
+                    break;
+                case '&':
+                    _current.type =
+                        next == '&' ? TOK_LOGICAl_AND :
+                        next == '=' ? TOK_AND_ASSIGN :
+                        TOK_AMP;
+                    break;
+                case '?': _current.type = TOK_QUEST; break;
+                case '~': _current.type = TOK_TILDA; break;
+                case '.': _current.type = TOK_DOT; break;
+                case '[': _current.type = TOK_L_SQUARE; break;
+                case ']': _current.type = TOK_R_SQUARE; break;
+            };
+            if(_current.type == TOK_OPER)
+                dd; //no such token. Error. Error.
+
+            j +=
+                TOKEN_TYPE_NAME[_current.type].size() -
+                TOKEN_TYPE_NAME[TOK_OPER].size() - 1;
+            _state = IS_READ;
         }
+
         switch(_state)
         {
             case IS_READ:
@@ -199,10 +284,9 @@ void Tokenizer::read()
                     }
                 }
                 break;
-        }
+        };
         j++;
     }
-
     _state = IS_NONE;
 }
 
