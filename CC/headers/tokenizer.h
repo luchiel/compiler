@@ -38,6 +38,10 @@ private:
     void readStr(unsigned int idx);
     void readChar(unsigned int idx);
 
+    void readInt(unsigned int& idx);
+    void readOct(unsigned int& idx);
+    void readHex(unsigned int& idx);
+
     void setTypeAndReadState(TokenType tt) { _current.type = tt; _state = IS_READ; }
     void makeEOFToken();
 

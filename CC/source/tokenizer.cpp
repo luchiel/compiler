@@ -59,6 +59,64 @@ void Tokenizer::readChar(unsigned int idx)
 {
 }
 
+//finish ints, then idents, then tests & test unit
+//then string & char or char & string
+
+void Tokenizer::readOct(unsigned int& idx)
+{
+    while(idx < _buffer.size() && '0' <= _buffer[idx] && _buffer[idx] <= '7')
+    {
+    }
+}
+
+void Tokenizer::readHex(unsigned int& idx)
+{
+    _current.value.intValue = 0;
+    while(idx < _buffer.size() && isxdigit(_buffer[idx]))
+    {
+        _current.value.intValue =
+            _current.value.intValue * 16 + ***;
+    }
+}
+
+void Tokenizer::readInt(unsigned int& idx)
+{
+    _state = IS_READ;
+    if(_buffer[idx] == '0')
+    {
+        char nextSymbol = trySymbol(idx + 1);
+        if(nextSymbol == 'x' || nextSymbol == 'X')
+        {
+            _current.type = TOK_HEX_CONST;
+            idx += 2;
+            readHex(idx);
+        }
+        else if(nextSymbol == ' ')
+        {
+            _current.type = TOK_DEC_CONST;
+            _current.value.intValue = 0;
+            idx++;
+        }
+        else
+        {
+            _current.type = TOK_OCT_CONST;
+            idx++;
+            readOct(idx);
+
+        }
+        return;
+    }
+    _current.type = TOK_DEC_CONST;
+    _current.value.intValue = 0;
+    while(idx < _buffer.size() && isdigit(_buffer[idx]))
+    {
+        _current.value.intValue =
+            _current.value.intValue * 10 +
+            (_buffer[idx] - '0');
+        idx++;
+    }
+}
+
 void Tokenizer::makeEOFToken()
 {
     _current.text = "";
@@ -136,10 +194,10 @@ void Tokenizer::read()
             default:
                 if(isalpha(_buffer[j]) || _buffer[j] == '_')
                     _current.type = TOK_IDENT;
-                else if(isspace(_buffer[j]))
-                    break;
+                //else if(isspace(_buffer[j]))
+                //    break;
                 else if(isdigit(_buffer[j]))
-                    _current.type = TOK_INT;
+                    readInt(j);
                 else if(_buffer[j] == '/' && j < _buffer.size() - 1)
                 {
                     _state = _buffer[j + 1] == '/' ? IS_LCOMMENT : _buffer[j + 1] == '*' ? IS_COMMENT : IS_NONE;
@@ -151,11 +209,11 @@ void Tokenizer::read()
         };
         if(_current.type == TOK_OPER)
         {
-            char next = trySymbol(j + 1);
+            char nextSymbol = trySymbol(j + 1);
             switch(_buffer[j])
             {
                 case '-':
-                    switch(next)
+                    switch(nextSymbol)
                     {
                         case '-': _current.type = TOK_DEC; break;
                         case '=': _current.type = TOK_SUB_ASSIGN; break;
@@ -165,12 +223,12 @@ void Tokenizer::read()
                     break;
                 case '+':
                     _current.type =
-                        next == '+' ? TOK_INC :
-                        next == '=' ? TOK_ADD_ASSIGN :
+                        nextSymbol == '+' ? TOK_INC :
+                        nextSymbol == '=' ? TOK_ADD_ASSIGN :
                         TOK_PLUS;
                     break;
                 case '=':
-                    _current.type = next == '=' ? TOK_EQUAL : TOK_ASSIGN;
+                    _current.type = nextSymbol == '=' ? TOK_EQUAL : TOK_ASSIGN;
                     break;
                 case '!':
                     _current.type =
@@ -179,54 +237,54 @@ void Tokenizer::read()
                     break;
                 case '|':
                     _current.type =
-                        next == '||' ? TOK_LOGICAL_OR :
-                        next == '=' ? TOK_OR_ASSIGN :
+                        nextSymbol == '||' ? TOK_LOGICAL_OR :
+                        nextSymbol == '=' ? TOK_OR_ASSIGN :
                         TOK_OR;
                     break;
                 case '^':
-                    _current.type = next == '=' ? TOK_XOR_ASSIGN : TOK_XOR;
+                    _current.type = nextSymbol == '=' ? TOK_XOR_ASSIGN : TOK_XOR;
                     break;
                 case '<':
-                    if(next == '<')
+                    if(nextSymbol == '<')
                         if(trySymbol(j + 2) == '=')
                             _current.type = TOK_SHL_ASSIGN;
                         else
                             _current.type = TOK_SHL;
-                    else if(next == '=')
+                    else if(nextSymbol == '=')
                         _current.type = TOK_LE;
                     else
                         _current.type = TOK_L;
                     break;
                 case '>':
-                    if(next == '<')
+                    if(nextSymbol == '<')
                         if(trySymbol(j + 2) == '=')
                             _current.type = TOK_SHR_ASSIGN;
                         else
                             _current.type = TOK_SHR;
-                    else if(next == '=')
+                    else if(nextSymbol == '=')
                         _current.type = TOK_GE;
                     else
                         _current.type = TOK_G;
                     break;
                 case '%':
                     _current.type =
-                        next == '=' ? TOK_MOD_ASSIGN :
+                        nextSymbol == '=' ? TOK_MOD_ASSIGN :
                         TOK_MOD;
                     break;
                 case '/':
                     _current.type =
-                        next == '=' ? TOK_DIV_ASSIGN :
+                        nextSymbol == '=' ? TOK_DIV_ASSIGN :
                         TOK_DIV;
                     break;
                 case '*':
                     _current.type =
-                        next == '=' ? TOK_MUL_ASSIGN :
+                        nextSymbol == '=' ? TOK_MUL_ASSIGN :
                         TOK_STAR;
                     break;
                 case '&':
                     _current.type =
-                        next == '&' ? TOK_LOGICAl_AND :
-                        next == '=' ? TOK_AND_ASSIGN :
+                        nextSymbol == '&' ? TOK_LOGICAl_AND :
+                        nextSymbol == '=' ? TOK_AND_ASSIGN :
                         TOK_AMP;
                     break;
                 case '?': _current.type = TOK_QUEST; break;

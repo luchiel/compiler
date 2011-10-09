@@ -8,7 +8,9 @@ using namespace std;
 enum TokenType
 {
     TOK_IDENT,
-    TOK_INT,
+    TOK_OCT_CONST,
+    TOK_DEC_CONST,
+    TOK_HEX_CONST,
     TOK_FLOAT,
     TOK_CHAR,
     TOK_STR,
@@ -65,10 +67,12 @@ enum TokenType
     TOK_SIZEOF,
 };
 
-const string TOKEN_TYPE_NAME[55] =
+const string TOKEN_TYPE_NAME[57] =
 {
     "IDENTIFIER",
-    "INTEGER",
+    "OCTAL CONST",
+    "DECIMAL CONST",
+    "HEXADECIMAL CONST",
     "FLOAT",
     "CHARACTER",
     "STRING",
