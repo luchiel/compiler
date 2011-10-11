@@ -1,5 +1,20 @@
- +
--
-   +++
-/=
-^==**&
+(line, col)	Type		Text, Value
+(1, 1)	OPERATION ++		++
+(1, 3)	OPERATION +		+
+(3, 1)	OPERATION -		-
+(3, 2)	OPERATION /=		/=
+(3, 4)	OPERATION =		=
+(3, 5)	OPERATION *		*
+(4, 1)	OPERATION &		&
+(5, 1)	OPERATION &&		&&
+(6, 1)	OPERATION <<=		<<=
+(6, 5)	OPERATION >>		>>
+(6, 7)	OPERATION >=		>=
+(7, 1)	OPERATION >		>
+(7, 2)	OPERATION <		<
+(7, 4)	OPERATION !		!
+(7, 6)	OPERATION ^=		^=
+(7, 9)	OPERATION %		%
+(7, 10)	OPERATION [		%
+(7, 11)	OPERATION ]		%
+(8, 1)	EOF

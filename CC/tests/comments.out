@@ -1,8 +1,2 @@
-/* hello */
-// index = 1;
-
-/*
-  {a}
-/*
-    a
-*/
+(line, col)	Type		Text, Value
+(9, 1)	EOF
