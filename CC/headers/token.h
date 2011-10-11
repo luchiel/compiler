@@ -142,7 +142,6 @@ public:
     {
         double floatValue;
         int intValue;
-        char charValue;
         string* strValue;
     }
     value;
