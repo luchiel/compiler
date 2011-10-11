@@ -74,9 +74,10 @@ int Tokenizer::getIntValue(char cval)
 }
 
 //then tests & test unit
-//and keywords
 //exceptions too
 //then string & char or char & string
+//floats
+//look at hex and oct float syntax
 
 void Tokenizer::readInt(unsigned int& idx)
 {
@@ -112,6 +113,16 @@ void Tokenizer::readInt(unsigned int& idx)
     ))
         _current.value.intValue =
             _current.value.intValue * notation + getIntValue(_buffer[idx++]);
+
+    if(idx < _buffer.size() && _current.type == TOK_DEC_CONST && (
+        _buffer[idx] == 'e' || _buffer[idx] == 'E' || _buffer[idx] == '.'
+    ))
+    {
+        idx++;
+        _current.type = TOK_FLOAT_CONST;
+        //rules here
+    }
+
     idx--;
 }
 
