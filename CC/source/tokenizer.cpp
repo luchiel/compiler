@@ -134,7 +134,7 @@ void Tokenizer::makeEOFToken()
     _current.text = "";
     _current.type = TOK_EOF;
     _current.line = _currentLine;
-    _current.col = 0;
+    _current.col = _index;
     //_state = IS_MADE;
 }
 

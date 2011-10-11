@@ -17,4 +17,4 @@
 (7, 9)	OPERATION %		%
 (7, 10)	OPERATION [		%
 (7, 11)	OPERATION ]		%
-(8, 1)	EOF
+(7, 12)	EOF

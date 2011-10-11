@@ -5,4 +5,4 @@
 (4, 1)	IDENTIFIER		f0urth44
 (5, 1)	DECIMAL CONST		3, 3
 (5, 2)	IDENTIFIER		i
-(6, 1)	EOF
+(5, 3)	EOF

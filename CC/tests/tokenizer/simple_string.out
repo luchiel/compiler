@@ -2,4 +2,4 @@
 (1, 1)	STRING		"aaa", aaa
 (1, 6)	SEPARATOR		;
 (3, 1)	STRING		"ss s sss", ss s sss
-(4, 1)	EOF
+(4, 9)	EOF
