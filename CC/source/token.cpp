@@ -12,9 +12,9 @@ void Token::outputAsString(ostream& outStream)
         text.c_str());//value);
     if(type == TOK_DEC_CONST || type == TOK_OCT_CONST || type == TOK_HEX_CONST)
         printf(", %d\n", value.intValue);
-    else if(type == TOK_STR || type == TOK_CHAR)
+    else if(type == TOK_STR_CONST || type == TOK_CHAR_CONST)
         printf(", %s\n", *(value.strValue));
-    else if(type == TOK_FLOAT)
+    else if(type == TOK_FLOAT_CONST)
         printf(", %f\n", value.floatValue);
     else
         printf("\n");

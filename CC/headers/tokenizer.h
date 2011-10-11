@@ -5,6 +5,7 @@
 #include <string>
 #include <fstream>
 #include <set>
+#include <map>
 #include "../headers/token.h"
 
 using namespace std;
@@ -22,6 +23,7 @@ private:
     };
 
     set<char> operations;
+    map<string, TokenType> keywords;
 
     InnerState _state;
     Token _current;
@@ -34,6 +36,7 @@ private:
 
     void read();
     bool tryGetLine();
+    void checkKeywords();
 
     void readStr(unsigned int idx);
     void readChar(unsigned int idx);

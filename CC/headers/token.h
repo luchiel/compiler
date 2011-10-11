@@ -11,9 +11,9 @@ enum TokenType
     TOK_OCT_CONST,
     TOK_DEC_CONST,
     TOK_HEX_CONST,
-    TOK_FLOAT,
-    TOK_CHAR,
-    TOK_STR,
+    TOK_FLOAT_CONST,
+    TOK_CHAR_CONST,
+    TOK_STR_CONST,
     TOK_SEP,
     TOK_EOF,
     TOK_UNDEF,
@@ -65,9 +65,23 @@ enum TokenType
     TOK_L_SQUARE,
     TOK_R_SQUARE,
     TOK_SIZEOF,
+
+    TOK_IF,
+    TOK_ELSE,
+    TOK_FOR,
+    TOK_DO,
+    TOK_WHILE,
+    TOK_STRUCT,
+    TOK_BREAK,
+    TOK_CONTINUE,
+    TOK_RETURN,
+
+    TOK_INT,
+    TOK_FLOAT,
+    TOK_VOID,
 };
 
-const string TOKEN_TYPE_NAME[57] =
+const string TOKEN_TYPE_NAME[69] =
 {
     "IDENTIFIER",
     "OCTAL CONST",
@@ -126,7 +140,21 @@ const string TOKEN_TYPE_NAME[57] =
     "OPERATION ~",
     "OPERATION [",
     "OPERATION ]",
-    "OPERATION sizeof", //currently not found
+    "OPERATION sizeof",
+
+    "if KEYWOARD",
+    "else KEYWOARD",
+    "for KEYWOARD",
+    "do KEYWOARD",
+    "while KEYWOARD",
+    "struct KEYWOARD",
+    "break KEYWOARD",
+    "continue KEYWOARD",
+    "return KEYWOARD",
+
+    "int KEYWOARD",
+    "float KEYWOARD",
+    "void KEYWOARD",
 };
 
 class Token

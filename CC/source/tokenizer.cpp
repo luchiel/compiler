@@ -10,7 +10,7 @@ void dd() {}
 
 void Tokenizer::readStr(unsigned int idx)
 {
-    _current.type = TOK_STR;
+    _current.type = TOK_STR_CONST;
     _current.value.strValue = new string("");
     _current.col = idx;
     _current.line = _currentLine;
@@ -73,7 +73,9 @@ int Tokenizer::getIntValue(char cval)
     return cval - '0';
 }
 
-//then idents, then tests & test unit
+//then tests & test unit
+//and keywords
+//exceptions too
 //then string & char or char & string
 
 void Tokenizer::readInt(unsigned int& idx)
@@ -162,6 +164,27 @@ Tokenizer::Tokenizer(): _state(IS_NONE), _current(Token()), _buffer(""), _index(
 
     for(unsigned int i = 0; i < OPERATIONS.size(); ++i)
         operations.insert(OPERATIONS[i]);
+
+    keywords["sizeof"] = TOK_SIZEOF;
+    keywords["int"] = TOK_INT;
+    keywords["float"] = TOK_FLOAT;
+    keywords["void"] = TOK_VOID;
+
+    keywords["if"] = TOK_IF;
+    keywords["else"] = TOK_ELSE;
+    keywords["for"] = TOK_FOR;
+    keywords["do"] = TOK_DO;
+    keywords["while"] = TOK_WHILE;
+    keywords["struct"] = TOK_STRUCT;
+    keywords["break"] = TOK_BREAK;
+    keywords["continue"] = TOK_CONTINUE;
+    keywords["return"] = TOK_RETURN;
+}
+
+void Tokenizer::checkKeywords()
+{
+    if(keywords.find(_current.text) != keywords.end())
+        _current.type = keywords[_current.text];
 }
 
 void Tokenizer::read()
@@ -173,7 +196,7 @@ void Tokenizer::read()
             makeEOFToken();
             return;
         }
-        _index = 0;
+        //_index = 0;
     }
 
     _current = Token();
@@ -198,7 +221,7 @@ void Tokenizer::read()
             case '(':   setTypeAndReadState(TOK_L_BRACKET); break;
             case ')':   setTypeAndReadState(TOK_R_BRACKET); break;
             case '"':   readStr(j); break;
-            case '\'':  readChar(j + 1); setTypeAndReadState(TOK_CHAR); break;
+            case '\'':  readChar(j + 1); setTypeAndReadState(TOK_CHAR_CONST); break;
             case ';':   setTypeAndReadState(TOK_SEP); break;
             case ':':   setTypeAndReadState(TOK_COLON); break;
             case ',':   setTypeAndReadState(TOK_COMMA); break;
@@ -320,6 +343,8 @@ void Tokenizer::read()
                 break;
             case IS_READ:
                 _current.text.assign(_buffer, _index, j - _index + 1);
+                if(_current.type == TOK_IDENT)
+                    checkKeywords();
                 _current.line = _currentLine;
                 _current.col = _index;
                 _index = j + 1;
