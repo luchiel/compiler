@@ -41,6 +41,7 @@ private:
     int getIntValue(char cval);
     bool isOctDigit(char cval);
     void readInt(unsigned int& idx);
+    void readIdentifier(unsigned int& idx);
 
     void setTypeAndReadState(TokenType tt) { _current.type = tt; _state = IS_READ; }
     void makeEOFToken();

@@ -73,7 +73,7 @@ int Tokenizer::getIntValue(char cval)
     return cval - '0';
 }
 
-//finish ints, then idents, then tests & test unit
+//then idents, then tests & test unit
 //then string & char or char & string
 
 void Tokenizer::readInt(unsigned int& idx)
@@ -113,6 +113,20 @@ void Tokenizer::readInt(unsigned int& idx)
     idx--;
 }
 
+void Tokenizer::readIdentifier(unsigned int& idx)
+{
+    //no need to check first symbol is not a digit
+    //it was checked earlier
+    _current.type = TOK_IDENT;
+    while(
+        idx < _buffer.size() && (
+        isalpha(_buffer[idx]) || _buffer[idx] == '_' || isdigit(_buffer[idx])
+    ))
+        idx++;
+    idx--;
+    _state = IS_READ;
+}
+
 void Tokenizer::makeEOFToken()
 {
     _current.text = "";
@@ -132,6 +146,7 @@ bool Tokenizer::tryGetLine()
         _currentLine++;
     }
     while(_buffer.size() == 0);
+    _index = 0;
     return true;
 }
 
@@ -189,7 +204,7 @@ void Tokenizer::read()
             case ',':   setTypeAndReadState(TOK_COMMA); break;
             default:
                 if(isalpha(_buffer[j]) || _buffer[j] == '_')
-                    _current.type = TOK_IDENT;
+                    readIdentifier(j);
                 //else if(isspace(_buffer[j]))
                 //    break;
                 else if(isdigit(_buffer[j]))
@@ -300,6 +315,9 @@ void Tokenizer::read()
 
         switch(_state)
         {
+            case IS_NONE:
+                _index++;
+                break;
             case IS_READ:
                 _current.text.assign(_buffer, _index, j - _index + 1);
                 _current.line = _currentLine;
@@ -340,7 +358,6 @@ void Tokenizer::read()
                 break;
         };
         j++;
-        _index++;
     }
     _state = IS_NONE;
 }
