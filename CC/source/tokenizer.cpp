@@ -110,6 +110,7 @@ void Tokenizer::readInt(unsigned int& idx)
     ))
         _current.value.intValue =
             _current.value.intValue * notation + getIntValue(_buffer[idx++]);
+    idx--;
 }
 
 void Tokenizer::makeEOFToken()
@@ -339,6 +340,7 @@ void Tokenizer::read()
                 break;
         };
         j++;
+        _index++;
     }
     _state = IS_NONE;
 }
