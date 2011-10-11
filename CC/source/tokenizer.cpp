@@ -59,29 +59,29 @@ void Tokenizer::readChar(unsigned int idx)
 {
 }
 
+bool Tokenizer::isOctDigit(char cval)
+{
+    return '0' <= cval && cval <= '7';
+}
+
+int Tokenizer::getIntValue(char cval)
+{
+    if(cval >= 'a' && cval <= 'f')
+        return cval - 'a' + 0xA;
+    if(cval >= 'A' && cval <= 'F')
+        return cval - 'A' + 0xA;
+    return cval - '0';
+}
+
 //finish ints, then idents, then tests & test unit
 //then string & char or char & string
-
-void Tokenizer::readOct(unsigned int& idx)
-{
-    while(idx < _buffer.size() && '0' <= _buffer[idx] && _buffer[idx] <= '7')
-    {
-    }
-}
-
-void Tokenizer::readHex(unsigned int& idx)
-{
-    _current.value.intValue = 0;
-    while(idx < _buffer.size() && isxdigit(_buffer[idx]))
-    {
-        _current.value.intValue =
-            _current.value.intValue * 16 + ***;
-    }
-}
 
 void Tokenizer::readInt(unsigned int& idx)
 {
     _state = IS_READ;
+    _current.value.intValue = 0;
+    _current.type = TOK_DEC_CONST;
+    int notation = 10;
     if(_buffer[idx] == '0')
     {
         char nextSymbol = trySymbol(idx + 1);
@@ -89,32 +89,27 @@ void Tokenizer::readInt(unsigned int& idx)
         {
             _current.type = TOK_HEX_CONST;
             idx += 2;
-            readHex(idx);
+            notation = 16;
         }
-        else if(nextSymbol == ' ')
+        else if(!isdigit(nextSymbol))
         {
-            _current.type = TOK_DEC_CONST;
-            _current.value.intValue = 0;
-            idx++;
+//            idx++;
+            return;
         }
         else
         {
             _current.type = TOK_OCT_CONST;
             idx++;
-            readOct(idx);
-
+            notation = 8;
         }
-        return;
     }
-    _current.type = TOK_DEC_CONST;
-    _current.value.intValue = 0;
-    while(idx < _buffer.size() && isdigit(_buffer[idx]))
-    {
+    while(idx < _buffer.size() && (
+        _current.type == TOK_OCT_CONST && isOctDigit(_buffer[idx]) ||
+        _current.type == TOK_DEC_CONST && isdigit(_buffer[idx]) ||
+        _current.type == TOK_HEX_CONST && isxdigit(_buffer[idx])
+    ))
         _current.value.intValue =
-            _current.value.intValue * 10 +
-            (_buffer[idx] - '0');
-        idx++;
-    }
+            _current.value.intValue * notation + getIntValue(_buffer[idx++]);
 }
 
 void Tokenizer::makeEOFToken()
