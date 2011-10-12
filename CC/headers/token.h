@@ -5,6 +5,9 @@
 
 using namespace std;
 
+namespace LuCCompiler
+{
+
 enum TokenType
 {
     TOK_IDENT,
@@ -81,7 +84,7 @@ enum TokenType
     TOK_VOID,
 };
 
-const string TOKEN_TYPE_NAME[69] =
+const string TOKEN_TYPE_NAME[68] =
 {
     "IDENTIFIER",
     "OCTAL CONST",
@@ -142,19 +145,19 @@ const string TOKEN_TYPE_NAME[69] =
     "OPERATION ]",
     "OPERATION sizeof",
 
-    "if KEYWOARD",
-    "else KEYWOARD",
-    "for KEYWOARD",
-    "do KEYWOARD",
-    "while KEYWOARD",
-    "struct KEYWOARD",
-    "break KEYWOARD",
-    "continue KEYWOARD",
-    "return KEYWOARD",
+    "if KEYWORD",
+    "else KEYWORD",
+    "for KEYWORD",
+    "do KEYWORD",
+    "while KEYWORD",
+    "struct KEYWORD",
+    "break KEYWORD",
+    "continue KEYWORD",
+    "return KEYWORD",
 
-    "int KEYWOARD",
-    "float KEYWOARD",
-    "void KEYWOARD",
+    "int KEYWORD",
+    "float KEYWORD",
+    "void KEYWORD",
 };
 
 class Token
@@ -177,5 +180,7 @@ public:
     Token(): type(TOK_UNDEF), text(""), line(0), col(0) {}
     void outputAsString(ostream& outStream);
 };
+
+}
 
 #endif
