@@ -1,8 +1,11 @@
 #include <cstdio>
 #include <cstdlib>
+#include <windows.h>
 #include <string>
 #include "headers/test.h"
 #include "headers/tokenizer.h"
+
+using namespace LuCCompiler;
 
 void Tokenize()
 {
@@ -27,7 +30,12 @@ int main(int argc, char *argv[])
     else if(argc > 1)
     {
         if(strcmp(argv[1], "--test"))
-            RunTests();
+        {
+            if(argc == 1)
+                printf("%s\n", "Do something");
+            else
+                RunTests(string(argv[2]));
+        }
         else
         {
             Tokenizer t;

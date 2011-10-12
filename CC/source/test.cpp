@@ -1,4 +1,5 @@
 #include <cstdio>
+#include <windows.h>
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -6,21 +7,43 @@
 
 using namespace std;
 
+namespace LuCCompiler
+{
+
 const string TEST_DIR = "tests/";
 
 const string OUTPUT = "output.txt";
 
-const int TOKENIZER_TESTS_NUM = 1;
-const string TOKENIZER_TESTS[1] = { "empty.c" };
-// indexes, but way to directory!
-
-void RunTests()
+void RunTests(string testBlock)
 {
     // there will be some selection between tests, some input parameter etc
     // log to the text file? arg!
+
     Tester t;
-    for(int i = 0; i < TOKENIZER_TESTS_NUM; ++i)
-        t.RunFile(TEST_DIR + TOKENIZER_TESTS[i]);
+
+    string path(TEST_DIR + testBlock + '/');
+    LPWSTR wpath = (LPWSTR)malloc((path.size() + 1) * sizeof(WCHAR));
+    MultiByteToWideChar(CP_ACP, 0, path.c_str(), path.size() + 1, wpath, path.size() + 1);
+
+    WIN32_FIND_DATA FindFileData;
+    HANDLE hFind;
+
+    hFind = FindFirstFile(wpath, &FindFileData);
+    do
+    {
+        if(hFind == INVALID_HANDLE_VALUE)
+        {
+            //error
+            //printf("FindFirstFile failed (%d)\n", GetLastError());
+            return;
+        }
+        else
+        {
+            t.RunFile(path + FindFileData.cFileName);
+        }
+    }
+    while(FindNextFile(hFind, &FindFileData) || GetLastError() != ERROR_NO_MORE_FILES);
+    FindClose(hFind);*/
 }
 
 void Tester::RunFile(std::string filename)
@@ -37,4 +60,6 @@ void Tester::RunFile(std::string filename)
     cout.rdbuf(backup);        // restore cout's original streambuf
 
     outStream.close();
+}
+
 }
