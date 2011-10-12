@@ -7,6 +7,11 @@
 #include <string>
 #include <vector>
 
+using namespace std;
+
+namespace LuCCompiler
+{
+
 class Tester
 {
 private:
@@ -18,6 +23,8 @@ public:
     //class FILE_NOT_FOUND: public std::exception {};
 };
 
-void RunTests();
+void RunTests(string testBlock);
+
+}
 
 #endif

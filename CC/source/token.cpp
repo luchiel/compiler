@@ -3,6 +3,9 @@
 
 using namespace std;
 
+namespace LuCCompiler
+{
+
 void Token::outputAsString(ostream& outStream)
 {
     printf(
@@ -18,4 +21,6 @@ void Token::outputAsString(ostream& outStream)
         printf(", %f\n", value.floatValue);
     else
         printf("\n");
+}
+
 }

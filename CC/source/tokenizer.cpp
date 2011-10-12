@@ -3,6 +3,9 @@
 #include "../headers/token.h"
 #include "../headers/tokenizer.h"
 
+namespace LuCCompiler
+{
+
 void dd() {}
 
 //const string a = "dsdg\
@@ -418,4 +421,6 @@ Tokenizer::~Tokenizer()
 void Tokenizer::bind(const string& filename)
 {
     _source.open(filename.c_str());
+}
+
 }

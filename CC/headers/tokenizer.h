@@ -6,9 +6,12 @@
 #include <fstream>
 #include <set>
 #include <map>
-#include "../headers/token.h"
+#include "token.h"
 
 using namespace std;
+
+namespace LuCCompiler
+{
 
 class Tokenizer
 {
@@ -67,5 +70,7 @@ public:
     class UnexpectedEOFInString: public std::exception {};
     class NewlineInConstantString: public std::exception {};
 };
+
+}
 
 #endif
