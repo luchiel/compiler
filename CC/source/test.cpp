@@ -53,17 +53,24 @@ void runTests(string testBlock)
     }
     while(FindNextFile(hFind, &FindFileData) || GetLastError() != ERROR_NO_MORE_FILES);
     FindClose(hFind);
+
+    t.outputGlobalResult();
 }
 
 void Tester::attachTypelessFilename(wstring& filename)
 {
-    _currentTest = filename.substr(0, filename.size() - 3);
+    char ctmp[MAX_PATH];
+    wstring wtmp = filename.substr(0, filename.size() - 3);
+    int l = WideCharToMultiByte(CP_ACP, 0, wtmp.c_str(), wtmp.size(), ctmp, 0, NULL, NULL);
+    WideCharToMultiByte(CP_ACP, 0, wtmp.c_str(), wtmp.size(), ctmp, l, NULL, NULL);
+    _currentTest.clear();
+    _currentTest.append(ctmp, l);
 }
 
 void Tester::runFile()
 {
     streambuf *backup;
-    _outStream.open(_currentTest + L".log");
+    _outStream.open(_currentTest + ".log");
     if(!_outStream.good())
         throw BadFile();
 
@@ -72,9 +79,9 @@ void Tester::runFile()
     cout.rdbuf(_outStream.rdbuf());
 
     Tokenizer t;
-    t.bind(_currentTest + L".in");
+    t.bind(_currentTest + ".in");
 
-    cout << "(line, col)\tType\t\tText, Value\n";
+    cout << "(line, col)\t\tType\t\tText, Value\n";
 
     while(t.get().type != TOK_EOF)
     {
@@ -84,16 +91,48 @@ void Tester::runFile()
     //restore stdout
     cout.rdbuf(backup);
     _outStream.close();
+
+    testsCount++;
 }
 
 void Tester::estimateResult()
 {
     ifstream outFile, logFile;
-    outFile.open(_currentTest + L".out");
-    logFile.open(_currentTest + L".log");
+    outFile.open(_currentTest + ".out");
+    logFile.open(_currentTest + ".log");
+
+    bool result = true;
+    string oS, lS;
+    while(!outFile.eof() && !logFile.eof())
+    {
+        getline(outFile, oS);
+        getline(logFile, lS);
+        if(oS != lS)
+        {
+            result = false;
+            break;
+        }
+    }
+
+    if(!outFile.eof() || !logFile.eof())
+        result = false;
+
+    if(result)
+    {
+        cout << "[OK] Test " << _currentTest.c_str() << ".in" << endl;
+        testsPassed++;
+    }
+    else
+        cout << "[FAIL] Test " << _currentTest.c_str() << ".in" << endl;
 
     outFile.close();
     logFile.close();
+}
+
+void Tester::outputGlobalResult()
+{
+    cout << "_______________________________________" << endl;
+    cout << "Result: "<< testsPassed << '/' << testsCount << " passed" << endl;
 }
 
 }

@@ -160,9 +160,9 @@ bool Tokenizer::tryGetLine()
             return false;
         getline(_source, _buffer);
         _currentLine++;
+        _index = 0;
     }
     while(_buffer.size() == 0);
-    _index = 0;
     return true;
 }
 
@@ -304,7 +304,7 @@ void Tokenizer::read()
                         _current.type = TOK_L;
                     break;
                 case '>':
-                    if(nextSymbol == '<')
+                    if(nextSymbol == '>')
                         if(trySymbol(j + 2) == '=')
                             _current.type = TOK_SHR_ASSIGN;
                         else

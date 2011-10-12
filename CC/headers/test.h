@@ -15,13 +15,17 @@ namespace LuCCompiler
 class Tester
 {
 private:
-    wstring _currentTest;
+    string _currentTest;
     ofstream _outStream;
+    int testsCount;
+    int testsPassed;
+
 public:
-    Tester() {}
+    Tester(): testsCount(0), testsPassed(0) {}
     void attachTypelessFilename(wstring& filename);
     void runFile();
     void estimateResult();
+    void outputGlobalResult();
 };
 
 class FindFileError: public exception {};

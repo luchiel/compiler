@@ -1,8 +1,8 @@
-(line, col)	Type		Text, Value
-(1, 1)	IDENTIFIER		first
-(2, 1)	IDENTIFIER		_second
-(3, 1)	IDENTIFIER		__3
-(4, 1)	IDENTIFIER		f0urth44
-(5, 1)	DECIMAL CONST		3, 3
-(5, 2)	IDENTIFIER		i
-(5, 3)	EOF
+(line, col)		Type		Text, Value
+(1, 1)		IDENTIFIER		first
+(2, 1)		IDENTIFIER		_second
+(3, 1)		IDENTIFIER		__3
+(4, 1)		IDENTIFIER		f0urth44
+(5, 1)		DECIMAL CONST		3, 3
+(5, 2)		IDENTIFIER		i
+(5, 3)		EOF
