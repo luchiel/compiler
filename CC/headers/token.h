@@ -84,7 +84,7 @@ enum TokenType
     TOK_VOID,
 };
 
-const string TOKEN_TYPE_NAME[68] =
+const string TOKEN_TYPE_NAME[] =
 {
     "IDENTIFIER",
     "OCTAL CONST",
@@ -178,7 +178,7 @@ public:
     value;
 
     Token(): type(TOK_UNDEF), text(""), line(0), col(0) {}
-    void outputAsString(ostream& outStream);
+    void outputAsString();
 };
 
 }

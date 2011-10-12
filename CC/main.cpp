@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
 
             while(t.get().type != TOK_EOF)
             {
-                t.next().outputAsString(cout);
+                t.next().outputAsString();
             }
         }
     }

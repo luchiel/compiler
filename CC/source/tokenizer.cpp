@@ -420,7 +420,14 @@ Tokenizer::~Tokenizer()
 
 void Tokenizer::bind(const string& filename)
 {
-    _source.open(filename.c_str());
+    _source.open(filename);
+    if(!_source.good())
+        throw BadFile();
+}
+
+void Tokenizer::bind(const wstring& filename)
+{
+    _source.open(filename);
     if(!_source.good())
         throw BadFile();
 }
