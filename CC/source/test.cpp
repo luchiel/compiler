@@ -17,7 +17,7 @@ namespace LuCCompiler
 
 const string TEST_DIR = "\\tests\\";
 
-void RunTests(string testBlock)
+void runTests(string testBlock)
 {
     Tester t;
 
@@ -44,8 +44,9 @@ void RunTests(string testBlock)
         if(hFind != INVALID_HANDLE_VALUE)
         {
             wstring filename(FindFileData.cFileName);
-            t.RunFile(wfullpath + filename);
-            //cmp .in.log with .out
+            t.attachTypelessFilename(wfullpath + filename);
+            t.runFile();
+            t.estimateResult();
         }
         else
             throw FindFileError();
@@ -54,19 +55,24 @@ void RunTests(string testBlock)
     FindClose(hFind);
 }
 
-void Tester::RunFile(wstring& filename)
+void Tester::attachTypelessFilename(wstring& filename)
+{
+    _currentTest = filename.substr(0, filename.size() - 3);
+}
+
+void Tester::runFile()
 {
     streambuf *backup;
-    outStream.open(filename + L".log");
-    if(!outStream.good())
+    _outStream.open(_currentTest + L".log");
+    if(!_outStream.good())
         throw BadFile();
 
     //redirect cout to outputfile
     backup = cout.rdbuf();
-    cout.rdbuf(outStream.rdbuf());
+    cout.rdbuf(_outStream.rdbuf());
 
     Tokenizer t;
-    t.bind(filename);
+    t.bind(_currentTest + L".in");
 
     cout << "(line, col)\tType\t\tText, Value\n";
 
@@ -77,7 +83,17 @@ void Tester::RunFile(wstring& filename)
 
     //restore stdout
     cout.rdbuf(backup);
-    outStream.close();
+    _outStream.close();
+}
+
+void Tester::estimateResult()
+{
+    ifstream outFile, logFile;
+    outFile.open(_currentTest + L".out");
+    logFile.open(_currentTest + L".log");
+
+    outFile.close();
+    logFile.close();
 }
 
 }

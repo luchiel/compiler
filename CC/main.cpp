@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
             if(argc == 1)
                 printf("%s\n", "Do something");
             else
-                RunTests(string(argv[2]));
+                runTests(string(argv[2]));
         }
         else
         {

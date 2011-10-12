@@ -1,0 +1,5 @@
+(line, col)	Type		Text, Value
+(1, 1)		STRING		"aaa", 0039B380
+(1, 6)		SEPARATOR		;
+(3, 1)		STRING		"ss s sss", 0039BB28
+(4, 9)		EOF
