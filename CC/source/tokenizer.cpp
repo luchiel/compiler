@@ -421,6 +421,8 @@ Tokenizer::~Tokenizer()
 void Tokenizer::bind(const string& filename)
 {
     _source.open(filename.c_str());
+    if(!_source.good())
+        throw BadFile();
 }
 
 }

@@ -20,7 +20,7 @@ public:
     Tester() {}
     void RunFile(std::string filename);
 
-    //class FILE_NOT_FOUND: public std::exception {};
+    class FindFileError: public std::exception {};
 };
 
 void RunTests(string testBlock);

@@ -69,6 +69,7 @@ public:
     class UnexpectedEOFInComment: public std::exception {};
     class UnexpectedEOFInString: public std::exception {};
     class NewlineInConstantString: public std::exception {};
+    class BadFile: public std::exception {};
 };
 
 }
