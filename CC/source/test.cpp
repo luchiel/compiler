@@ -56,24 +56,23 @@ void RunTests(string testBlock)
 
 void Tester::RunFile(wstring& filename)
 {
-    streambuf *backup;//, *file;
+    streambuf *backup;
     outStream.open(filename + L".log");
     if(!outStream.good())
         throw BadFile();
 
-    //redirect stdout to outputfile
+    //redirect cout to outputfile
     backup = cout.rdbuf();
-    //file = ;
     cout.rdbuf(outStream.rdbuf());
 
     Tokenizer t;
     t.bind(filename);
 
-    printf("(line, col)\tType\t\tText, Value\n");
+    cout << "(line, col)\tType\t\tText, Value\n";
 
     while(t.get().type != TOK_EOF)
     {
-        t.next().outputAsString();
+        t.next().outputAsString(cout);
     }
 
     //restore stdout

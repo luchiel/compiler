@@ -178,7 +178,7 @@ public:
     value;
 
     Token(): type(TOK_UNDEF), text(""), line(0), col(0) {}
-    void outputAsString();
+    void outputAsString(ostream& outStream);
 };
 
 }
