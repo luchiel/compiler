@@ -4,3 +4,4 @@ CC/ipch
 .ssh/*
 .gitconfig
 CC/first.c
+CC/tests/tokenizer/*.in.log
