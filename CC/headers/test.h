@@ -15,13 +15,13 @@ namespace LuCCompiler
 class Tester
 {
 private:
-    std::ofstream outStream;
+    ofstream outStream;
 public:
     Tester() {}
-    void RunFile(std::string filename);
-
-    class FindFileError: public std::exception {};
+    void RunFile(wstring& filename);
 };
+
+class FindFileError: public exception {};
 
 void RunTests(string testBlock);
 

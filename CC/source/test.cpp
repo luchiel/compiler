@@ -29,20 +29,22 @@ void RunTests(string testBlock)
     //current path
     wchar_t wdir[FILENAME_MAX];
     _wgetcwd(wdir, MAX_PATH);
-    wstring ws(wdir);
-    ws.append(wpath);
-    ws.append(L"*.in");
+    wstring wfullpath(wdir);
+    wfullpath.append(wpath);
+
+    wstring tmp(wfullpath);
+    tmp.append(L"*.in");
 
     WIN32_FIND_DATA FindFileData;
     HANDLE hFind;
 
-    hFind = FindFirstFile(ws.c_str(), &FindFileData);
+    hFind = FindFirstFile(tmp.c_str(), &FindFileData);
     do
     {
         if(hFind != INVALID_HANDLE_VALUE)
         {
             wstring filename(FindFileData.cFileName);
-            //t.RunFile(/*wpath, */);
+            t.RunFile(wfullpath + filename);
             //cmp .in.log with .out
         }
         else
@@ -52,15 +54,17 @@ void RunTests(string testBlock)
     FindClose(hFind);
 }
 
-void Tester::RunFile(std::string filename)
+void Tester::RunFile(wstring& filename)
 {
-    streambuf *file, *backup;
-    outStream.open(string(filename + ".log").c_str());
+    streambuf *backup;//, *file;
+    outStream.open(filename + L".log");
+    if(!outStream.good())
+        throw BadFile();
 
     //redirect stdout to outputfile
     backup = cout.rdbuf();
-    file = outStream.rdbuf();
-    cout.rdbuf(file);
+    //file = ;
+    cout.rdbuf(outStream.rdbuf());
 
     Tokenizer t;
     t.bind(filename);
@@ -69,7 +73,7 @@ void Tester::RunFile(std::string filename)
 
     while(t.get().type != TOK_EOF)
     {
-        t.next().outputAsString(cout);
+        t.next().outputAsString();
     }
 
     //restore stdout
