@@ -35,7 +35,7 @@ void Tokenizer::readStr(unsigned int idx)
             }
             else
             {
-                idx += 2;
+                idx += 1;
                 if(idx == _buffer.size())
                     throw NewlineInConstantString();
             }
