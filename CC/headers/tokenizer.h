@@ -48,6 +48,7 @@ private:
     bool isOctDigit(char cval);
     void readInt(unsigned int& idx);
     void readIdentifier(unsigned int& idx);
+    bool tryReadFloatPart(unsigned int& idx, bool hasIntPart);
 
     void setTypeAndReadState(TokenType tt) { _current.type = tt; _state = IS_READ; }
     void makeEOFToken();
@@ -70,6 +71,7 @@ public:
     class UnexpectedEOFInComment: public std::exception {};
     class UnexpectedEOFInString: public std::exception {};
     class NewlineInConstantString: public std::exception {};
+    class InvalidFloatingPointConstant: public std::exception {};
 };
 
 class BadFile: public std::exception {};

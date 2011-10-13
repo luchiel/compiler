@@ -43,7 +43,9 @@ int main(int argc, char *argv[])
 
 //and ignore that weird slash behavior - not in STD
 
-+ignore hex/octal. ignore hex float
++ignore hex/octal? ignore hex float
+
++add test error: line 1, 1 do not look alike or smth
 */
 
     return 0;

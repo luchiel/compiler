@@ -1,0 +1,9 @@
+(line, col)		Type		Text, Value
+(1, 1)		FLOAT CONST		1.0, 1
+(2, 1)		FLOAT CONST		0.3, 0.3
+(3, 1)		FLOAT CONST		.33, 0.33
+(4, 1)		FLOAT CONST		.3e3, 300
+(5, 1)		FLOAT CONST		1.1, 1.1
+(6, 1)		FLOAT CONST		1.e3, 1000
+(7, 1)		FLOAT CONST		1e1, 10
+(8, 1)		EOF
