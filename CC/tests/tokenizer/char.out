@@ -1,6 +1,6 @@
 (line, col)		Type		Text, Value
 (1, 1)		CHARACTER		'a', a
 (2, 1)		CHARACTER		'/', /
-(3, 1)		CHARACTER		'\\', \\
-(4, 1)		CHARACTER		'\r', \r
+(3, 1)		CHARACTER		'\', \
+(4, 1)		CHARACTER		'	', 	
 (5, 1)		EOF

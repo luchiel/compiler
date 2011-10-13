@@ -3,7 +3,13 @@
 (1, 6)		SEPARATOR		;
 (3, 1)		STRING		"ss s sss", ss s sss
 (4, 9)		SEPARATOR		;
-(6, 1)		STRING		"\n\\\"", \n\\\"
+(6, 1)		STRING		"
+\"", 
+\"
 (6, 9)		SEPARATOR		;
 (8, 1)		STRING		"yyy   uuu", yyy   uuu
-(9, 8)		EOF 
+(9, 8)		SEPARATOR		;
+(11, 1)		STRING		"a
+b", a
+b
+(11, 7)		EOF
