@@ -75,6 +75,7 @@ void Tokenizer::readChar(unsigned int& idx)
     _current.line = _currentLine;
     _current.type = TOK_CHAR_CONST;
     _current.value.strValue = new string("");
+    //string symbol("");
     idx++;
     if(idx + 1 >= _buffer.size())//closing quote
         throw NewlineInConstantChar();
@@ -85,13 +86,17 @@ void Tokenizer::readChar(unsigned int& idx)
             throw NewlineInConstantChar();
         if(_buffer[idx + 1] != '\'')
             throw MulticharacterConstantChar();
+        //symbol += '\\';
         *(_current.value.strValue) += '\\';
     }
     else
         if(_buffer[idx + 1] != '\'')
             throw MulticharacterConstantChar();
     *(_current.value.strValue) += _buffer[idx];
+    //symbol += _buffer[idx];
     _current.text = '\'' + *(_current.value.strValue) + '\'';
+    //_current.text = '\'' + symbol + '\'';
+    //_current.value.intValue = symbol.c_str()[0];
     idx++;
     _index = idx + 1;
     _state = IS_MADE;
@@ -149,8 +154,10 @@ void Tokenizer::readInt(unsigned int& idx)
     if(idx < _buffer.size() && _current.type == TOK_DEC_CONST && (
         _buffer[idx] == 'e' || _buffer[idx] == 'E' || _buffer[idx] == '.'
     ))
+    {
         if(!tryReadFloatPart(idx, true))
             throw InvalidFloatingPointConstant();
+    }
     else
         idx--;
 }
