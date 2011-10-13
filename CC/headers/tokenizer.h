@@ -42,7 +42,7 @@ private:
     void checkKeywords();
 
     void readStr(unsigned int idx);
-    void readChar(unsigned int idx);
+    void readChar(unsigned int& idx);
 
     int getIntValue(char cval);
     bool isOctDigit(char cval);
@@ -66,12 +66,36 @@ public:
     ~Tokenizer();
 
     void bind(const string& filename);
-    void bind(const wstring& filename);
+    //void bind(const wstring& filename);
 
-    class UnexpectedEOFInComment: public std::exception {};
-    class UnexpectedEOFInString: public std::exception {};
-    class NewlineInConstantString: public std::exception {};
-    class InvalidFloatingPointConstant: public std::exception {};
+    class UnexpectedEOFInComment: public exception
+    {
+        virtual const char* what() const throw() { return "Unexpected EOF in comment"; }
+    };
+    class NewlineInConstantString: public exception
+    {
+        virtual const char* what() const throw() { return "Newline in constant string"; }
+    };
+    class NewlineInConstantChar: public exception
+    {
+        virtual const char* what() const throw() { return "Newline in constant char"; }
+    };
+    class MulticharacterConstantChar: public exception
+    {
+        virtual const char* what() const throw() { return "Multicharacter constant char"; }
+    };
+    class InvalidFloatingPointConstant: public exception
+    {
+        virtual const char* what() const throw() { return "Invalid floating point constant"; }
+    };
+    class UnknownOperation: public exception
+    {
+        virtual const char* what() const throw() { return "Inknown operation"; }
+    };
+    class BadDigitInOctalConst: public exception
+    {
+        virtual const char* what() const throw() { return "Bad digit in octal const"; }
+    };
 };
 
 class BadFile: public std::exception {};
