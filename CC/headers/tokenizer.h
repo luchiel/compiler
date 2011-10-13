@@ -53,6 +53,8 @@ private:
     void setTypeAndReadState(TokenType tt) { _current.type = tt; _state = IS_READ; }
     void makeEOFToken();
 
+    void processEscapeSequencesInStrValue();
+
     char trySymbol(unsigned int pos);
 
 public:
@@ -95,6 +97,10 @@ public:
     class BadDigitInOctalConst: public exception
     {
         virtual const char* what() const throw() { return "Bad digit in octal const"; }
+    };
+    class InvalidEscapeSequence: public exception
+    {
+        virtual const char* what() const throw() { return "Invalid escape sequence"; }
     };
 };
 

@@ -64,9 +64,44 @@ void Tokenizer::readStr(unsigned int idx)
                 break;
     }
 
+    processEscapeSequencesInStrValue();
     _current.text = '"' + *(_current.value.strValue) + '"';
     _index = idx;
     _state = IS_MADE;
+}
+
+void Tokenizer::processEscapeSequencesInStrValue()
+{
+    string& val = *_current.value.strValue;
+    unsigned int j = 0;
+    for(unsigned int i = 0; i < val.size(); ++i, ++j)
+    {
+        //"...\" is not possible. It has \\" or it is not the end of the string
+        if(val[i] == '\\')
+        {
+            i++;
+            switch(val[i])
+            {
+                case 'n':   val[j] = '\n'; break;
+                case 't':   val[j] = '\t'; break;
+                case '\'':  val[j] = '\''; break;
+                case '"':   val[j] = '\"'; break;
+                case '?':   val[j] = '\?'; break;
+                case '\\':  val[j] = '\\'; break;
+                case 'a':   val[j] = '\a'; break;
+                case 'b':   val[j] = '\b'; break;
+                case 'f':   val[j] = '\f'; break;
+                case 'r':   val[j] = '\r'; break;
+                case 'v':   val[j] = '\v'; break;
+                default:
+                    throw InvalidEscapeSequence();
+                // \' \" \? \\ \a \b \f \n \r \t \v \" == " \? == ?
+            }
+        }
+        else
+            val[j] = val[i];
+    }
+    val.resize(j);
 }
 
 void Tokenizer::readChar(unsigned int& idx)
@@ -75,7 +110,6 @@ void Tokenizer::readChar(unsigned int& idx)
     _current.line = _currentLine;
     _current.type = TOK_CHAR_CONST;
     _current.value.strValue = new string("");
-    //string symbol("");
     idx++;
     if(idx + 1 >= _buffer.size())//closing quote
         throw NewlineInConstantChar();
@@ -86,21 +120,19 @@ void Tokenizer::readChar(unsigned int& idx)
             throw NewlineInConstantChar();
         if(_buffer[idx + 1] != '\'')
             throw MulticharacterConstantChar();
-        //symbol += '\\';
         *(_current.value.strValue) += '\\';
     }
     else
         if(_buffer[idx + 1] != '\'')
             throw MulticharacterConstantChar();
     *(_current.value.strValue) += _buffer[idx];
-    //symbol += _buffer[idx];
+
+    processEscapeSequencesInStrValue();
     _current.text = '\'' + *(_current.value.strValue) + '\'';
-    //_current.text = '\'' + symbol + '\'';
-    //_current.value.intValue = symbol.c_str()[0];
+
     idx++;
     _index = idx + 1;
     _state = IS_MADE;
-    // \' \" \? \\ \a \b \f \n \r \t \v \" == " \? == ?
 }
 
 bool Tokenizer::isOctDigit(char cval)
