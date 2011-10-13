@@ -1,4 +1,4 @@
-(line, col)	Type		Text, Value
+(line, col)		Type		Text, Value
 (1, 1)		IDENTIFIER		first
 (2, 1)		IDENTIFIER		_second
 (3, 1)		IDENTIFIER		__3

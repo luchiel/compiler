@@ -1,4 +1,4 @@
-(line, col)	Type		Text, Value
+(line, col)		Type		Text, Value
 (1, 1)		if KEYWORD		if
 (1, 4)		IDENTIFIER		then
 (1, 9)		else KEYWORD		else
@@ -14,4 +14,4 @@
 (3, 7)		continue KEYWORD		continue
 (3, 16)		return KEYWORD		return
 (4, 1)		OPERATION sizeof		sizeof
-(5, 7)		EOF
+(5, 1)		EOF
