@@ -9,9 +9,6 @@ namespace LuCCompiler
 
 void dd() {}
 
-//const string a = "dsdg\
-//                 dsfdf";
-
 void Tokenizer::readStr(unsigned int idx)
 {
     _current.type = TOK_STR_CONST;
@@ -21,17 +18,30 @@ void Tokenizer::readStr(unsigned int idx)
 
     bool isOpened = false;
     unsigned int startText = idx;
-    //int backslashes = 0;
 
     while(idx < _buffer.size())
     {
-        //if(_buffer[idx] == '\\')
-        //{
-        //    backslashes = backslashes == 1 ? 0 : 1;
-        //}
-        if(_buffer[idx] == '"')// && backslashes == 0)
+        if(_buffer[idx] == '\\')
         {
-            //forgot about \"
+            if(idx + 1 == _buffer.size())
+            {
+                string tmp;
+                tmp.assign(_buffer, startText + 1, idx - startText - 1);
+                *(_current.value.strValue) = *(_current.value.strValue) + tmp;
+                if(tryGetLine())
+                    startText = -1;
+                else
+                    throw NewlineInConstantString();
+            }
+            else
+            {
+                idx += 2;
+                if(idx == _buffer.size())
+                    throw NewlineInConstantString();
+            }
+        }
+        else if(_buffer[idx] == '"')
+        {
             isOpened = !isOpened;
             if(!isOpened)
             {
@@ -59,8 +69,33 @@ void Tokenizer::readStr(unsigned int idx)
     _state = IS_MADE;
 }
 
-void Tokenizer::readChar(unsigned int idx)
+void Tokenizer::readChar(unsigned int& idx)
 {
+    _current.col = idx;
+    _current.line = _currentLine;
+    _current.type = TOK_CHAR_CONST;
+    _current.value.strValue = new string("");
+    idx++;
+    if(idx + 1 >= _buffer.size())//closing quote
+        throw NewlineInConstantChar();
+    if(_buffer[idx] == '\\')
+    {
+        idx++;
+        if(idx + 1 >= _buffer.size())
+            throw NewlineInConstantChar();
+        if(_buffer[idx + 1] != '\'')
+            throw MulticharacterConstantChar();
+        *(_current.value.strValue) += '\\';
+    }
+    else
+        if(_buffer[idx + 1] != '\'')
+            throw MulticharacterConstantChar();
+    *(_current.value.strValue) += _buffer[idx];
+    _current.text = '\'' + *(_current.value.strValue) + '\'';
+    idx++;
+    _index = idx + 1;
+    _state = IS_MADE;
+    // \' \" \? \\ \a \b \f \n \r \t \v \" == " \? == ?
 }
 
 bool Tokenizer::isOctDigit(char cval)
@@ -77,11 +112,6 @@ int Tokenizer::getIntValue(char cval)
     return cval - '0';
 }
 
-//then tests
-//exceptions too
-//then string & char or char & string
-//floats
-
 void Tokenizer::readInt(unsigned int& idx)
 {
     _state = IS_READ;
@@ -97,11 +127,6 @@ void Tokenizer::readInt(unsigned int& idx)
             idx += 2;
             notation = 16;
         }
-//        else if(!isdigit(nextSymbol))
-//        {
-//            idx++;
-//            return;
-//        }
         else if(isdigit(nextSymbol))
         {
             _current.type = TOK_OCT_CONST;
@@ -110,20 +135,22 @@ void Tokenizer::readInt(unsigned int& idx)
         }
     }
     while(idx < _buffer.size() && (
-        _current.type == TOK_OCT_CONST && isOctDigit(_buffer[idx]) ||
+        _current.type == TOK_OCT_CONST && isdigit(_buffer[idx]) ||
         _current.type == TOK_DEC_CONST && isdigit(_buffer[idx]) ||
         _current.type == TOK_HEX_CONST && isxdigit(_buffer[idx])
     ))
+	{
+        if(_current.type == TOK_OCT_CONST && !isOctDigit(_buffer[idx]))
+            throw BadDigitInOctalConst();
         _current.value.intValue =
             _current.value.intValue * notation + getIntValue(_buffer[idx++]);
+	}
 
     if(idx < _buffer.size() && _current.type == TOK_DEC_CONST && (
         _buffer[idx] == 'e' || _buffer[idx] == 'E' || _buffer[idx] == '.'
     ))
-    {
         if(!tryReadFloatPart(idx, true))
             throw InvalidFloatingPointConstant();
-    }
     else
         idx--;
 }
@@ -254,7 +281,6 @@ void Tokenizer::read()
             makeEOFToken();
             return;
         }
-        //_index = 0;
     }
 
     _current = Token();
@@ -387,7 +413,7 @@ void Tokenizer::read()
                 case ']': _current.type = TOK_R_SQUARE; break;
             };
             if(_current.type == TOK_OPER)
-                dd; //no such token. Error. Error.
+                throw UnknownOperation();
             if(_current.type != TOK_FLOAT_CONST)
                 j +=
                     TOKEN_TYPE_NAME[_current.type].size() -
@@ -426,7 +452,7 @@ void Tokenizer::read()
                     {
                         if(_buffer[j] == '*' && j < _buffer.size() - 1 && _buffer[j + 1] == '/')
                         {
-                            j += 2; // sure? 2, not 1?
+                            j += 2;
                             _state = IS_NONE;
                             break;
                         }
@@ -465,16 +491,16 @@ Tokenizer::~Tokenizer()
 
 void Tokenizer::bind(const string& filename)
 {
-    _source.open(filename);
+    _source.open(filename.c_str());
     if(!_source.good())
         throw BadFile();
 }
 
-void Tokenizer::bind(const wstring& filename)
+/*void Tokenizer::bind(const wstring& filename)
 {
     _source.open(filename);
     if(!_source.good())
         throw BadFile();
-}
+}*/
 
 }

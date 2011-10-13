@@ -70,7 +70,7 @@ void Tester::attachTypelessFilename(wstring& filename)
 void Tester::runFile()
 {
     streambuf *backup;
-    _outStream.open(_currentTest + ".log");
+    _outStream.open(string(_currentTest + ".log").c_str());
     if(!_outStream.good())
         throw BadFile();
 
@@ -85,7 +85,15 @@ void Tester::runFile()
 
     while(t.get().type != TOK_EOF)
     {
-        t.next().outputAsString(cout);
+        try
+        {
+            t.next().outputAsString(cout);
+        }
+        catch(exception& e)
+        {
+            cout << "Exception caught: " << e.what() << endl;
+            break;
+        }
     }
 
     //restore stdout
@@ -98,32 +106,33 @@ void Tester::runFile()
 void Tester::estimateResult()
 {
     ifstream outFile, logFile;
-    outFile.open(_currentTest + ".out");
-    logFile.open(_currentTest + ".log");
+    outFile.open(string(_currentTest + ".out").c_str());
+    logFile.open(string(_currentTest + ".log").c_str());
 
-    bool result = true;
+    int line = 0, result = -1;
     string oS, lS;
     while(!outFile.eof() && !logFile.eof())
     {
+        line++;
         getline(outFile, oS);
         getline(logFile, lS);
         if(oS != lS)
         {
-            result = false;
+            result = line;
             break;
         }
     }
 
     if(!outFile.eof() || !logFile.eof())
-        result = false;
+        result = line + 1;
 
-    if(result)
+    if(result == -1)
     {
         cout << "[OK] Test " << _currentTest.c_str() << ".in" << endl;
         testsPassed++;
     }
     else
-        cout << "[FAIL] Test " << _currentTest.c_str() << ".in" << endl;
+        cout << "[FAIL] Test " << _currentTest.c_str() << ".in:\n\tmismatch in line " << line << "." << endl;
 
     outFile.close();
     logFile.close();

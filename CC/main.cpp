@@ -11,7 +11,10 @@ int main(int argc, char *argv[])
 {
     if(argc == 1)
     {
-        printf("%s\n", "No args found. You should enter some filename or --test to test the application");
+        printf(
+            "No args found. You should enter some filename "
+            "or --test <test_option> to test the application\n"
+        );
     }
     else if(argc > 1)
     {
@@ -20,29 +23,30 @@ int main(int argc, char *argv[])
             if(argc == 1)
                 printf("%s\n", "Do something");
             else
-                runTests(string(argv[2]));
+                runTests(argv[2]);
         }
         else
         {
             Tokenizer t;
-            t.bind(argv[1]);    //string?
+            t.bind(argv[1]);
 
             printf("(line, col)\t\tType\t\tText, Value\n");
 
             while(t.get().type != TOK_EOF)
             {
-                t.next().outputAsString(cout);
+                try
+                {
+                    t.next().outputAsString(cout);
+                }
+                catch(exception& e)
+                {
+                    cout << "Exception caught: " << e.what() << endl;
+                    break;
+                }
             }
         }
     }
 /*
-\' \" \? \\
-\a \b \f \n \r \t \v
-\" == "
-\? == ?
-
-//and ignore that weird slash behavior - not in STD
-
 +ignore hex/octal? ignore hex float
 
 +add test error: line 1, 1 do not look alike or smth
