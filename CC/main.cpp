@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
         if(!strcmp(argv[1], "--test"))
         {
             if(argc == 1)
-                printf("%s\n", "Do something");
+                printf("Do something\n");
             else
                 runTests(argv[2]);
         }
@@ -46,11 +46,6 @@ int main(int argc, char *argv[])
             }
         }
     }
-/*
-+ignore hex/octal? ignore hex float
-
-+add test error: line 1, 1 do not look alike or smth
-*/
 
     return 0;
 }

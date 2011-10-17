@@ -27,7 +27,7 @@ void Tokenizer::readStr(unsigned int idx)
             {
                 string tmp;
                 tmp.assign(_buffer, startText + 1, idx - startText - 1);
-                *(_current.value.strValue) = *(_current.value.strValue) + tmp;
+                *_current.value.strValue = *_current.value.strValue + tmp;
                 if(tryGetLine())
                     startText = -1;
                 else
@@ -47,7 +47,7 @@ void Tokenizer::readStr(unsigned int idx)
             {
                 string tmp;
                 tmp.assign(_buffer, startText + 1, idx - startText - 1);
-                *(_current.value.strValue) = *(_current.value.strValue) + tmp;
+                *_current.value.strValue = *_current.value.strValue + tmp;
             }
             else
                 startText = idx;
@@ -65,7 +65,7 @@ void Tokenizer::readStr(unsigned int idx)
     }
 
     processEscapeSequencesInStrValue();
-    _current.text = '"' + *(_current.value.strValue) + '"';
+    _current.text = '"' + *_current.value.strValue + '"';
     _index = idx;
     _state = IS_MADE;
 }
@@ -120,15 +120,15 @@ void Tokenizer::readChar(unsigned int& idx)
             throw NewlineInConstantChar();
         if(_buffer[idx + 1] != '\'')
             throw MulticharacterConstantChar();
-        *(_current.value.strValue) += '\\';
+        *_current.value.strValue += '\\';
     }
     else
         if(_buffer[idx + 1] != '\'')
             throw MulticharacterConstantChar();
-    *(_current.value.strValue) += _buffer[idx];
+    *_current.value.strValue += _buffer[idx];
 
     processEscapeSequencesInStrValue();
-    _current.text = '\'' + *(_current.value.strValue) + '\'';
+    _current.text = '\'' + *_current.value.strValue + '\'';
 
     idx++;
     _index = idx + 1;
@@ -313,6 +313,8 @@ void Tokenizer::checkKeywords()
 
 void Tokenizer::read()
 {
+    _current = Token();
+
     if(_buffer.size() == 0 || _index >= _buffer.size())
     {
         if(!tryGetLine())
@@ -321,8 +323,6 @@ void Tokenizer::read()
             return;
         }
     }
-
-    _current = Token();
 
     unsigned int cloneOfIndex = _index;
     unsigned int j = _index;
