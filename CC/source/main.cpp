@@ -2,8 +2,8 @@
 #include <cstdlib>
 #include <windows.h>
 #include <string>
-#include "headers/test.h"
-#include "headers/tokenizer.h"
+#include "test.h"
+#include "tokenizer.h"
 
 using namespace LuCCompiler;
 
@@ -27,8 +27,7 @@ int main(int argc, char *argv[])
         }
         else
         {
-            Tokenizer t;
-            t.bind(argv[1]);
+            Tokenizer t(argv[1]);
 
             printf("(line, col)\t\tType\t\tText, Value\n");
 
@@ -40,7 +39,7 @@ int main(int argc, char *argv[])
                 }
                 catch(exception& e)
                 {
-                    cout << "Exception caught: " << e.what() << endl;
+                    cout << "Error: " << e.what() << endl;
                     break;
                 }
             }

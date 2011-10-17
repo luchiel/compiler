@@ -1,8 +1,8 @@
 #include <string>
 #include <sstream>
 #include <cctype>
-#include "../headers/token.h"
-#include "../headers/tokenizer.h"
+#include "token.h"
+#include "tokenizer.h"
 
 namespace LuCCompiler
 {
@@ -225,7 +225,7 @@ bool Tokenizer::tryReadFloatPart(unsigned int& idx, bool hasIntPart)
         idx--;
         return false;
     }
-    
+
     if(idx < _buffer.size() && (_buffer[idx] == 'e' || _buffer[idx] == 'E'))
     {
         floatPart += _buffer[idx];
@@ -282,7 +282,7 @@ char Tokenizer::trySymbol(unsigned int pos)
     return pos < _buffer.size() ? _buffer[pos] : ' ';
 }
 
-Tokenizer::Tokenizer(): _state(IS_NONE), _current(Token()), _buffer(""), _index(0), _currentLine(0)
+Tokenizer::Tokenizer(const string& filename): _state(IS_NONE), _current(Token()), _buffer(""), _index(0), _currentLine(0)
 {
     const string OPERATIONS = "+-=/*><%&^|!~.?[]";
 
@@ -303,6 +303,8 @@ Tokenizer::Tokenizer(): _state(IS_NONE), _current(Token()), _buffer(""), _index(
     keywords["break"] = TOK_BREAK;
     keywords["continue"] = TOK_CONTINUE;
     keywords["return"] = TOK_RETURN;
+
+    bind(filename);
 }
 
 void Tokenizer::checkKeywords()
@@ -513,7 +515,7 @@ void Tokenizer::read()
 
 Token& Tokenizer::get()
 {
-    return _current;
+    return _current.type == TOK_UNDEF ? next() : _current;
 }
 
 Token& Tokenizer::next()

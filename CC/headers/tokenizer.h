@@ -64,7 +64,7 @@ public:
     Token& get();
     Token& next();
 
-    Tokenizer();
+    Tokenizer(const string& filename);
     ~Tokenizer();
 
     void bind(const string& filename);

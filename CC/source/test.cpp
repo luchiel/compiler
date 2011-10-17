@@ -7,8 +7,8 @@
 #include <iostream>
 #include <string>
 #include <fstream>
-#include "../headers/test.h"
-#include "../headers/tokenizer.h"
+#include "test.h"
+#include "tokenizer.h"
 
 using namespace std;
 
@@ -78,8 +78,7 @@ void Tester::runFile()
     backup = cout.rdbuf();
     cout.rdbuf(_outStream.rdbuf());
 
-    Tokenizer t;
-    t.bind(_currentTest + ".in");
+    Tokenizer t(_currentTest + ".in");
 
     cout << "(line, col)\t\tType\t\tText, Value\n";
 
@@ -91,7 +90,7 @@ void Tester::runFile()
         }
         catch(exception& e)
         {
-            cout << "Exception caught: " << e.what() << endl;
+            cout << "Error: " << e.what() << endl;
             break;
         }
     }
