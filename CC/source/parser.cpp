@@ -13,7 +13,11 @@ Parser::Parser(Tokenizer* tokens)
 
 ExpressionNode* Parser::parseBinaryExpression(int priority)
 {
-    ExpressionNode* left = parseBinaryExpression(priority + 1);
+    printf(":P");
+    //meet the rec!
+    //never to Unary
+    if(priority < 13)
+        ExpressionNode* left = parseBinaryExpression(priority + 1);
 
     OperationGroups* og = new OperationGroups();
 

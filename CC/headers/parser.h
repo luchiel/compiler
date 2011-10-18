@@ -13,6 +13,8 @@ private:
     BinaryNode* _root;
     Tokenizer* _tokens;
 
+    TokenType tokenType() { return _tokens->get().type; }
+
 public:
     ExpressionNode* parseExpression();
 
@@ -24,8 +26,6 @@ public:
     ExpressionNode* parseBinaryExpression(int priority);
     ExpressionNode* parseCastExpression();
     ExpressionNode* parseConditionalExpression();
-
-    TokenType tokenType() { return _tokens->get().type; }
 };
 
 class RightSquareBracketExpected: public exception {};

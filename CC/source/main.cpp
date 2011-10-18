@@ -4,6 +4,8 @@
 #include <string>
 #include "test.h"
 #include "tokenizer.h"
+#include "parser.h"
+#include "expression.h"
 
 using namespace LuCCompiler;
 
@@ -28,21 +30,11 @@ int main(int argc, char *argv[])
         else
         {
             Tokenizer t(argv[1]);
-
-            printf("(line, col)\t\tType\t\tText, Value\n");
-
-            while(t.get().type != TOK_EOF)
-            {
-                try
-                {
-                    t.next().outputAsString(cout);
-                }
-                catch(exception& e)
-                {
-                    cout << "Error: " << e.what() << endl;
-                    break;
-                }
-            }
+            Parser p(&t);
+            ExpressionNode* n = p.parseExpression();
+            //printf(":P");
+            //n->out(0);
+            printf("UNYA");
         }
     }
 
