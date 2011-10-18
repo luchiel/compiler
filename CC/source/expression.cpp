@@ -1,4 +1,7 @@
+#include <stdio.h>
+#include <iostream>
 #include "expression.h"
+#include "operations.h"
 
 namespace LuCCompiler
 {
@@ -15,42 +18,42 @@ void IdentNode::out(int depth)
 {
     printRibs(depth);
 
-    cout << '+-{' << _name << '}' << endl;
+    cout << "+-{" << _name << '}' << endl;
 }
 
 void StringNode::out(int depth)
 {
     printRibs(depth);
 
-    cout << '+-{' << _value << '}' << endl;
+    cout << "+-{" << _value << '}' << endl;
 }
 
 void CharNode::out(int depth)
 {
     printRibs(depth);
 
-    cout << '+-{' << _value << '}' << endl;
+    cout << "+-{" << _value << '}' << endl;
 }
 
 void IntNode::out(int depth)
 {
     printRibs(depth);
 
-    cout << '+-{' << _value << '}' << endl;
+    cout << "+-{" << _value << '}' << endl;
 }
 
 void FloatNode::out(int depth)
 {
     printRibs(depth);
 
-    cout << '+-{' << _value << '}' << endl;
+    cout << "+-{" << _value << '}' << endl;
 }
 
 void PostfixNode::out(int depth)
 {
     printRibs(depth);
 
-    cout << '+-{' << operationName(_type) << '}' << endl;
+    cout << "+-{" << operationName(_type) << '}' << endl;
 
     printRibs(depth + 1);
     cout << endl;
@@ -64,7 +67,7 @@ void UnaryNode::out(int depth)
 {
     printRibs(depth);
 
-    cout << '+-{' << operationName(_type) << '}' << endl;
+    cout << "+-{" << operationName(_type) << '}' << endl;
 
     printRibs(depth + 1);
     cout << endl;
@@ -75,7 +78,7 @@ void BinaryNode::out(int depth)
 {
     printRibs(depth);
 
-    cout << '+-{' << operationName(_type) << '}' << endl;
+    cout << "+-{" << operationName(_type) << '}' << endl;
 
     printRibs(depth + 1);
     cout << endl;
