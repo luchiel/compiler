@@ -1,6 +1,7 @@
 CC/debug
 CC/CC.*
 CC/ipch
+CC/objects
 .ssh/*
 .gitconfig
 CC/tests/tokenizer/*.log
