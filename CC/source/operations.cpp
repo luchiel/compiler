@@ -7,34 +7,38 @@ namespace LuCCompiler
 
 OperationGroups::OperationGroups()
 {
-    _binaryOps[TOK_ASTERISK] = 13; //*a!
-    _binaryOps[TOK_DIV] = 13;
-    _binaryOps[TOK_MOD] = 13;
-    _binaryOps[TOK_PLUS] = 12; //+1
-    _binaryOps[TOK_MINUS] = 12; //-1
-    _binaryOps[TOK_SHL] = 11;
-    _binaryOps[TOK_SHR] = 11;
-    _binaryOps[TOK_L] = 10;
-    _binaryOps[TOK_G] = 10;
-    _binaryOps[TOK_LE] = 10;
-    _binaryOps[TOK_GE] = 10;
-    _binaryOps[TOK_EQUAL] = 9;
-    _binaryOps[TOK_NOT_EQUAL] = 9;
-    _binaryOps[TOK_AMP] = 8; //&readHere
-    _binaryOps[TOK_XOR] = 7;
-    _binaryOps[TOK_OR] = 6;
-    _binaryOps[TOK_LOGICAl_AND] = 5;
-    _binaryOps[TOK_LOGICAL_OR] = 4;
+    _binaryOps = new map<TokenType, int>;
+    map<TokenType, int> bo = *_binaryOps;
+    bo[TOK_ASTERISK] = 13; //*a!
+    bo[TOK_DIV] = 13;
+    bo[TOK_MOD] = 13;
+    bo[TOK_PLUS] = 12; //+1
+    bo[TOK_MINUS] = 12; //-1
+    bo[TOK_SHL] = 11;
+    bo[TOK_SHR] = 11;
+    bo[TOK_L] = 10;
+    bo[TOK_G] = 10;
+    bo[TOK_LE] = 10;
+    bo[TOK_GE] = 10;
+    bo[TOK_EQUAL] = 9;
+    bo[TOK_NOT_EQUAL] = 9;
+    bo[TOK_AMP] = 8; //&readHere
+    bo[TOK_XOR] = 7;
+    bo[TOK_OR] = 6;
+    bo[TOK_LOGICAl_AND] = 5;
+    bo[TOK_LOGICAL_OR] = 4;
     //left to right
 
+    _unaryOps = new map<TokenType, int>;
+    map<TokenType, int> uo = *_binaryOps;
     //_unaryOps[(typename)] = 14;
-    _unaryOps[TOK_ASTERISK] = 15;
-    _unaryOps[TOK_AMP] = 15;
-    _unaryOps[TOK_PLUS] = 15;
-    _unaryOps[TOK_MINUS] = 15;
-    _unaryOps[TOK_NOT] = 15;
-    _unaryOps[TOK_TILDA] = 15;
-    _unaryOps[TOK_SIZEOF] = 15;
+    uo[TOK_ASTERISK] = 15;
+    uo[TOK_AMP] = 15;
+    uo[TOK_PLUS] = 15;
+    uo[TOK_MINUS] = 15;
+    uo[TOK_NOT] = 15;
+    uo[TOK_TILDA] = 15;
+    uo[TOK_SIZEOF] = 15;
     //right to left
 }
 

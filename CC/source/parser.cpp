@@ -14,10 +14,18 @@ Parser::Parser(Tokenizer* tokens)
 ExpressionNode* Parser::parseBinaryExpression(int priority)
 {
     ExpressionNode* left = parseBinaryExpression(priority + 1);
-    map<TokenType, int>::iterator tok = OperationGroups::getInstance()->_binaryOps.find(_tokens->next().type);
-    if(tok == OperationGroups::getInstance()->_binaryOps.end() || tok->second != priority)
+
+    OperationGroups* og = new OperationGroups();
+
+    map<TokenType, int>::iterator tok =
+        /*OperationGroups::getInstance()->*/
+        og->_binaryOps->find(_tokens->next().type);
+    if(
+        tok == /*OperationGroups::getInstance()->*/og->_binaryOps->end() ||
+        tok->second != priority
+    )
         return left;
-    BinaryNode* bNode;
+    BinaryNode* bNode = new BinaryNode();
     bNode->_type = _tokens->get().type;
     bNode->_left = left;
     bNode->_right = parseBinaryExpression(priority);

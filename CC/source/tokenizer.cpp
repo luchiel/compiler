@@ -56,12 +56,14 @@ void Tokenizer::readStr(unsigned int idx)
             break;
         idx++;
         if(idx == _buffer.size())
+        {
             if(isOpened)
                 throw NewlineInConstantString();
             else if(tryGetLine())
                 idx = 0;
             else
                 break;
+        }
     }
 
     processEscapeSequencesInStrValue();
@@ -172,9 +174,9 @@ void Tokenizer::readInt(unsigned int& idx)
         }
     }
     while(idx < _buffer.size() && (
-        _current.type == TOK_OCT_CONST && isdigit(_buffer[idx]) ||
-        _current.type == TOK_DEC_CONST && isdigit(_buffer[idx]) ||
-        _current.type == TOK_HEX_CONST && isxdigit(_buffer[idx])
+        (_current.type == TOK_OCT_CONST && isdigit(_buffer[idx])) ||
+        (_current.type == TOK_DEC_CONST && isdigit(_buffer[idx])) ||
+        (_current.type == TOK_HEX_CONST && isxdigit(_buffer[idx]))
     ))
 	{
         if(_current.type == TOK_OCT_CONST && !isOctDigit(_buffer[idx]))
@@ -326,7 +328,6 @@ void Tokenizer::read()
         }
     }
 
-    unsigned int cloneOfIndex = _index;
     unsigned int j = _index;
     while(_state != IS_MADE)
     {
@@ -394,7 +395,7 @@ void Tokenizer::read()
                     break;
                 case '|':
                     _current.type =
-                        nextSymbol == '||' ? TOK_LOGICAL_OR :
+                        nextSymbol == '|' ? TOK_LOGICAL_OR :
                         nextSymbol == '=' ? TOK_OR_ASSIGN :
                         TOK_OR;
                     break;

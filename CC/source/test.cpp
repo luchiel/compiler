@@ -82,17 +82,17 @@ void Tester::runFile()
 
     cout << "(line, col)\t\tType\t\tText, Value\n";
 
-    while(t.get().type != TOK_EOF)
+    try
     {
-        try
+        do
         {
             t.next().outputAsString(cout);
         }
-        catch(exception& e)
-        {
-            cout << "Error: " << e.what() << endl;
-            break;
-        }
+        while(t.get().type != TOK_EOF);
+    }
+    catch(exception& e)
+    {
+        cout << "Error: " << e.what() << endl;
     }
 
     //restore stdout
