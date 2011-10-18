@@ -14,18 +14,26 @@ private:
     Tokenizer* _tokens;
 
 public:
-    void parseExpression();
+    ExpressionNode* parseExpression();
 
     Parser(Tokenizer* tokens);
 
-	ExpressionNode* parsePrimaryExpression();
-	ExpressionNode* parsePostfixExpression();
-	ExpressionNode* parseUnaryExpression();
-	ExpressionNode* parseCastExpression();
-	ExpressionNode* parseConditionalExpression();
+    ExpressionNode* parsePrimaryExpression();
+    ExpressionNode* parsePostfixExpression();
+    ExpressionNode* parseUnaryExpression();
+    ExpressionNode* parseBinaryExpression(int priority);
+    ExpressionNode* parseCastExpression();
+    ExpressionNode* parseConditionalExpression();
 
     TokenType tokenType() { return _tokens->get().type; }
 };
+
+class RightSquareBracketExpected: public exception {};
+class RightBracketExpected: public exception {};
+class LeftBracketExpected: public exception {};
+class RightBraceExpected: public exception {};
+class UnepectedToken: public exception {};
+class IdentifierExpected: public exception {};
 
 }
 
