@@ -35,10 +35,10 @@ void runTests(string testBlock)
     wstring tmp(wfullpath);
     tmp.append(L"*.in");
 
-    WIN32_FIND_DATA FindFileData;
+    WIN32_FIND_DATAW FindFileData;
     HANDLE hFind;
 
-    hFind = FindFirstFile(tmp.c_str(), &FindFileData);
+    hFind = FindFirstFileW(tmp.c_str(), &FindFileData);
     do
     {
         if(hFind != INVALID_HANDLE_VALUE)
@@ -51,13 +51,13 @@ void runTests(string testBlock)
         else
             throw FindFileError();
     }
-    while(FindNextFile(hFind, &FindFileData) || GetLastError() != ERROR_NO_MORE_FILES);
+    while(FindNextFileW(hFind, &FindFileData) || GetLastError() != ERROR_NO_MORE_FILES);
     FindClose(hFind);
 
     t.outputGlobalResult();
 }
 
-void Tester::attachTypelessFilename(wstring& filename)
+void Tester::attachTypelessFilename(wstring filename)
 {
     char ctmp[MAX_PATH];
     wstring wtmp = filename.substr(0, filename.size() - 3);
