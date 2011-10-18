@@ -4,14 +4,6 @@ CC/ipch
 CC/objects
 .ssh/*
 .gitconfig
-CC/tests/tokenizer/*.log
-CC/tests/tokenizer/float_const.log
-CC/tests/tokenizer/integer_const.log
-CC/tests/tokenizer/comments.log
-CC/tests/tokenizer/simple_string.log
-CC/tests/tokenizer/operations.log
-CC/tests/tokenizer/keywords.log
-CC/tests/tokenizer/identifiers.log
 CStandart.pdf
 *.log
 CC2008/*
