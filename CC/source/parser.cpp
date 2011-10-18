@@ -14,13 +14,14 @@ Parser::Parser(Tokenizer* tokens)
 ExpressionNode* Parser::parseBinaryExpression(int priority)
 {
     ExpressionNode* left = parseBinaryExpression(priority + 1);
-    map<TokenType, int>::iterator tok = OperationGroups.getInstance()->binaryOps.find(_tokens->next().type);
-    if(tok == OperationGroups.getInstance()->binaryOps.end() || tok->second != priority)
+    map<TokenType, int>::iterator tok = OperationGroups::getInstance()->_binaryOps.find(_tokens->next().type);
+    if(tok == OperationGroups::getInstance()->_binaryOps.end() || tok->second != priority)
         return left;
     BinaryNode* bNode;
     bNode->_type = _tokens->get().type;
     bNode->_left = left;
     bNode->_right = parseBinaryExpression(priority);
+    return bNode;
 }
 
 ExpressionNode* Parser::parsePrimaryExpression()
@@ -37,7 +38,7 @@ ExpressionNode* Parser::parsePrimaryExpression()
         case TOK_STR_CONST:
             node = new StringNode(*_tokens->get().value.strValue); break;
         case TOK_IDENT:
-            node = new IdentNode(*_tokens->get().text); break;
+            node = new IdentNode(_tokens->get().text); break;
         case TOK_L_BRACKET:
             _tokens->next(); //( eaten
             node = parseExpression();
@@ -45,7 +46,7 @@ ExpressionNode* Parser::parsePrimaryExpression()
                 throw RightBracketExpected();
             break;
         default:
-            //throw
+            throw UnepectedToken();
     }
     _tokens->next(); //token eaten
     return node;
@@ -65,7 +66,7 @@ ExpressionNode* Parser::parsePostfixExpression()
         {
             case TOK_L_SQUARE:
                 node->_tail = parseExpression();
-                if(tokenType() != TOK_R_Square)
+                if(tokenType() != TOK_R_SQUARE)
                     throw RightSquareBracketExpected();
                 _tokens->next();
                 break;
@@ -97,21 +98,21 @@ ExpressionNode* Parser::parseUnaryExpression()
     UnaryNode* node = NULL;
     switch(tokenType())
     {
-        case TOK_INC_OP:
-        case TOK_DEC_OP:
+        case TOK_INC:
+        case TOK_DEC:
             node = new UnaryNode();
-            node->type = tokenType();
+            node->_type = tokenType();
             _tokens->next();
             node->_only = parseUnaryExpression();
             break;
         case TOK_SIZEOF:
             node = new UnaryNode();
-            node->type = tokenType();
+            node->_type = tokenType();
             _tokens->next();
-            if(tokenType != TOK_L_BRACKET)
+            if(tokenType() != TOK_L_BRACKET)
                 throw LeftBracketExpected();
             node->_only = parseUnaryExpression();
-            if(tokenType != TOK_R_BRACKET)
+            if(tokenType() != TOK_R_BRACKET)
                 throw RightBracketExpected();
             _tokens->next();
             break;
@@ -122,12 +123,12 @@ ExpressionNode* Parser::parseUnaryExpression()
         case TOK_ASTERISK:
         case TOK_NOT:
             node = new UnaryNode();
-            node->type = tokenType();
+            node->_type = tokenType();
             _tokens->next();
             node->_only = parseCastExpression();
             break;
         default:
-            node = parsePostfixExpression();
+            return parsePostfixExpression();
     }
     return node;
 }
@@ -140,7 +141,12 @@ ExpressionNode* Parser::parseCastExpression()
 
 ExpressionNode* Parser::parseConditionalExpression()
 {
-    //
+    return parseBinaryExpression(4);
+}
+
+ExpressionNode* Parser::parseExpression()
+{
+    return parseConditionalExpression();
 }
 
 }

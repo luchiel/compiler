@@ -2,6 +2,7 @@
 #define EXPRESSION_H
 
 #include <string>
+#include "token.h"
 
 using namespace std;
 
@@ -11,6 +12,7 @@ namespace LuCCompiler
 class Node {};
 class ExpressionNode: public Node
 {
+public:
     virtual int width() { return 1; }
 
     virtual void out(int depth) {}
@@ -23,7 +25,7 @@ public:
     string _name;
     IdentNode(const string& name): _name(name) {}
 
-
+    virtual void out(int depth);
 };
 
 class StringNode: public ExpressionNode

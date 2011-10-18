@@ -2,6 +2,7 @@
 #define OPERATIONS_H
 
 #include <map>
+#include <string>
 #include "token.h"
 
 namespace LuCCompiler
@@ -11,7 +12,7 @@ class OperationGroups
 {
 private:
     OperationGroups();
-    OperationGroups* _instance;
+    static OperationGroups* _instance;
 
 public:
     map<TokenType, int> _binaryOps;
@@ -22,12 +23,16 @@ public:
     static OperationGroups* getInstance()
     {
         if(_instance == NULL)
-            _instance = new OperaionGroups;
+            _instance = new OperationGroups();
         return _instance;
     }
 };
 
-OperationGroups* OperationGroups::_instance = NULL;
+class OperationExpected: public exception {};
+
+string operationName(TokenType type);
+
+//OperationGroups* OperationGroups::_instance = NULL;
 
 }
 
