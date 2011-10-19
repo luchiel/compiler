@@ -2,6 +2,7 @@
 #include "parser.h"
 #include "expression.h"
 #include "tokenizer.h"
+#include "token.h"
 #include "operations.h"
 
 namespace LuCCompiler
@@ -30,13 +31,8 @@ Node* Parser::parseBinaryExpression(int priority)
 
     OperationGroups* og = new OperationGroups();
 
-    map<TokenType, int>::iterator tok =
-        /*OperationGroups::getInstance()->*/
-        og->_binaryOps->find(_tokens->get().type);
-    if(
-        tok == /*OperationGroups::getInstance()->*/og->_binaryOps->end() ||
-        tok->second != priority
-    )
+    map<TokenType, int>::iterator tok = og->_binaryOps->find(_tokens->get().type);
+    if(tok == og->_binaryOps->end() || tok->second != priority)
         return left;
     BinaryNode* bNode = new BinaryNode();
     bNode->_type = _tokens->get().type;
@@ -70,7 +66,7 @@ Node* Parser::parsePrimaryExpression()
                 throw makeException("')' expected");
             break;
         default:
-            throw makeException("Unexpected token");
+            throw makeException("Unexpected token " + TOKEN_TYPE_NAME[tokenType()]);
     }
     _tokens->next(); //token eaten
     return node;
@@ -209,7 +205,7 @@ Node* Parser::parseExpression()
 
 ParserException Parser::makeException(const string& e)
 {
-    return ParserException(_tokens->get().line, _tokens->get().col, e);
+    return ParserException(_tokens->get().line, _tokens->get().col + 1, e);
 }
 
 
