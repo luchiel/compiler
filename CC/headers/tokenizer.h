@@ -7,6 +7,7 @@
 #include <set>
 #include <map>
 #include "token.h"
+#include "exception.h"
 
 using namespace std;
 
@@ -68,40 +69,8 @@ public:
     ~Tokenizer();
 
     void bind(const string& filename);
-    //void bind(const wstring& filename);
 
-    class UnexpectedEOFInComment: public exception
-    {
-        virtual const char* what() const throw() { return "Unexpected EOF in comment"; }
-    };
-    class NewlineInConstantString: public exception
-    {
-        virtual const char* what() const throw() { return "Newline in constant string"; }
-    };
-    class NewlineInConstantChar: public exception
-    {
-        virtual const char* what() const throw() { return "Newline in constant char"; }
-    };
-    class MulticharacterConstantChar: public exception
-    {
-        virtual const char* what() const throw() { return "Multicharacter constant char"; }
-    };
-    class InvalidFloatingPointConstant: public exception
-    {
-        virtual const char* what() const throw() { return "Invalid floating point constant"; }
-    };
-    class UnknownOperation: public exception
-    {
-        virtual const char* what() const throw() { return "Inknown operation"; }
-    };
-    class BadDigitInOctalConst: public exception
-    {
-        virtual const char* what() const throw() { return "Bad digit in octal const"; }
-    };
-    class InvalidEscapeSequence: public exception
-    {
-        virtual const char* what() const throw() { return "Invalid escape sequence"; }
-    };
+    TokenizerException makeException(int col, const string& e);
 };
 
 class BadFile: public std::exception {};

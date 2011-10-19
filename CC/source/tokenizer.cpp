@@ -7,7 +7,10 @@
 namespace LuCCompiler
 {
 
-void dd() {}
+TokenizerException Tokenizer::makeException(int col, const string& e)
+{
+    return TokenizerException(_currentLine, col, e);
+}
 
 void Tokenizer::readStr(unsigned int idx)
 {
@@ -31,13 +34,13 @@ void Tokenizer::readStr(unsigned int idx)
                 if(tryGetLine())
                     startText = -1;
                 else
-                    throw NewlineInConstantString();
+                    throw makeException(idx, "Newline in constant string");
             }
             else
             {
                 idx += 1;
                 if(idx == _buffer.size())
-                    throw NewlineInConstantString();
+                    throw makeException(idx, "Newline in constant string");
             }
         }
         else if(_buffer[idx] == '"')
@@ -58,7 +61,7 @@ void Tokenizer::readStr(unsigned int idx)
         if(idx == _buffer.size())
         {
             if(isOpened)
-                throw NewlineInConstantString();
+                throw makeException(idx, "Newline in constant string");
             else if(tryGetLine())
                 idx = 0;
             else
@@ -96,7 +99,7 @@ void Tokenizer::processEscapeSequencesInStrValue()
                 case 'r':   val[j] = '\r'; break;
                 case 'v':   val[j] = '\v'; break;
                 default:
-                    throw InvalidEscapeSequence();
+                    throw makeException(_current.col, "Invalid escape sequence");
                 // \' \" \? \\ \a \b \f \n \r \t \v \" == " \? == ?
             }
         }
@@ -114,19 +117,19 @@ void Tokenizer::readChar(unsigned int& idx)
     _current.value.strValue = new string("");
     idx++;
     if(idx + 1 >= _buffer.size())//closing quote
-        throw NewlineInConstantChar();
+        throw makeException(idx, "Newline in constant char");
     if(_buffer[idx] == '\\')
     {
         idx++;
         if(idx + 1 >= _buffer.size())
-            throw NewlineInConstantChar();
+            throw makeException(idx, "Newline in constant char");
         if(_buffer[idx + 1] != '\'')
-            throw MulticharacterConstantChar();
+            throw makeException(idx, "Multicharacter constant char");
         *_current.value.strValue += '\\';
     }
     else
         if(_buffer[idx + 1] != '\'')
-            throw MulticharacterConstantChar();
+            throw makeException(idx, "Multicharacter constant char");
     *_current.value.strValue += _buffer[idx];
 
     processEscapeSequencesInStrValue();
@@ -180,7 +183,7 @@ void Tokenizer::readInt(unsigned int& idx)
     ))
 	{
         if(_current.type == TOK_OCT_CONST && !isOctDigit(_buffer[idx]))
-            throw BadDigitInOctalConst();
+            throw makeException(idx, "Bad digit in octal const");
         _current.value.intValue =
             _current.value.intValue * notation + getIntValue(_buffer[idx++]);
 	}
@@ -190,7 +193,7 @@ void Tokenizer::readInt(unsigned int& idx)
     ))
     {
         if(!tryReadFloatPart(idx, true))
-            throw InvalidFloatingPointConstant();
+            throw makeException(idx, "Invalid floating point constant");
     }
     else
         idx--;
@@ -233,18 +236,18 @@ bool Tokenizer::tryReadFloatPart(unsigned int& idx, bool hasIntPart)
         floatPart += _buffer[idx];
         idx++;
         if(idx == _buffer.size())
-            throw InvalidFloatingPointConstant();
+            throw makeException(idx, "Invalid floating point constant");
         if(_buffer[idx] == '+' || _buffer[idx] == '-')
         {
             floatPart += _buffer[idx];
             idx++;
             if(idx == _buffer.size())
-                throw InvalidFloatingPointConstant();
+                throw makeException(idx, "Invalid floating point constant");
         }
         while(idx < _buffer.size() && isdigit(_buffer[idx]))
             floatPart += _buffer[idx++];
         if(!isdigit(floatPart[floatPart.size() - 1]))
-            throw InvalidFloatingPointConstant();
+            throw makeException(idx, "Invalid floating point constant");
     }
 
     idx--;
@@ -455,7 +458,7 @@ void Tokenizer::read()
                 case ']': _current.type = TOK_R_SQUARE; break;
             };
             if(_current.type == TOK_OPER)
-                throw UnknownOperation();
+                throw makeException(j, "Unknown operation");
             if(_current.type != TOK_FLOAT_CONST)
                 j +=
                     TOKEN_TYPE_NAME[_current.type].size() -
@@ -503,7 +506,7 @@ void Tokenizer::read()
                     if(_state == IS_COMMENT)
                     {
                         if(!tryGetLine())
-                            throw UnexpectedEOFInComment();
+                            throw makeException(j, "Unexpected EOF in comment");
                         j = 0;
                     }
                 }
@@ -537,12 +540,5 @@ void Tokenizer::bind(const string& filename)
     if(!_source.good())
         throw BadFile();
 }
-
-/*void Tokenizer::bind(const wstring& filename)
-{
-    _source.open(filename);
-    if(!_source.good())
-        throw BadFile();
-}*/
 
 }

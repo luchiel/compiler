@@ -4,6 +4,7 @@
 #include "iostream"
 #include "expression.h"
 #include "tokenizer.h"
+#include "exception.h"
 
 namespace LuCCompiler
 {
@@ -30,16 +31,10 @@ public:
     Node* parseAssignmentExpression();
     Node* parseExpression();
 
+    ParserException makeException(const string& e);
+
     void out();
 };
-
-class RightSquareBracketExpected: public exception {};
-class RightBracketExpected: public exception {};
-class LeftBracketExpected: public exception {};
-class RightBraceExpected: public exception {};
-class UnexpectedToken: public exception {};
-class IdentifierExpected: public exception {};
-class ColonExpected: public exception {};
 
 }
 

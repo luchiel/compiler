@@ -67,10 +67,10 @@ Node* Parser::parsePrimaryExpression()
             _tokens->next(); //( eaten
             node = parseExpression();
             if(tokenType() != TOK_R_BRACKET)
-                throw RightBracketExpected();
+                throw makeException("')' expected");
             break;
         default:
-            throw UnexpectedToken();
+            throw makeException("Unexpected token");
     }
     _tokens->next(); //token eaten
     return node;
@@ -91,21 +91,21 @@ Node* Parser::parsePostfixExpression()
                 _tokens->next();
                 node->_tail = parseExpression();
                 if(tokenType() != TOK_R_SQUARE)
-                    throw RightSquareBracketExpected();
+                    throw makeException("']' expected");
                 _tokens->next();
                 break;
             case TOK_L_BRACKET:
                 _tokens->next();
                 node->_tail = parseExpression(); //List();
                 if(tokenType() != TOK_R_BRACKET)
-                    throw RightBracketExpected();
+                    throw makeException("')' expected");
                 _tokens->next();
                 break;
             case TOK_ARROW:
             case TOK_DOT:
                 _tokens->next();
                 if(tokenType() != TOK_IDENT)
-                    throw IdentifierExpected();
+                    throw makeException("Identifier expected");
                 node->_tail = parsePrimaryExpression();
                 break;
             case TOK_INC:
@@ -138,10 +138,10 @@ Node* Parser::parseUnaryExpression()
             node->_type = tokenType();
             _tokens->next();
             if(tokenType() != TOK_L_BRACKET)
-                throw LeftBracketExpected();
+                throw makeException("'(' expected");
             node->_only = parseUnaryExpression();
             if(tokenType() != TOK_R_BRACKET)
-                throw RightBracketExpected();
+                throw makeException("')' expected");
             _tokens->next();
             break;
         case TOK_PLUS:
@@ -179,7 +179,7 @@ Node* Parser::parseConditionalExpression()
     _tokens->next();
     node->_then = parseExpression();
     if(tokenType() != TOK_COLON)
-        throw ColonExpected();
+        throw makeException("':' expected");
     _tokens->next();
     node->_else = parseConditionalExpression();
     return node;
@@ -206,5 +206,11 @@ Node* Parser::parseExpression()
     node->_right = parseExpression();
     return node;
 }
+
+ParserException Parser::makeException(const string& e)
+{
+    return ParserException(_tokens->get().line, _tokens->get().col, e);
+}
+
 
 }
