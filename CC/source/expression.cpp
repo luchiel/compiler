@@ -23,28 +23,28 @@ void StringNode::out(int depth)
 {
     printRibs(depth);
 
-    cout << (depth == 0 ? "" : "+-") << "{" << _value << '}' << endl;
+    cout << (depth == 0 ? "" : "+-") << "{string " << _value << '}' << endl;
 }
 
 void CharNode::out(int depth)
 {
     printRibs(depth);
 
-    cout << (depth == 0 ? "" : "+-") << "{" << _value << '}' << endl;
+    cout << (depth == 0 ? "" : "+-") << "{char " << _value << '}' << endl;
 }
 
 void IntNode::out(int depth)
 {
     printRibs(depth);
 
-    cout << (depth == 0 ? "" : "+-") << "{" << _value << '}' << endl;
+    cout << (depth == 0 ? "" : "+-") << "{int " << _value << '}' << endl;
 }
 
 void FloatNode::out(int depth)
 {
     printRibs(depth);
 
-    cout << (depth == 0 ? "" : "+-") << "{" << _value << '}' << endl;
+    cout << (depth == 0 ? "" : "+-") << "{float " << _value << '}' << endl;
 }
 
 void PostfixNode::out(int depth)

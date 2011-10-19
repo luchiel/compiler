@@ -59,6 +59,8 @@ Node* Parser::parsePrimaryExpression()
             node = new CharNode(*_tokens->get().value.strValue); break;
         case TOK_STR_CONST:
             node = new StringNode(*_tokens->get().value.strValue); break;
+        case TOK_FLOAT_CONST:
+            node = new FloatNode(_tokens->get().value.floatValue); break;
         case TOK_IDENT:
             node = new IdentNode(_tokens->get().text); break;
         case TOK_L_BRACKET:
