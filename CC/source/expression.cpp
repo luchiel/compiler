@@ -1,89 +1,143 @@
 #include <stdio.h>
 #include <iostream>
+#include <vector>
 #include "expression.h"
 #include "operations.h"
 
 namespace LuCCompiler
 {
 
-void printNodeWithRibs(Node* node, int depth)
+void setBranch(unsigned int depth, vector<bool>* branches)
 {
-    node->printRibs(depth + 2);
+    if(branches->size() < depth + 1)
+        branches->push_back(false);
+    else
+        (*branches)[depth] = false;
+}
+
+void printNodeWithRibs(Node* node, unsigned int depth, vector<bool>* branches)
+{
+    node->printRibs(depth + 2, branches);
     cout << endl;
-    node->out(depth + 1);
+    node->out(depth + 1, branches);
 }
 
-void Node::printRibs(int depth)
+void Node::printRibs(unsigned int depth, vector<bool>* branches)
 {
-    while(depth-- > 1)
-        cout << "| ";
+    unsigned int i = 0;
+    while(depth != 0 && i < depth - 1)
+    {
+        cout << (branches->size() > i && (*branches)[i] == false ? "| " : "  ");
+        i++;
+    }
 }
 
-void IdentNode::out(int depth)
+void IdentNode::out(unsigned int depth, vector<bool>* branches)
 {
-    printRibs(depth);
+    printRibs(depth, branches);
     cout << (depth == 0 ? "" : "+-") << "{" << _name << "}" << endl;
 }
 
-void StringNode::out(int depth)
+void StringNode::out(unsigned int depth, vector<bool>* branches)
 {
-    printRibs(depth);
+    printRibs(depth, branches);
     cout << (depth == 0 ? "" : "+-") << "{string " << _value << "}" << endl;
 }
 
-void CharNode::out(int depth)
+void CharNode::out(unsigned int depth, vector<bool>* branches)
 {
-    printRibs(depth);
+    printRibs(depth, branches);
     cout << (depth == 0 ? "" : "+-") << "{char " << _value << "}" << endl;
 }
 
-void IntNode::out(int depth)
+void IntNode::out(unsigned int depth, vector<bool>* branches)
 {
-    printRibs(depth);
+    printRibs(depth, branches);
     cout << (depth == 0 ? "" : "+-") << "{int " << _value << "}" << endl;
 }
 
-void FloatNode::out(int depth)
+void FloatNode::out(unsigned int depth, vector<bool>* branches)
 {
-    printRibs(depth);
+    printRibs(depth, branches);
     cout << (depth == 0 ? "" : "+-") << "{float " << _value << "}" << endl;
 }
 
-void PostfixNode::out(int depth)
+void PostfixNode::out(unsigned int depth, vector<bool>* branches)
 {
-    printRibs(depth);
+    setBranch(depth, branches);
+
+    printRibs(depth, branches);
     string x(_type == TOK_INC || _type == TOK_DEC ? "x" : "");
     cout << (depth == 0 ? "" : "+-");
     cout << "{" << x << operationName(_type) << "}" << endl;
-    printNodeWithRibs(_only, depth);
-    if(_tail != NULL)
-        printNodeWithRibs(_tail, depth);
+
+    printRibs(depth + 2, branches);
+    cout << endl;
+
+    if(_tail == NULL)
+        (*branches)[depth] = true;
+
+    _only->out(depth + 1, branches);
+
+    if(_tail == NULL)
+        return;
+
+    printRibs(depth + 2, branches);
+    cout << endl;
+
+    (*branches)[depth] = true;
+
+    _tail->out(depth + 1, branches);
 }
 
-void UnaryNode::out(int depth)
+void UnaryNode::out(unsigned int depth, vector<bool>* branches)
 {
-    printRibs(depth);
+    setBranch(depth, branches);
+
+    printRibs(depth, branches);
     string x(_type == TOK_INC || _type == TOK_DEC ? "x" : "");
     cout << (depth == 0 ? "" : "+-");
     cout << "{" << operationName(_type) << x << "}" << endl;
-    printNodeWithRibs(_only, depth);
+
+    printRibs(depth + 2, branches);
+    cout << endl;
+
+    (*branches)[depth] = true;
+
+    _only->out(depth + 1, branches);
 }
 
-void BinaryNode::out(int depth)
+void BinaryNode::out(unsigned int depth, vector<bool>* branches)
 {
-    printRibs(depth);
+    setBranch(depth, branches);
+
+    printRibs(depth, branches);
     cout << (depth == 0 ? "" : "+-") << "{" << operationName(_type) << "}" << endl;
-    printNodeWithRibs(_left, depth);
-    printNodeWithRibs(_right, depth);
+    printNodeWithRibs(_left, depth, branches);
+
+    printRibs(depth + 2, branches);
+    cout << endl;
+
+    (*branches)[depth] = true;
+
+    _right->out(depth + 1, branches);
 }
 
-void TernaryNode::out(int depth)
+void TernaryNode::out(unsigned int depth, vector<bool>* branches)
 {
-    printRibs(depth);
+    setBranch(depth, branches);
+
+    printRibs(depth, branches);
     cout << (depth == 0 ? "" : "+-") << "{" << operationName(_type) << "}" << endl;
-    printNodeWithRibs(_if, depth);
-    printNodeWithRibs(_then, depth);
-    printNodeWithRibs(_else, depth);
+    printNodeWithRibs(_if, depth, branches);
+    printNodeWithRibs(_then, depth, branches);
+
+    printRibs(depth + 2, branches);
+    cout << endl;
+
+    (*branches)[depth] = true;
+
+    _else->out(depth + 1, branches);
 }
 
 }

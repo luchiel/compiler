@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 #include "parser.h"
 #include "expression.h"
 #include "tokenizer.h"
@@ -10,7 +11,8 @@ namespace LuCCompiler
 
 void Parser::out()
 {
-    _root->out(0);
+    vector<bool> finishedBranches;
+    _root->out(0, &finishedBranches);
 }
 
 Parser::Parser(Tokenizer* tokens)
