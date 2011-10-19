@@ -9,7 +9,7 @@ namespace LuCCompiler
 
 TokenizerException Tokenizer::makeException(int col, const string& e)
 {
-    return TokenizerException(_currentLine, col, e);
+    return TokenizerException(_currentLine, col + 1, e);
 }
 
 void Tokenizer::readStr(unsigned int idx)
@@ -117,19 +117,19 @@ void Tokenizer::readChar(unsigned int& idx)
     _current.value.strValue = new string("");
     idx++;
     if(idx + 1 >= _buffer.size())//closing quote
-        throw makeException(idx, "Newline in constant char");
+        throw makeException(idx + 1, "Newline in constant char");
     if(_buffer[idx] == '\\')
     {
         idx++;
         if(idx + 1 >= _buffer.size())
-            throw makeException(idx, "Newline in constant char");
+            throw makeException(idx + 1, "Newline in constant char");
         if(_buffer[idx + 1] != '\'')
-            throw makeException(idx, "Multicharacter constant char");
+            throw makeException(idx + 1, "Multicharacter constant char");
         *_current.value.strValue += '\\';
     }
     else
         if(_buffer[idx + 1] != '\'')
-            throw makeException(idx, "Multicharacter constant char");
+            throw makeException(idx + 1, "Multicharacter constant char");
     *_current.value.strValue += _buffer[idx];
 
     processEscapeSequencesInStrValue();
