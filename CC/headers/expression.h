@@ -13,8 +13,6 @@ class Node {};
 class ExpressionNode: public Node
 {
 public:
-    virtual int width() { return 1; }
-
     virtual void out(int depth) {}
     void printRibs(int depth);
 };
@@ -69,8 +67,6 @@ class PostfixNode: public ExpressionNode
 public:
     TokenType _type;
 
-    virtual int width() { return _only->width() + _tail->width() + 1; }
-
     ExpressionNode* _only;
     ExpressionNode* _tail;
     PostfixNode(): _type(TOK_UNDEF), _only(NULL), _tail(NULL) {}
@@ -83,8 +79,6 @@ class UnaryNode: public ExpressionNode
 public:
     TokenType _type;
 
-    virtual int width() { return _only->width(); }
-
     ExpressionNode* _only;
     UnaryNode(): _type(TOK_UNDEF), _only(NULL) {}
 
@@ -96,12 +90,24 @@ class BinaryNode: public ExpressionNode
 public:
     TokenType _type;
 
-    virtual int width() { return _left->width() + _right->width() + 1; }
-
     ExpressionNode* _left;
     ExpressionNode* _right;
 
     BinaryNode(): _type(TOK_UNDEF), _left(NULL), _right(NULL) {}
+
+    virtual void out(int depth);
+};
+
+class TernaryNode: public ExpressionNode
+{
+public:
+    TokenType _type;
+
+    ExpressionNode* _if;
+    ExpressionNode* _then;
+    ExpressionNode* _else;
+
+    TernaryNode(): _type(TOK_UNDEF), _if(NULL), _then(NULL), _else(NULL) {}
 
     virtual void out(int depth);
 };

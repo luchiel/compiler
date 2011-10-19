@@ -55,10 +55,11 @@ void PostfixNode::out(int depth)
 
     printRibs(depth + 2);
     cout << endl;
-    _tail->out(depth + 1);
+    _only->out(depth + 1);
+
     printRibs(depth + 2);
     cout << endl;
-    _only->out(depth + 1);
+    _tail->out(depth + 1);
 }
 
 void UnaryNode::out(int depth)
@@ -84,6 +85,23 @@ void BinaryNode::out(int depth)
     printRibs(depth + 2);
     cout << endl;
     _right->out(depth + 1);
+}
+
+void TernaryNode::out(int depth)
+{
+    printRibs(depth);
+
+    cout << (depth == 0 ? "" : "+-") << "{" << operationName(_type) << '}' << endl;
+
+    printRibs(depth + 2);
+    cout << endl;
+    _if->out(depth + 1);
+    printRibs(depth + 2);
+    cout << endl;
+    _then->out(depth + 1);
+    printRibs(depth + 2);
+    cout << endl;
+    _else->out(depth + 1);
 }
 
 }
