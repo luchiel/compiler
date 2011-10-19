@@ -92,9 +92,12 @@ Node* Parser::parsePostfixExpression()
                 break;
             case TOK_L_BRACKET:
                 _tokens->next();
-                node->_tail = parseExpression(); //List();
                 if(tokenType() != TOK_R_BRACKET)
-                    throw makeException("')' expected");
+                {
+                    node->_tail = parseExpression(); //List();
+                    if(tokenType() != TOK_R_BRACKET)
+                        throw makeException("')' expected");
+                }
                 _tokens->next();
                 break;
             case TOK_ARROW:
