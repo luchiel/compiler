@@ -16,7 +16,7 @@ class OperationGroups
 
 public:
     map<TokenType, int>* _binaryOps;
-    map<TokenType, int>* _unaryOps;
+    //map<TokenType, int>* _unaryOps;
 
     ~OperationGroups();
 

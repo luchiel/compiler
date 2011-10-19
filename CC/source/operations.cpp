@@ -28,6 +28,7 @@ OperationGroups::OperationGroups()
     (*_binaryOps)[TOK_LOGICAL_OR] = 4;
     //left to right
 
+/*
     _unaryOps = new map<TokenType, int>;
     //_unaryOps[(typename)] = 14;
     (*_unaryOps)[TOK_ASTERISK] = 15;
@@ -38,12 +39,13 @@ OperationGroups::OperationGroups()
     (*_unaryOps)[TOK_TILDA] = 15;
     (*_unaryOps)[TOK_SIZEOF] = 15;
     //right to left
+*/
 }
 
 OperationGroups::~OperationGroups()
 {
     delete _binaryOps;
-    delete _unaryOps;
+    //delete _unaryOps;
 }
 
 string operationName(TokenType type)
