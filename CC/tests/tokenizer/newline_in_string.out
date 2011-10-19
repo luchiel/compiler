@@ -1,2 +1,2 @@
 (line, col)		Type		Text, Value
-Error: Newline in constant string
+Error: TokenError:1:5 Newline in constant string

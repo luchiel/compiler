@@ -1,2 +1,2 @@
 (line, col)		Type		Text, Value
-Error: Invalid floating point constant
+Error: TokenError:1:4 Invalid floating point constant

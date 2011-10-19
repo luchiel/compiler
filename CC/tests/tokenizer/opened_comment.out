@@ -1,2 +1,2 @@
 (line, col)		Type		Text, Value
-Error: Unexpected EOF in comment
+Error: TokenError:1:5 Unexpected EOF in comment

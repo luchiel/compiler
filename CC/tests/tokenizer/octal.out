@@ -1,2 +1,2 @@
 (line, col)		Type		Text, Value
-Error: Bad digit in octal const
+Error: TokenError:1:3 Bad digit in octal const
