@@ -6,7 +6,7 @@
 namespace LuCCompiler
 {
 
-void ExpressionNode::printRibs(int depth)
+void Node::printRibs(int depth)
 {
     while(depth-- > 1)
         cout << "| ";

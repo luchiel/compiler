@@ -9,15 +9,14 @@ using namespace std;
 namespace LuCCompiler
 {
 
-class Node {};
-class ExpressionNode: public Node
+class Node
 {
 public:
     virtual void out(int depth) {}
     void printRibs(int depth);
 };
 
-class IdentNode: public ExpressionNode
+class IdentNode: public Node
 {
 public:
     string _name;
@@ -26,7 +25,7 @@ public:
     virtual void out(int depth);
 };
 
-class StringNode: public ExpressionNode
+class StringNode: public Node
 {
 public:
     string _value;
@@ -35,7 +34,7 @@ public:
     virtual void out(int depth);
 };
 
-class CharNode: public ExpressionNode
+class CharNode: public Node
 {
 public:
     string _value;
@@ -44,7 +43,7 @@ public:
     virtual void out(int depth);
 };
 
-class IntNode: public ExpressionNode
+class IntNode: public Node
 {
 public:
     int _value;
@@ -53,7 +52,7 @@ public:
     virtual void out(int depth);
 };
 
-class FloatNode: public ExpressionNode
+class FloatNode: public Node
 {
 public:
     float _value;
@@ -62,54 +61,60 @@ public:
     virtual void out(int depth);
 };
 
-class PostfixNode: public ExpressionNode
+class PostfixNode: public Node
 {
 public:
     TokenType _type;
 
-    ExpressionNode* _only;
-    ExpressionNode* _tail;
+    Node* _only;
+    Node* _tail;
     PostfixNode(): _type(TOK_UNDEF), _only(NULL), _tail(NULL) {}
 
     virtual void out(int depth);
 };
 
-class UnaryNode: public ExpressionNode
+class UnaryNode: public Node
 {
 public:
     TokenType _type;
 
-    ExpressionNode* _only;
+    Node* _only;
     UnaryNode(): _type(TOK_UNDEF), _only(NULL) {}
 
     virtual void out(int depth);
 };
 
-class BinaryNode: public ExpressionNode
+class BinaryNode: public Node
 {
 public:
     TokenType _type;
 
-    ExpressionNode* _left;
-    ExpressionNode* _right;
+    Node* _left;
+    Node* _right;
 
     BinaryNode(): _type(TOK_UNDEF), _left(NULL), _right(NULL) {}
 
     virtual void out(int depth);
 };
 
-class TernaryNode: public ExpressionNode
+class TernaryNode: public Node
 {
 public:
     TokenType _type;
 
-    ExpressionNode* _if;
-    ExpressionNode* _then;
-    ExpressionNode* _else;
+    Node* _if;
+    Node* _then;
+    Node* _else;
 
     TernaryNode(): _type(TOK_UNDEF), _if(NULL), _then(NULL), _else(NULL) {}
 
     virtual void out(int depth);
+};
+
+class ExpressionNode: public BinaryNode
+{
+public:
+    ExpressionNode(): BinaryNode() {}
 };
 
 }

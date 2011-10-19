@@ -22,9 +22,9 @@ void Parser::parse()
     _root = parseExpression();
 }
 
-ExpressionNode* Parser::parseBinaryExpression(int priority)
+Node* Parser::parseBinaryExpression(int priority)
 {
-    ExpressionNode* left = priority < 13 ?
+    Node* left = priority < 13 ?
         parseBinaryExpression(priority + 1) :
         parseCastExpression();
 
@@ -46,9 +46,9 @@ ExpressionNode* Parser::parseBinaryExpression(int priority)
     return bNode;
 }
 
-ExpressionNode* Parser::parsePrimaryExpression()
+Node* Parser::parsePrimaryExpression()
 {
-    ExpressionNode* node = NULL;
+    Node* node = NULL;
     switch(tokenType())
     {
         case TOK_OCT_CONST:
@@ -74,11 +74,11 @@ ExpressionNode* Parser::parsePrimaryExpression()
     return node;
 }
 
-ExpressionNode* Parser::parsePostfixExpression()
+Node* Parser::parsePostfixExpression()
 {
     //'(' type_name ')' '{' initializer_list [','] '}' ;
     PostfixNode* node = new PostfixNode();
-    ExpressionNode* core = parsePrimaryExpression();
+    Node* core = parsePrimaryExpression();
     node->_only = core;
     while(true)
     {
@@ -119,7 +119,7 @@ ExpressionNode* Parser::parsePostfixExpression()
     }
 }
 
-ExpressionNode* Parser::parseUnaryExpression()
+Node* Parser::parseUnaryExpression()
 {
     UnaryNode* node = NULL;
     switch(tokenType())
@@ -159,16 +159,16 @@ ExpressionNode* Parser::parseUnaryExpression()
     return node;
 }
 
-ExpressionNode* Parser::parseCastExpression()
+Node* Parser::parseCastExpression()
 {
     //cast_expression = unary_expression | '(' type_name ')' cast_expression ;
     return parseUnaryExpression();
 }
 
-ExpressionNode* Parser::parseConditionalExpression()
+Node* Parser::parseConditionalExpression()
 {
     TernaryNode* node = NULL;
-    ExpressionNode* tmp = parseBinaryExpression(4);
+    Node* tmp = parseBinaryExpression(4);
     if(tokenType() != TOK_QUEST)
         return tmp;
     node = new TernaryNode();
@@ -183,9 +183,26 @@ ExpressionNode* Parser::parseConditionalExpression()
     return node;
 }
 
-ExpressionNode* Parser::parseExpression()
+Node* Parser::parseAssignmentExpression()
 {
+    /*
+    assignment_expression =
+        conditional_expression |
+        unary_expression assignment_operator assignment_expression ;
+    */
     return parseConditionalExpression();
+}
+
+Node* Parser::parseExpression()
+{
+    ExpressionNode* node = new ExpressionNode();
+    node->_left = parseConditionalExpression();
+    if(tokenType() != TOK_COMMA)
+        return node->_left;
+    node->_type = TOK_COMMA;
+    _tokens->next();
+    node->_right = parseExpression();
+    return node;
 }
 
 }

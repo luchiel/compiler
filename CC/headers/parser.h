@@ -11,7 +11,7 @@ namespace LuCCompiler
 class Parser
 {
 private:
-    ExpressionNode* _root;
+    Node* _root;
     Tokenizer* _tokens;
 
     TokenType tokenType() { return _tokens->get().type; }
@@ -21,13 +21,14 @@ public:
 
     Parser(Tokenizer* tokens);
 
-    ExpressionNode* parsePrimaryExpression();
-    ExpressionNode* parsePostfixExpression();
-    ExpressionNode* parseUnaryExpression();
-    ExpressionNode* parseBinaryExpression(int priority);
-    ExpressionNode* parseCastExpression();
-    ExpressionNode* parseConditionalExpression();
-    ExpressionNode* parseExpression();
+    Node* parsePrimaryExpression();
+    Node* parsePostfixExpression();
+    Node* parseUnaryExpression();
+    Node* parseBinaryExpression(int priority);
+    Node* parseCastExpression();
+    Node* parseConditionalExpression();
+    Node* parseAssignmentExpression();
+    Node* parseExpression();
 
     void out();
 };

@@ -81,6 +81,8 @@ string operationName(TokenType type)
 
         case TOK_QUEST: return "?:";
 
+        case TOK_COMMA: return ",";
+
         default:
             throw OperationExpected();
     }
