@@ -1,3 +1,4 @@
+#include <iostream>
 #include "parser.h"
 #include "expression.h"
 #include "tokenizer.h"
@@ -6,24 +7,32 @@
 namespace LuCCompiler
 {
 
+void Parser::out()
+{
+    _root->out(0);
+}
+
 Parser::Parser(Tokenizer* tokens)
 {
     _tokens = tokens;
 }
 
+void Parser::parse()
+{
+    _root = parseExpression();
+}
+
 ExpressionNode* Parser::parseBinaryExpression(int priority)
 {
-    printf(":P");
-    //meet the rec!
-    //never to Unary
-    if(priority < 13)
-        ExpressionNode* left = parseBinaryExpression(priority + 1);
+    ExpressionNode* left = priority < 13 ?
+        parseBinaryExpression(priority + 1) :
+        parseCastExpression();
 
     OperationGroups* og = new OperationGroups();
 
     map<TokenType, int>::iterator tok =
         /*OperationGroups::getInstance()->*/
-        og->_binaryOps->find(_tokens->next().type);
+        og->_binaryOps->find(_tokens->get().type);
     if(
         tok == /*OperationGroups::getInstance()->*/og->_binaryOps->end() ||
         tok->second != priority
@@ -32,6 +41,7 @@ ExpressionNode* Parser::parseBinaryExpression(int priority)
     BinaryNode* bNode = new BinaryNode();
     bNode->_type = _tokens->get().type;
     bNode->_left = left;
+    _tokens->next();
     bNode->_right = parseBinaryExpression(priority);
     return bNode;
 }
@@ -73,16 +83,17 @@ ExpressionNode* Parser::parsePostfixExpression()
     while(true)
     {
         node->_type = tokenType();
-        _tokens->next();
-        switch(node->_type)
+        switch(tokenType())
         {
             case TOK_L_SQUARE:
+                _tokens->next();
                 node->_tail = parseExpression();
                 if(tokenType() != TOK_R_SQUARE)
                     throw RightSquareBracketExpected();
                 _tokens->next();
                 break;
             case TOK_L_BRACKET:
+                _tokens->next();
                 node->_tail = parseExpression(); //List();
                 if(tokenType() != TOK_R_BRACKET)
                     throw RightBracketExpected();
@@ -90,18 +101,21 @@ ExpressionNode* Parser::parsePostfixExpression()
                 break;
             case TOK_ARROW:
             case TOK_DOT:
+                _tokens->next();
                 if(tokenType() != TOK_IDENT)
                     throw IdentifierExpected();
                 node->_tail = parsePrimaryExpression();
                 break;
             case TOK_INC:
             case TOK_DEC:
+                _tokens->next();
                 break;
             default:
                 return node->_only;
         }
         core = node;
         node = new PostfixNode();
+        node->_only = core;
     }
 }
 
@@ -148,7 +162,7 @@ ExpressionNode* Parser::parseUnaryExpression()
 ExpressionNode* Parser::parseCastExpression()
 {
     //cast_expression = unary_expression | '(' type_name ')' cast_expression ;
-    return parsePrimaryExpression();
+    return parseUnaryExpression();
 }
 
 ExpressionNode* Parser::parseConditionalExpression()

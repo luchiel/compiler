@@ -31,10 +31,8 @@ int main(int argc, char *argv[])
         {
             Tokenizer t(argv[1]);
             Parser p(&t);
-            ExpressionNode* n = p.parseExpression();
-            //printf(":P");
-            //n->out(0);
-            printf("UNYA");
+            p.parse();
+            p.out();
         }
     }
 

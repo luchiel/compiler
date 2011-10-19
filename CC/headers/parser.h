@@ -1,6 +1,7 @@
 #ifndef PARSER_H
 #define PARSER_H
 
+#include "iostream"
 #include "expression.h"
 #include "tokenizer.h"
 
@@ -10,13 +11,13 @@ namespace LuCCompiler
 class Parser
 {
 private:
-    BinaryNode* _root;
+    ExpressionNode* _root;
     Tokenizer* _tokens;
 
     TokenType tokenType() { return _tokens->get().type; }
 
 public:
-    ExpressionNode* parseExpression();
+    void parse();
 
     Parser(Tokenizer* tokens);
 
@@ -26,6 +27,9 @@ public:
     ExpressionNode* parseBinaryExpression(int priority);
     ExpressionNode* parseCastExpression();
     ExpressionNode* parseConditionalExpression();
+    ExpressionNode* parseExpression();
+
+    void out();
 };
 
 class RightSquareBracketExpected: public exception {};
