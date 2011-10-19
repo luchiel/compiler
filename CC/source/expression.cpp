@@ -22,37 +22,39 @@ void Node::printRibs(int depth)
 void IdentNode::out(int depth)
 {
     printRibs(depth);
-    cout << (depth == 0 ? "" : "+-") << "{" << _name << '}' << endl;
+    cout << (depth == 0 ? "" : "+-") << "{" << _name << "}" << endl;
 }
 
 void StringNode::out(int depth)
 {
     printRibs(depth);
-    cout << (depth == 0 ? "" : "+-") << "{string " << _value << '}' << endl;
+    cout << (depth == 0 ? "" : "+-") << "{string " << _value << "}" << endl;
 }
 
 void CharNode::out(int depth)
 {
     printRibs(depth);
-    cout << (depth == 0 ? "" : "+-") << "{char " << _value << '}' << endl;
+    cout << (depth == 0 ? "" : "+-") << "{char " << _value << "}" << endl;
 }
 
 void IntNode::out(int depth)
 {
     printRibs(depth);
-    cout << (depth == 0 ? "" : "+-") << "{int " << _value << '}' << endl;
+    cout << (depth == 0 ? "" : "+-") << "{int " << _value << "}" << endl;
 }
 
 void FloatNode::out(int depth)
 {
     printRibs(depth);
-    cout << (depth == 0 ? "" : "+-") << "{float " << _value << '}' << endl;
+    cout << (depth == 0 ? "" : "+-") << "{float " << _value << "}" << endl;
 }
 
 void PostfixNode::out(int depth)
 {
     printRibs(depth);
-    cout << (depth == 0 ? "" : "+-") << "{" << operationName(_type) << '}' << endl;
+    string x(_type == TOK_INC || _type == TOK_DEC ? "x" : "");
+    cout << (depth == 0 ? "" : "+-");
+    cout << "{" << x << operationName(_type) << "}" << endl;
     printNodeWithRibs(_only, depth);
     if(_tail != NULL)
         printNodeWithRibs(_tail, depth);
@@ -61,14 +63,16 @@ void PostfixNode::out(int depth)
 void UnaryNode::out(int depth)
 {
     printRibs(depth);
-    cout << (depth == 0 ? "" : "+-") << "{" << operationName(_type) << '}' << endl;
+    string x(_type == TOK_INC || _type == TOK_DEC ? "x" : "");
+    cout << (depth == 0 ? "" : "+-");
+    cout << "{" << operationName(_type) << x << "}" << endl;
     printNodeWithRibs(_only, depth);
 }
 
 void BinaryNode::out(int depth)
 {
     printRibs(depth);
-    cout << (depth == 0 ? "" : "+-") << "{" << operationName(_type) << '}' << endl;
+    cout << (depth == 0 ? "" : "+-") << "{" << operationName(_type) << "}" << endl;
     printNodeWithRibs(_left, depth);
     printNodeWithRibs(_right, depth);
 }
@@ -76,7 +80,7 @@ void BinaryNode::out(int depth)
 void TernaryNode::out(int depth)
 {
     printRibs(depth);
-    cout << (depth == 0 ? "" : "+-") << "{" << operationName(_type) << '}' << endl;
+    cout << (depth == 0 ? "" : "+-") << "{" << operationName(_type) << "}" << endl;
     printNodeWithRibs(_if, depth);
     printNodeWithRibs(_then, depth);
     printNodeWithRibs(_else, depth);
