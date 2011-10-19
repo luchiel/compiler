@@ -54,7 +54,8 @@ void PostfixNode::out(int depth)
     printRibs(depth);
     cout << (depth == 0 ? "" : "+-") << "{" << operationName(_type) << '}' << endl;
     printNodeWithRibs(_only, depth);
-    printNodeWithRibs(_tail, depth);
+    if(_tail != NULL)
+        printNodeWithRibs(_tail, depth);
 }
 
 void UnaryNode::out(int depth)
