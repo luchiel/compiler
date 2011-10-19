@@ -9,6 +9,7 @@
 #include <fstream>
 #include "test.h"
 #include "tokenizer.h"
+#include "parser.h"
 
 using namespace std;
 
@@ -45,7 +46,7 @@ void runTests(string testBlock)
         {
             wstring filename(FindFileData.cFileName);
             t.attachTypelessFilename(wfullpath + filename);
-            t.runFile();
+            t.runFile(testBlock);
             t.estimateResult();
         }
         else
@@ -67,7 +68,7 @@ void Tester::attachTypelessFilename(wstring filename)
     _currentTest.append(ctmp, l);
 }
 
-void Tester::runFile()
+void Tester::runFile(string& testBlock)
 {
     streambuf *backup;
     _outStream.open(string(_currentTest + ".log").c_str());
@@ -80,15 +81,23 @@ void Tester::runFile()
 
     Tokenizer t(_currentTest + ".in");
 
-    cout << "(line, col)\t\tType\t\tText, Value\n";
-
     try
     {
-        do
+        if(testBlock == "tokenizer")
         {
-            t.next().outputAsString(cout);
+            cout << "(line, col)\t\tType\t\tText, Value\n";
+            do
+            {
+                t.next().outputAsString(cout);
+            }
+            while(t.get().type != TOK_EOF);
         }
-        while(t.get().type != TOK_EOF);
+        else if(testBlock == "expressions")
+        {
+            Parser p(&t);
+            p.parse();
+            p.out();
+        }
     }
     catch(exception& e)
     {

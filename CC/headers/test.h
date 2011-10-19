@@ -23,7 +23,7 @@ private:
 public:
     Tester(): testsCount(0), testsPassed(0) {}
     void attachTypelessFilename(wstring filename);
-    void runFile();
+    void runFile(string& testBlock);
     void estimateResult();
     void outputGlobalResult();
 };
