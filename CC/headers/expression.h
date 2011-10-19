@@ -11,9 +11,12 @@ namespace LuCCompiler
 
 class Node
 {
+protected:
+    void printRibs(int depth);
+    friend void printNodeWithRibs(Node* node, int depth);
+
 public:
     virtual void out(int depth) {}
-    void printRibs(int depth);
 };
 
 class IdentNode: public Node
