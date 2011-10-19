@@ -21,7 +21,7 @@ OperationGroups::OperationGroups()
     (*_binaryOps)[TOK_GE] = 10;
     (*_binaryOps)[TOK_EQUAL] = 9;
     (*_binaryOps)[TOK_NOT_EQUAL] = 9;
-    (*_binaryOps)[TOK_AMP] = 8; //&readHere
+    (*_binaryOps)[TOK_AMP] = 8;
     (*_binaryOps)[TOK_XOR] = 7;
     (*_binaryOps)[TOK_OR] = 6;
     (*_binaryOps)[TOK_LOGICAl_AND] = 5;
@@ -42,8 +42,8 @@ OperationGroups::OperationGroups()
 
 OperationGroups::~OperationGroups()
 {
-    //_binaryOps.clear();
-    //_unaryOps.clear();
+    delete _binaryOps;
+    delete _unaryOps;
 }
 
 string operationName(TokenType type)
@@ -78,6 +78,8 @@ string operationName(TokenType type)
         case TOK_OR: return "|";
         case TOK_LOGICAl_AND: return "&&";
         case TOK_LOGICAL_OR: return "||";
+
+        case TOK_QUEST: return "?:";
 
         default:
             throw OperationExpected();

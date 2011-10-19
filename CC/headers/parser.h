@@ -36,8 +36,9 @@ class RightSquareBracketExpected: public exception {};
 class RightBracketExpected: public exception {};
 class LeftBracketExpected: public exception {};
 class RightBraceExpected: public exception {};
-class UnepectedToken: public exception {};
+class UnexpectedToken: public exception {};
 class IdentifierExpected: public exception {};
+class ColonExpected: public exception {};
 
 }
 

@@ -68,7 +68,7 @@ ExpressionNode* Parser::parsePrimaryExpression()
                 throw RightBracketExpected();
             break;
         default:
-            throw UnepectedToken();
+            throw UnexpectedToken();
     }
     _tokens->next(); //token eaten
     return node;
@@ -167,7 +167,20 @@ ExpressionNode* Parser::parseCastExpression()
 
 ExpressionNode* Parser::parseConditionalExpression()
 {
-    return parseBinaryExpression(4);
+    TernaryNode* node = NULL;
+    ExpressionNode* tmp = parseBinaryExpression(4);
+    if(tokenType() != TOK_QUEST)
+        return tmp;
+    node = new TernaryNode();
+    node->_type = TOK_QUEST;
+    node->_if = tmp;
+    _tokens->next();
+    node->_then = parseExpression();
+    if(tokenType() != TOK_COLON)
+        throw ColonExpected();
+    _tokens->next();
+    node->_else = parseConditionalExpression();
+    return node;
 }
 
 ExpressionNode* Parser::parseExpression()
