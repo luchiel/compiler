@@ -85,6 +85,18 @@ string operationName(TokenType type)
 
         case TOK_COMMA: return ",";
 
+        case TOK_ASSIGN: return "=";
+        case TOK_MUL_ASSIGN: return "*=";
+        case TOK_DIV_ASSIGN: return "/=";
+        case TOK_MOD_ASSIGN: return "%=";
+        case TOK_ADD_ASSIGN: return "+=";
+        case TOK_SUB_ASSIGN: return "-=";
+        case TOK_SHL_ASSIGN: return "<<=";
+        case TOK_SHR_ASSIGN: return ">>=";
+        case TOK_AND_ASSIGN: return "&=";
+        case TOK_XOR_ASSIGN: return "^=";
+        case TOK_OR_ASSIGN: return "|=";
+
         default:
             throw OperationExpected();
     }

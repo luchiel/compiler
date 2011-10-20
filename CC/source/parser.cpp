@@ -188,18 +188,38 @@ Node* Parser::parseConditionalExpression()
 
 Node* Parser::parseAssignmentExpression()
 {
-    /*
-    assignment_expression =
-        conditional_expression |
-        unary_expression assignment_operator assignment_expression ;
-    */
-    return parseConditionalExpression();
+    AssignmentNode* node = NULL;
+    Node* tmp = parseConditionalExpression();
+    //cout << (tokenType() == EOF ? "qu" : operationName(tokenType())) << " ";
+    switch(tokenType())
+    {
+        case TOK_ASSIGN:
+        case TOK_MUL_ASSIGN:
+        case TOK_DIV_ASSIGN:
+        case TOK_MOD_ASSIGN:
+        case TOK_ADD_ASSIGN:
+        case TOK_SUB_ASSIGN:
+        case TOK_SHL_ASSIGN:
+        case TOK_SHR_ASSIGN:
+        case TOK_AND_ASSIGN:
+        case TOK_XOR_ASSIGN:
+        case TOK_OR_ASSIGN:
+            node = new AssignmentNode();
+            node->_left = tmp;
+            node->_type = tokenType();
+            _tokens->next();
+            node->_right = parseAssignmentExpression();
+            return node;
+            break;
+        default:
+            return tmp;
+    }
 }
 
 Node* Parser::parseExpression()
 {
     ExpressionNode* node = new ExpressionNode();
-    node->_left = parseConditionalExpression();
+    node->_left = parseAssignmentExpression();
     if(tokenType() != TOK_COMMA)
         return node->_left;
     node->_type = TOK_COMMA;

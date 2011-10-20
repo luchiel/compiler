@@ -18,6 +18,7 @@ protected:
 
 public:
     virtual void out(unsigned int depth, vector<bool>* branches) {}
+    virtual ~Node() {}
 };
 
 class IdentNode: public Node
@@ -113,6 +114,12 @@ public:
     TernaryNode(): _type(TOK_UNDEF), _if(NULL), _then(NULL), _else(NULL) {}
 
     virtual void out(unsigned int depth, vector<bool>* branches);
+};
+
+class AssignmentNode: public BinaryNode
+{
+public:
+    AssignmentNode(): BinaryNode() {}
 };
 
 class ExpressionNode: public BinaryNode
