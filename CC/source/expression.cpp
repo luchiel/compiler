@@ -15,11 +15,10 @@ void setBranch(unsigned int depth, vector<bool>* branches)
         (*branches)[depth] = false;
 }
 
-void printNodeWithRibs(Node* node, unsigned int depth, vector<bool>* branches)
+void Node::printRibsBeforeNode(unsigned int depth, vector<bool>* branches)
 {
-    node->printRibs(depth + 2, branches);
+    printRibs(depth + 2, branches);
     cout << endl;
-    node->out(depth + 1, branches);
 }
 
 void Node::printRibs(unsigned int depth, vector<bool>* branches)
@@ -71,8 +70,7 @@ void PostfixNode::out(unsigned int depth, vector<bool>* branches)
     cout << (depth == 0 ? "" : "+-");
     cout << "{" << x << operationName(_type) << "}" << endl;
 
-    printRibs(depth + 2, branches);
-    cout << endl;
+    printRibsBeforeNode(depth, branches);
 
     if(_tail == NULL)
         (*branches)[depth] = true;
@@ -82,11 +80,8 @@ void PostfixNode::out(unsigned int depth, vector<bool>* branches)
     if(_tail == NULL)
         return;
 
-    printRibs(depth + 2, branches);
-    cout << endl;
-
+    printRibsBeforeNode(depth, branches);
     (*branches)[depth] = true;
-
     _tail->out(depth + 1, branches);
 }
 
@@ -99,11 +94,8 @@ void UnaryNode::out(unsigned int depth, vector<bool>* branches)
     cout << (depth == 0 ? "" : "+-");
     cout << "{" << operationName(_type) << x << "}" << endl;
 
-    printRibs(depth + 2, branches);
-    cout << endl;
-
+    printRibsBeforeNode(depth, branches);
     (*branches)[depth] = true;
-
     _only->out(depth + 1, branches);
 }
 
@@ -113,13 +105,11 @@ void BinaryNode::out(unsigned int depth, vector<bool>* branches)
 
     printRibs(depth, branches);
     cout << (depth == 0 ? "" : "+-") << "{" << operationName(_type) << "}" << endl;
-    printNodeWithRibs(_left, depth, branches);
-
-    printRibs(depth + 2, branches);
-    cout << endl;
-
+    
+    printRibsBeforeNode(depth, branches);
+    _left->out(depth + 1, branches);
+    printRibsBeforeNode(depth, branches);
     (*branches)[depth] = true;
-
     _right->out(depth + 1, branches);
 }
 
@@ -129,14 +119,13 @@ void TernaryNode::out(unsigned int depth, vector<bool>* branches)
 
     printRibs(depth, branches);
     cout << (depth == 0 ? "" : "+-") << "{" << operationName(_type) << "}" << endl;
-    printNodeWithRibs(_if, depth, branches);
-    printNodeWithRibs(_then, depth, branches);
 
-    printRibs(depth + 2, branches);
-    cout << endl;
-
+    printRibsBeforeNode(depth, branches);
+    _if->out(depth + 1, branches);
+    printRibsBeforeNode(depth, branches);
+    _then->out(depth + 1, branches);
+    printRibsBeforeNode(depth, branches);
     (*branches)[depth] = true;
-
     _else->out(depth + 1, branches);
 }
 
