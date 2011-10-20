@@ -29,10 +29,17 @@ int main(int argc, char *argv[])
         }
         else
         {
-            Tokenizer t(argv[1]);
-            Parser p(&t);
-            p.parse();
-            p.out();
+            try
+            {
+                Tokenizer t(argv[1]);
+                Parser p(&t);
+                p.parse();
+                p.out();
+            }
+            catch(exception& e)
+            {
+                cout << "Error: " << e.what() << endl;
+            }
         }
     }
 
