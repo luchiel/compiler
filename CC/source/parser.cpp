@@ -286,6 +286,25 @@ Node* Parser::parseJumpStatement()
     return NULL;
 }
 
+Node* Parser::parseBlockItem()
+{
+    //block_item = declaration | statement ;
+}
+
+Node* Parser::parseCompoundStatement()
+{
+    if(tokenType() == TOK_L_BRACE)
+    {
+        CompoundStatement* node = new CompoundStatement();
+        _tokens->next();
+        while(tokenType() != TOK_R_BRACE)
+            node->_items->push_back(parseBlockItem());
+        consumeTokenOfType(TOK_R_BRACE, "'}' expected");
+        return node;
+    }
+    return NULL;
+}
+
 Node* Parser::parseSelectionStatement()
 {
     if(tokenType() == TOK_IF)

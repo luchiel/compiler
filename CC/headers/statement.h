@@ -1,6 +1,7 @@
 #ifndef STATEMENT_H
 #define STATEMENT_H
 
+#include <vector>
 #include "token.h"
 #include "node.h"
 
@@ -70,7 +71,19 @@ public:
     ForStatement(): IterationStatement(), _expr2(NULL), _expr3(NULL) { _type = TOK_FOR; }
 };
 
-class CompoundStatement: public Node {};
+class BlockItem: public Statement
+{
+public:
+    BlockItem() {}
+};
+
+class CompoundStatement: public Statement
+{
+public:
+    vector<Node*>* _items;
+    CompoundStatement() { _items = new vector<Node*>; }
+    ~CompoundStatement() { delete _items; }
+};
 
 }
 

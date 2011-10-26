@@ -33,8 +33,8 @@ public:
 
     Node* parseDeclaration();
 
-    /*Node* parse();
-    Node* parse();*/
+    Node* parseBlockItem();
+    Node* parseCompoundStatement();
     Node* parseSelectionStatement();
     Node* parseJumpStatement();
     Node* parseExpressionStatement();
