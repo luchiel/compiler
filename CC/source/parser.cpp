@@ -31,10 +31,8 @@ Node* Parser::parseBinaryExpression(int priority)
         parseBinaryExpression(priority + 1) :
         parseCastExpression();
 
-    OperationGroups* og = new OperationGroups();
-
-    map<TokenType, int>::iterator tok = og->_binaryOps->find(_tokens->get().type);
-    if(tok == og->_binaryOps->end() || tok->second != priority)
+    map<TokenType, int>::iterator tok = OperationGroups::binaries()->find(_tokens->get().type);
+    if(tok == OperationGroups::binaries()->end() || tok->second != priority)
         return left;
     BinaryNode* bNode = new BinaryNode();
     bNode->_type = _tokens->get().type;

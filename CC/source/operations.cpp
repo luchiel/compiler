@@ -5,14 +5,28 @@
 namespace LuCCompiler
 {
 
+OperationGroups* OperationGroups::_instance = NULL;
+
+OperationGroups* OperationGroups::getInstance()
+{
+    if(_instance == NULL)
+        _instance = new OperationGroups();
+    return _instance;
+}
+
+map<TokenType, int>* OperationGroups::binaries()
+{
+    return getInstance()->_binaryOps;
+}
+
 OperationGroups::OperationGroups()
 {
     _binaryOps = new map<TokenType, int>;
-    (*_binaryOps)[TOK_ASTERISK] = 13; //*a!
+    (*_binaryOps)[TOK_ASTERISK] = 13;
     (*_binaryOps)[TOK_DIV] = 13;
     (*_binaryOps)[TOK_MOD] = 13;
-    (*_binaryOps)[TOK_PLUS] = 12; //+1
-    (*_binaryOps)[TOK_MINUS] = 12; //-1
+    (*_binaryOps)[TOK_PLUS] = 12;
+    (*_binaryOps)[TOK_MINUS] = 12;
     (*_binaryOps)[TOK_SHL] = 11;
     (*_binaryOps)[TOK_SHR] = 11;
     (*_binaryOps)[TOK_L] = 10;
@@ -26,7 +40,6 @@ OperationGroups::OperationGroups()
     (*_binaryOps)[TOK_OR] = 6;
     (*_binaryOps)[TOK_LOGICAl_AND] = 5;
     (*_binaryOps)[TOK_LOGICAL_OR] = 4;
-    //left to right
 
 /*
     _unaryOps = new map<TokenType, int>;
@@ -38,7 +51,6 @@ OperationGroups::OperationGroups()
     (*_unaryOps)[TOK_NOT] = 15;
     (*_unaryOps)[TOK_TILDA] = 15;
     (*_unaryOps)[TOK_SIZEOF] = 15;
-    //right to left
 */
 }
 

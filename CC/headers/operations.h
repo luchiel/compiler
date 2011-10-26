@@ -10,33 +10,22 @@ namespace LuCCompiler
 
 class OperationGroups
 {
-//private:
-    //OperationGroups();
-    //static OperationGroups* _instance;
-
-public:
+private:
+    OperationGroups();
+    static OperationGroups* _instance;
     map<TokenType, int>* _binaryOps;
     //map<TokenType, int>* _unaryOps;
 
+public:
     ~OperationGroups();
 
-    //till problem found
-    OperationGroups();
-    /*
-    static OperationGroups* getInstance()
-    {
-        if(_instance == NULL)
-            _instance = new OperationGroups();
-        return _instance;
-    }
-    */
+    static OperationGroups* getInstance();
+    static map<TokenType, int>* binaries();
 };
 
 class OperationExpected: public exception {};
 
 string operationName(TokenType type);
-
-//OperationGroups* OperationGroups::_instance = NULL;
 
 }
 
