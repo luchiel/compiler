@@ -35,8 +35,8 @@ public:
 
     /*Node* parse();
     Node* parse();
-    Node* parse();
     Node* parse();*/
+    Node* parseJumpStatement();
     Node* parseExpressionStatement();
     Node* parseIterationStatement();
     Node* parseStatement();

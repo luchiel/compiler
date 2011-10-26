@@ -17,6 +17,22 @@ iteration_statement
 jump_statement
 */
 
+class JumpStatement: public Statement
+{
+public:
+    TokenType _type;
+
+    JumpStatement(): _type(TOK_UNDEF) {}
+};
+
+class ReturnStatement: public Statement
+{
+public:
+    Node* _expr;
+
+    ReturnStatement(): _expr(NULL) {}
+};
+
 class ExpressionStatement: public Statement
 {
 public:
