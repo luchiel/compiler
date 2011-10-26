@@ -12,12 +12,6 @@ namespace LuCCompiler
 
 class Statement: public Node {};
 
-/*
-selection_statement
-iteration_statement
-jump_statement
-*/
-
 class SelectionStatement: public Statement
 {
 public:

@@ -35,8 +35,7 @@ void Parser::consumeTokenOfType(TokenType type, const string& except)
 
 Node* Parser::parseDeclaration()
 {
-    //not true
-    return parseExpression();
+    return NULL;
 }
 
 Node* Parser::parseBinaryExpression(int priority)
@@ -288,7 +287,10 @@ Node* Parser::parseJumpStatement()
 
 Node* Parser::parseBlockItem()
 {
-    //block_item = declaration | statement ;
+    Node* r = parseDeclaration();
+    if(r == NULL)
+        return parseStatement();
+    return r;
 }
 
 Node* Parser::parseCompoundStatement()
@@ -373,7 +375,19 @@ Node* Parser::parseIterationStatement()
 
 Node* Parser::parseStatement()
 {
-    return NULL;
+    Node* r = parseCompoundStatement();
+    if(r != NULL)
+        return r;
+    r = parseSelectionStatement();
+    if(r != NULL)
+        return r;
+    r = parseIterationStatement();
+    if(r != NULL)
+        return r;
+    r = parseJumpStatement();
+    if(r != NULL)
+        return r;
+    return parseExpressionStatement();
 }
 
 }
