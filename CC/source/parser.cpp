@@ -27,19 +27,32 @@ void Parser::parse()
 
 Node* Parser::parseBinaryExpression(int priority)
 {
-    Node* left = priority < 13 ?
+    TokenType opType = TOK_UNDEF;
+    BinaryNode* node = NULL;
+    Node* tmp = priority < 13 ?
         parseBinaryExpression(priority + 1) :
         parseCastExpression();
+    do
+    {
+        if(opType == TOK_UNDEF)
+            opType = tokenType();
+        map<TokenType, int>::iterator tok =
+            OperationGroups::binaries()->find(tokenType());
+        if(tok == OperationGroups::binaries()->end() || tok->second != priority)
+            return tmp;
 
-    map<TokenType, int>::iterator tok = OperationGroups::binaries()->find(_tokens->get().type);
-    if(tok == OperationGroups::binaries()->end() || tok->second != priority)
-        return left;
-    BinaryNode* bNode = new BinaryNode();
-    bNode->_type = _tokens->get().type;
-    bNode->_left = left;
-    _tokens->next();
-    bNode->_right = parseBinaryExpression(priority);
-    return bNode;
+        node = new BinaryNode();
+        node->_type = tokenType();
+        node->_left = tmp;
+        _tokens->next();
+        node->_right = priority < 13 ?
+            parseBinaryExpression(priority + 1) :
+            parseCastExpression();
+        tmp = node;
+    }
+    while(opType == tokenType());
+
+    return node;
 }
 
 Node* Parser::parsePrimaryExpression()
