@@ -286,6 +286,26 @@ Node* Parser::parseJumpStatement()
     return NULL;
 }
 
+Node* Parser::parseSelectionStatement()
+{
+    if(tokenType() == TOK_IF)
+    {
+        SelectionStatement* node = new SelectionStatement();
+        _tokens->next();
+        consumeTokenOfType(TOK_L_BRACKET, "'(' expected");
+        node->_expr = parseExpression();
+        consumeTokenOfType(TOK_R_BRACKET, "')' expected");
+        node->_then = parseStatement();
+        if(tokenType() == TOK_ELSE)
+        {
+            _tokens->next();
+            node->_else = parseStatement();
+        }
+        return node;
+    }
+    return NULL;
+}
+
 Node* Parser::parseIterationStatement()
 {
     IterationStatement* node = NULL;

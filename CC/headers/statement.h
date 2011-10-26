@@ -17,6 +17,16 @@ iteration_statement
 jump_statement
 */
 
+class SelectionStatement: public Statement
+{
+public:
+    Node* _expr;
+    Node* _then;
+    Node* _else;
+
+    SelectionStatement(): _expr(NULL), _then(NULL), _else(NULL) {}
+};
+
 class JumpStatement: public Statement
 {
 public:
