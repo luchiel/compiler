@@ -330,7 +330,6 @@ Node* Parser::parseSelectionStatement()
 Node* Parser::parseIterationStatement()
 {
     IterationStatement* node = NULL;
-    ForStatement* forNode = NULL;
     if(tokenType() == TOK_WHILE)
     {
         node = new IterationStatement();
@@ -357,7 +356,7 @@ Node* Parser::parseIterationStatement()
     }
     else if(tokenType() == TOK_FOR)
     {
-        forNode = new ForStatement();
+        ForStatement* forNode = new ForStatement();
         _tokens->next();
         consumeTokenOfType(TOK_L_BRACKET, "'(' expected");
         //declaration expression_statement
