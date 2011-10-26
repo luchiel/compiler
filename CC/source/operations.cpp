@@ -70,7 +70,7 @@ string operationName(TokenType type)
         case TOK_DOT: return ".";
         case TOK_INC: return "++";
         case TOK_DEC: return "--";
-        case TOK_SIZEOF: return "[]";
+        case TOK_SIZEOF: return "sizeof";
         case TOK_PLUS: return "+";
         case TOK_MINUS: return "-";
         case TOK_TILDA: return "~";
