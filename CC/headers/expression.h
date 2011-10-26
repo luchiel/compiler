@@ -4,22 +4,12 @@
 #include <string>
 #include <vector>
 #include "token.h"
+#include "node.h"
 
 using namespace std;
 
 namespace LuCCompiler
 {
-
-class Node
-{
-protected:
-    void printRibs(unsigned int depth, vector<bool>* branches);
-    void printRibsBeforeNode(unsigned int depth, vector<bool>* branches);
-
-public:
-    virtual void out(unsigned int depth, vector<bool>* branches) {}
-    virtual ~Node() {}
-};
 
 class IdentNode: public Node
 {

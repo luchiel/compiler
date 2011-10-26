@@ -2,6 +2,7 @@
 #include <vector>
 #include "parser.h"
 #include "expression.h"
+#include "statement.h"
 #include "tokenizer.h"
 #include "token.h"
 #include "operations.h"
@@ -25,13 +26,25 @@ void Parser::parse()
     _root = parseExpression();
 }
 
+void Parser::consumeTokenOfType(TokenType type, const string& except)
+{
+    if(tokenType() != type)
+        throw makeException(except);
+    _tokens->next();
+}
+
+Node* Parser::parseDeclaration()
+{
+    //not true
+    return parseExpression();
+}
+
 Node* Parser::parseBinaryExpression(int priority)
 {
     TokenType opType = TOK_UNDEF;
     BinaryNode* node = NULL;
     Node* tmp = priority < 13 ?
-        parseBinaryExpression(priority + 1) :
-        parseCastExpression();
+        parseBinaryExpression(priority + 1) : parseCastExpression();
     do
     {
         if(opType == TOK_UNDEF)
@@ -46,8 +59,7 @@ Node* Parser::parseBinaryExpression(int priority)
         node->_left = tmp;
         _tokens->next();
         node->_right = priority < 13 ?
-            parseBinaryExpression(priority + 1) :
-            parseCastExpression();
+            parseBinaryExpression(priority + 1) : parseCastExpression();
         tmp = node;
     }
     while(opType == tokenType());
@@ -99,9 +111,7 @@ Node* Parser::parsePostfixExpression()
             case TOK_L_SQUARE:
                 _tokens->next();
                 node->_tail = parseExpression();
-                if(tokenType() != TOK_R_SQUARE)
-                    throw makeException("']' expected");
-                _tokens->next();
+                consumeTokenOfType(TOK_R_SQUARE, "']' expected");
                 break;
             case TOK_L_BRACKET:
                 _tokens->next();
@@ -149,12 +159,9 @@ Node* Parser::parseUnaryExpression()
             node = new UnaryNode();
             node->_type = tokenType();
             _tokens->next();
-            if(tokenType() != TOK_L_BRACKET)
-                throw makeException("'(' expected");
+            consumeTokenOfType(TOK_L_BRACKET, "'(' expected");
             node->_only = parseUnaryExpression();
-            if(tokenType() != TOK_R_BRACKET)
-                throw makeException("')' expected");
-            _tokens->next();
+            consumeTokenOfType(TOK_R_BRACKET, "')' expected");
             break;
         case TOK_PLUS:
         case TOK_MINUS:
@@ -190,9 +197,7 @@ Node* Parser::parseConditionalExpression()
     node->_if = tmp;
     _tokens->next();
     node->_then = parseExpression();
-    if(tokenType() != TOK_COLON)
-        throw makeException("':' expected");
-    _tokens->next();
+    consumeTokenOfType(TOK_COLON, "':' expected");
     node->_else = parseConditionalExpression();
     return node;
 }
@@ -221,7 +226,6 @@ Node* Parser::parseAssignmentExpression()
             _tokens->next();
             node->_right = parseAssignmentExpression();
             return node;
-            break;
         default:
             return tmp;
     }
@@ -244,5 +248,66 @@ ParserException Parser::makeException(const string& e)
     return ParserException(_tokens->get().line, _tokens->get().col + 1, e);
 }
 
+Node* Parser::parseExpressionStatement()
+{
+    ExpressionStatement* node = new ExpressionStatement();
+    if(tokenType() == TOK_SEP)
+        return node;
+    node->_expr = parseExpression();
+    consumeTokenOfType(TOK_SEP, "';' expected");
+}
+
+Node* Parser::parseIterationStatement()
+{
+    IterationStatement* node = new IterationStatement();
+    ForStatement* forNode = new ForStatement();
+    node->_type = tokenType();
+    switch(tokenType())
+    {
+        case TOK_WHILE:
+            delete forNode;
+            _tokens->next();
+            consumeTokenOfType(TOK_L_BRACKET, "'(' expected");
+            node->_expr = parseExpression();
+            consumeTokenOfType(TOK_R_BRACKET, "')' expected");
+            node->_loop = parseStatement();
+            return node;
+
+        case TOK_DO:
+            delete forNode;
+            _tokens->next();
+            node->_loop = parseStatement();
+            consumeTokenOfType(TOK_WHILE, "'while' expected");
+            consumeTokenOfType(TOK_L_BRACKET, "'(' expected");
+            node->_expr = parseExpression();
+            consumeTokenOfType(TOK_R_BRACKET, "')' expected");
+            consumeTokenOfType(TOK_SEP, "';' expected");
+            return node;
+
+        case TOK_FOR:
+            delete node;
+            _tokens->next();
+            consumeTokenOfType(TOK_L_BRACKET, "'(' expected");
+            //declaration expression_statement
+            //declaration expression_statement expression
+            forNode->_expr = parseExpressionStatement();
+            forNode->_expr2 = parseExpressionStatement();
+            if(tokenType() != TOK_R_BRACKET)
+                forNode->_expr3 = parseExpression();
+            consumeTokenOfType(TOK_R_BRACKET, "')' expected");
+            forNode->_loop = parseStatement();
+            return forNode;
+
+        default:
+            delete node;
+            delete forNode;
+            return NULL;
+    }
+}
+
+Node* Parser::parseStatement()
+{
+    return NULL;
+}
 
 }

@@ -31,7 +31,18 @@ public:
     Node* parseAssignmentExpression();
     Node* parseExpression();
 
+    Node* parseDeclaration();
+
+    /*Node* parse();
+    Node* parse();
+    Node* parse();
+    Node* parse();*/
+    Node* parseExpressionStatement();
+    Node* parseIterationStatement();
+    Node* parseStatement();
+
     ParserException makeException(const string& e);
+    void consumeTokenOfType(TokenType type, const string& except);
 
     void out();
 };

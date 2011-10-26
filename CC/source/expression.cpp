@@ -15,22 +15,6 @@ void setBranch(unsigned int depth, vector<bool>* branches)
         (*branches)[depth] = false;
 }
 
-void Node::printRibsBeforeNode(unsigned int depth, vector<bool>* branches)
-{
-    printRibs(depth + 2, branches);
-    cout << endl;
-}
-
-void Node::printRibs(unsigned int depth, vector<bool>* branches)
-{
-    unsigned int i = 0;
-    while(depth != 0 && i < depth - 1)
-    {
-        cout << (branches->size() > i && (*branches)[i] == false ? "| " : "  ");
-        i++;
-    }
-}
-
 void IdentNode::out(unsigned int depth, vector<bool>* branches)
 {
     printRibs(depth, branches);
@@ -105,7 +89,7 @@ void BinaryNode::out(unsigned int depth, vector<bool>* branches)
 
     printRibs(depth, branches);
     cout << (depth == 0 ? "" : "+-") << "{" << operationName(_type) << "}" << endl;
-    
+
     printRibsBeforeNode(depth, branches);
     _left->out(depth + 1, branches);
     printRibsBeforeNode(depth, branches);
