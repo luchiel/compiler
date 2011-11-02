@@ -1,0 +1,5 @@
+while(a)
+{
+    if(!a)
+        break;
+}
