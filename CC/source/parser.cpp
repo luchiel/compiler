@@ -23,6 +23,11 @@ Parser::Parser(Tokenizer* tokens)
 
 void Parser::parse()
 {
+    _root = parseStatement();
+}
+
+void Parser::parseExpr()
+{
     _root = parseExpression();
 }
 
@@ -280,6 +285,7 @@ Node* Parser::parseJumpStatement()
         JumpStatement* node = new JumpStatement();
         node->_type = tokenType();
         _tokens->next();
+        consumeTokenOfType(TOK_SEP, "';' expected");
         return node;
     }
     return NULL;
@@ -300,7 +306,9 @@ Node* Parser::parseCompoundStatement()
         CompoundStatement* node = new CompoundStatement();
         _tokens->next();
         while(tokenType() != TOK_R_BRACE)
+        {
             node->_items->push_back(parseBlockItem());
+        }
         consumeTokenOfType(TOK_R_BRACE, "'}' expected");
         return node;
     }

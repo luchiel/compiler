@@ -19,6 +19,7 @@ private:
 
 public:
     void parse();
+    void parseExpr();
 
     Parser(Tokenizer* tokens);
 

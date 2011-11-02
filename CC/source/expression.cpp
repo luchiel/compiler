@@ -4,16 +4,10 @@
 #include "expression.h"
 #include "operations.h"
 
+using namespace std;
+
 namespace LuCCompiler
 {
-
-void setBranch(unsigned int depth, vector<bool>* branches)
-{
-    if(branches->size() < depth + 1)
-        branches->push_back(false);
-    else
-        (*branches)[depth] = false;
-}
 
 void IdentNode::out(unsigned int depth, vector<bool>* branches)
 {

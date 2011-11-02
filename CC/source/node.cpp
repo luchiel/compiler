@@ -6,6 +6,14 @@
 namespace LuCCompiler
 {
 
+void Node::setBranch(unsigned int depth, vector<bool>* branches)
+{
+    if(branches->size() < depth + 1)
+        branches->push_back(false);
+    else
+        (*branches)[depth] = false;
+}
+
 void Node::printRibsBeforeNode(unsigned int depth, vector<bool>* branches)
 {
     printRibs(depth + 2, branches);
