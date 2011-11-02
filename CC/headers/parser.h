@@ -42,6 +42,8 @@ public:
     Node* parseIterationStatement();
     Node* parseStatement();
 
+    Node* parseIdentifierList();
+
     ParserException makeException(const string& e);
     void consumeTokenOfType(TokenType type, const string& except);
 
