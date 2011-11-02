@@ -42,6 +42,24 @@ public:
     virtual const char* what() const throw();
 };
 
+class RedefinedSymbolException: public LuCCException
+{
+public:
+    RedefinedSymbolException(const int line, const int col, const string& error):
+        LuCCException(line, col, error) {}
+
+    virtual const char* what() const throw();
+};
+
+class UndefinedSymbolException: public LuCCException
+{
+public:
+    UndefinedSymbolException(const int line, const int col, const string& error):
+        LuCCException(line, col, error) {}
+
+    virtual const char* what() const throw();
+};
+
 }
 
 #endif

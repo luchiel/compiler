@@ -26,4 +26,18 @@ const char* ParserException::what() const throw()
     return e.c_str();
 }
 
+const char* UndefinedSymbolException::what() const throw()
+{
+    string e("UndefinedSymbol:");
+    e += LuCCException::what();
+    return e.c_str();
+}
+
+const char* RedefinedSymbolException::what() const throw()
+{
+    string e("RedefinedSymbol:");
+    e += LuCCException::what();
+    return e.c_str();
+}
+
 }
