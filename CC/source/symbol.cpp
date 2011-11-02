@@ -1,5 +1,6 @@
 #include <iostream>
 #include "symbol.h"
+#include "symbol_table.h"
 
 using namespace std;
 

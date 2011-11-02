@@ -33,7 +33,7 @@ Symbol* SymbolTable::getSymbol(const string& name, int line, int col)
 
 void SymbolTable::out(int indent)
 {
-    for(int i = 0; i < _ordered.size(); ++i)
+    for(unsigned int i = 0; i < _ordered.size(); ++i)
         _ordered[i]->out(indent);
 }
 
@@ -41,6 +41,17 @@ SymbolTable::~SymbolTable()
 {
     //objects. How to kill?
     //cycle? Carefully delete everyone?
+}
+
+SymbolTable* initPrimarySymbolTable()
+{
+    SymbolTable* primarySymbolTable = new SymbolTable();
+
+    primarySymbolTable->addSymbol(new SymbolType("int"), 0, 0);
+    primarySymbolTable->addSymbol(new SymbolType("float"), 0, 0);
+    primarySymbolTable->addSymbol(new SymbolType("void"), 0, 0);
+
+    return primarySymbolTable;
 }
 
 }

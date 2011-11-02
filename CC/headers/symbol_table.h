@@ -25,17 +25,31 @@ public:
     void addSymbol(Symbol* symbol, int line, int col);
     void out(int indent);
 
-    SymbolTable(parent_ = NULL): _innerIdx(0), parent(parent_) {}
+    SymbolTable(): _innerIdx(0), parent(NULL) {}
+    SymbolTable(SymbolTable* parent_): _innerIdx(0), parent(parent_) {}
     ~SymbolTable();
 };
 
-SymbolTable PrimarySymbolTable();
-
-PrimarySymbolTable.addSymbol(new SymbolType("int"));
-PrimarySymbolTable.addSymbol(new SymbolType("float"));
+SymbolTable* initPrimarySymbolTable();
 
 //int -> float
 //[] -> *
+
+class SymbolFunction: public Symbol
+{
+public:
+    SymbolTable* locals; //attach it to global
+    SymbolFunction(string name_): Symbol(name_), locals(new SymbolTable()) {}
+    virtual void out(int indent);
+};
+
+class SymbolTypeStruct: public SymbolType
+{
+public:
+    SymbolTable* fields; //attach it to global
+    SymbolTypeStruct(string name_): SymbolType(name_), fields(new SymbolTable()) {}
+    virtual void out(int indent);
+};
 
 }
 

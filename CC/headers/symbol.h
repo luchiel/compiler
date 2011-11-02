@@ -39,27 +39,11 @@ public:
     virtual void out(int indent);
 };
 
-class SymbolTypeStruct: public SymbolType
-{
-public:
-    SymbolTable* fields; //attach it to global
-    SymbolTypeStruct(string name_): SymbolType(name_), fields(new SymbolTable()) {}
-    virtual void out(int indent);
-};
-
 class SymbolTypePointer: public SymbolType
 {
 public:
     SymbolType* type;
     SymbolTypePointer(string name_): SymbolType(name_), type(NULL) {}
-    virtual void out(int indent);
-};
-
-class SymbolFunction: public Symbol
-{
-public:
-    SymbolTable* locals; //attach it to global
-    SymbolFunction(string name_): Symbol(name_), locals(new SymbolTable()) {}
     virtual void out(int indent);
 };
 
