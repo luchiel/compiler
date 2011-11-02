@@ -40,8 +40,6 @@ expression = assignment_expression [',' expression] ;
 
 argument_expression_list = assignment_expression [',' argument_expression_list] ;
 
-constant_expression = conditional_expression ;
-
 declaration = declaration_specifiers [init_declarator_list] ';' ;
 
 declaration_specifiers =
@@ -54,8 +52,10 @@ init_declarator_list = init_declarator [',' init_declarator_list] ;
 
 init_declarator = declarator ['=' initializer] ;
 
+//from here
+
 type_specifier =
-    VOID | INT | FLOAT | DOUBLE |
+    VOID | INT | FLOAT |
     struct_specifier ;
 
 struct_specifier =
@@ -68,7 +68,7 @@ struct_declaration = type_specifier struct_declarator_list ';' ;
 
 struct_declarator_list = struct_declarator [',' struct_declarator_list] ;
 
-struct_declarator = declarator | [declarator] ':' constant_expression ;
+struct_declarator = declarator | [declarator] ':' conditional_expression ;
 
 declarator = [pointer] direct_declarator;
 
@@ -89,6 +89,8 @@ identifier_list = IDENTIFIER [',' identifier_list] ;
 
 type_name = type_specifier [abstract_declarator] ;
 
+//to here
+
 abstract_declarator = pointer | [pointer] direct_abstract_declarator ;
 
 direct_abstract_declarator =
@@ -106,7 +108,7 @@ designation = designator_list '=' ;
 
 designator_list = designator [designator_list] ;
 
-designator = '[' constant_expression ']' | '.' IDENTIFIER ;
+designator = '[' conditional_expression ']' | '.' IDENTIFIER ;
 
 translation_unit = external_declaration [translation_unit] ;
 
