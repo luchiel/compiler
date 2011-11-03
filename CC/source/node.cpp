@@ -1,7 +1,10 @@
 #include <stdio.h>
 #include <iostream>
 #include <vector>
+#include <string>
 #include "node.h"
+
+using namespace std;
 
 namespace LuCCompiler
 {
@@ -28,6 +31,13 @@ void Node::printRibs(unsigned int depth, vector<bool>* branches)
         cout << (branches->size() > i && (*branches)[i] == false ? "| " : "  ");
         i++;
     }
+}
+
+void Node::makeNodeTop(unsigned int depth, vector<bool>* branches, const string& s)
+{
+    setBranch(depth, branches);
+    printRibs(depth, branches);
+    cout << (depth == 0 ? "" : "+-") << "{" << s << "}" << endl;
 }
 
 }

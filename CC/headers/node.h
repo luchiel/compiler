@@ -14,6 +14,7 @@ protected:
     void printRibs(unsigned int depth, vector<bool>* branches);
     void printRibsBeforeNode(unsigned int depth, vector<bool>* branches);
     void setBranch(unsigned int depth, vector<bool>* branches);
+    void makeNodeTop(unsigned int depth, vector<bool>* branches, const string& s);
 
 public:
     virtual void out(unsigned int depth, vector<bool>* branches) {}

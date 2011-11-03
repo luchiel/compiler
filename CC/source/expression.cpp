@@ -41,12 +41,9 @@ void FloatNode::out(unsigned int depth, vector<bool>* branches)
 
 void PostfixNode::out(unsigned int depth, vector<bool>* branches)
 {
-    setBranch(depth, branches);
-
-    printRibs(depth, branches);
     string x(_type == TOK_INC || _type == TOK_DEC ? "x" : "");
-    cout << (depth == 0 ? "" : "+-");
-    cout << "{" << x << operationName(_type) << "}" << endl;
+    makeNodeTop(depth, branches, x + operationName(_type));
+    setBranch(depth, branches);
 
     printRibsBeforeNode(depth, branches);
 
@@ -65,12 +62,8 @@ void PostfixNode::out(unsigned int depth, vector<bool>* branches)
 
 void UnaryNode::out(unsigned int depth, vector<bool>* branches)
 {
-    setBranch(depth, branches);
-
-    printRibs(depth, branches);
     string x(_type == TOK_INC || _type == TOK_DEC ? "x" : "");
-    cout << (depth == 0 ? "" : "+-");
-    cout << "{" << operationName(_type) << x << "}" << endl;
+    makeNodeTop(depth, branches, operationName(_type) + x);
 
     printRibsBeforeNode(depth, branches);
     (*branches)[depth] = true;
@@ -79,10 +72,7 @@ void UnaryNode::out(unsigned int depth, vector<bool>* branches)
 
 void BinaryNode::out(unsigned int depth, vector<bool>* branches)
 {
-    setBranch(depth, branches);
-
-    printRibs(depth, branches);
-    cout << (depth == 0 ? "" : "+-") << "{" << operationName(_type) << "}" << endl;
+    makeNodeTop(depth, branches, operationName(_type));
 
     printRibsBeforeNode(depth, branches);
     _left->out(depth + 1, branches);
@@ -93,10 +83,7 @@ void BinaryNode::out(unsigned int depth, vector<bool>* branches)
 
 void TernaryNode::out(unsigned int depth, vector<bool>* branches)
 {
-    setBranch(depth, branches);
-
-    printRibs(depth, branches);
-    cout << (depth == 0 ? "" : "+-") << "{" << operationName(_type) << "}" << endl;
+    makeNodeTop(depth, branches, operationName(_type));
 
     printRibsBeforeNode(depth, branches);
     _if->out(depth + 1, branches);

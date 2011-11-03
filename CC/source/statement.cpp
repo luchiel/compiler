@@ -10,10 +10,7 @@ namespace LuCCompiler
 
 void SelectionStatement::out(unsigned int depth, vector<bool>* branches)
 {
-    setBranch(depth, branches);
-
-    printRibs(depth, branches);
-    cout << (depth == 0 ? "" : "+-") << "{if}" << endl;
+    makeNodeTop(depth, branches, "if");
 
     printRibsBeforeNode(depth, branches);
     _expr->out(depth + 1, branches);
@@ -32,21 +29,13 @@ void SelectionStatement::out(unsigned int depth, vector<bool>* branches)
 
 void JumpStatement::out(unsigned int depth, vector<bool>* branches)
 {
-    setBranch(depth, branches);
-
-    printRibs(depth, branches);
-    cout << (depth == 0 ? "" : "+-") << "{";
-    cout << (_type == TOK_BREAK ? "break" : "continue");
-    cout << "}" << endl;
+    makeNodeTop(depth, branches, _type == TOK_BREAK ? "break" : "continue");
     (*branches)[depth] = true;
 }
 
 void ReturnStatement::out(unsigned int depth, vector<bool>* branches)
 {
-    setBranch(depth, branches);
-
-    printRibs(depth, branches);
-    cout << (depth == 0 ? "" : "+-") << "{return}" << endl;
+    makeNodeTop(depth, branches, "return");
 
     if(_expr != NULL)
         printRibsBeforeNode(depth, branches);
@@ -59,10 +48,7 @@ void ReturnStatement::out(unsigned int depth, vector<bool>* branches)
 
 void ExpressionStatement::out(unsigned int depth, vector<bool>* branches)
 {
-    setBranch(depth, branches);
-
-    printRibs(depth, branches);
-    cout << (depth == 0 ? "" : "+-") << "{;}" << endl;
+    makeNodeTop(depth, branches, ";");
 
     if(_expr != NULL)
         printRibsBeforeNode(depth, branches);
@@ -75,12 +61,7 @@ void ExpressionStatement::out(unsigned int depth, vector<bool>* branches)
 
 void IterationStatement::out(unsigned int depth, vector<bool>* branches)
 {
-    setBranch(depth, branches);
-
-    printRibs(depth, branches);
-    cout << (depth == 0 ? "" : "+-") << "{";
-    cout << (_type == TOK_WHILE ? "while" : "do");
-    cout << "}" << endl;
+    makeNodeTop(depth, branches, _type == TOK_WHILE ? "while" : "do");
 
     if(_type == TOK_WHILE)
     {
@@ -102,10 +83,7 @@ void IterationStatement::out(unsigned int depth, vector<bool>* branches)
 
 void ForStatement::out(unsigned int depth, vector<bool>* branches)
 {
-    setBranch(depth, branches);
-
-    printRibs(depth, branches);
-    cout << (depth == 0 ? "" : "+-") << "{for}" << endl;
+    makeNodeTop(depth, branches, "for");
 
     printRibsBeforeNode(depth, branches);
     _expr->out(depth + 1, branches);
@@ -123,10 +101,7 @@ void ForStatement::out(unsigned int depth, vector<bool>* branches)
 
 void CompoundStatement::out(unsigned int depth, vector<bool>* branches)
 {
-    setBranch(depth, branches);
-
-    printRibs(depth, branches);
-    cout << (depth == 0 ? "" : "+-") << "{{}}" << endl;
+    makeNodeTop(depth, branches, "{}");
 
     for(unsigned int i = 0; i < _items->size() - 1; ++i)
     {
