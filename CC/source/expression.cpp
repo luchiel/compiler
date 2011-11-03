@@ -55,43 +55,30 @@ void PostfixNode::out(unsigned int depth, vector<bool>* branches)
     if(_tail == NULL)
         return;
 
-    printRibsBeforeNode(depth, branches);
-    (*branches)[depth] = true;
-    _tail->out(depth + 1, branches);
+    printNodeWithRibs(depth, branches, true, _tail);
 }
 
 void UnaryNode::out(unsigned int depth, vector<bool>* branches)
 {
     string x(_type == TOK_INC || _type == TOK_DEC ? "x" : "");
     makeNodeTop(depth, branches, operationName(_type) + x);
-
-    printRibsBeforeNode(depth, branches);
-    (*branches)[depth] = true;
-    _only->out(depth + 1, branches);
+    printNodeWithRibs(depth, branches, true, _only);
 }
 
 void BinaryNode::out(unsigned int depth, vector<bool>* branches)
 {
     makeNodeTop(depth, branches, operationName(_type));
-
-    printRibsBeforeNode(depth, branches);
-    _left->out(depth + 1, branches);
-    printRibsBeforeNode(depth, branches);
-    (*branches)[depth] = true;
-    _right->out(depth + 1, branches);
+    printNodeWithRibs(depth, branches, false, _left);
+    printNodeWithRibs(depth, branches, true, _right);
 }
 
 void TernaryNode::out(unsigned int depth, vector<bool>* branches)
 {
     makeNodeTop(depth, branches, operationName(_type));
 
-    printRibsBeforeNode(depth, branches);
-    _if->out(depth + 1, branches);
-    printRibsBeforeNode(depth, branches);
-    _then->out(depth + 1, branches);
-    printRibsBeforeNode(depth, branches);
-    (*branches)[depth] = true;
-    _else->out(depth + 1, branches);
+    printNodeWithRibs(depth, branches, false, _if);
+    printNodeWithRibs(depth, branches, false, _then);
+    printNodeWithRibs(depth, branches, true, _else);
 }
 
 }

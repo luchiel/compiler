@@ -11,20 +11,10 @@ namespace LuCCompiler
 void SelectionStatement::out(unsigned int depth, vector<bool>* branches)
 {
     makeNodeTop(depth, branches, "if");
-
-    printRibsBeforeNode(depth, branches);
-    _expr->out(depth + 1, branches);
-    printRibsBeforeNode(depth, branches);
-    if(_else == NULL)
-        (*branches)[depth] = true;
-    _then->out(depth + 1, branches);
-
+    printNodeWithRibs(depth, branches, false, _expr);
+    printNodeWithRibs(depth, branches, _else == NULL, _then);
     if(_else != NULL)
-    {
-        printRibsBeforeNode(depth, branches);
-        (*branches)[depth] = true;
-        _else->out(depth + 1, branches);
-    }
+        printNodeWithRibs(depth, branches, true, _else);
 }
 
 void JumpStatement::out(unsigned int depth, vector<bool>* branches)
@@ -62,55 +52,34 @@ void ExpressionStatement::out(unsigned int depth, vector<bool>* branches)
 void IterationStatement::out(unsigned int depth, vector<bool>* branches)
 {
     makeNodeTop(depth, branches, _type == TOK_WHILE ? "while" : "do");
-
     if(_type == TOK_WHILE)
     {
-        printRibsBeforeNode(depth, branches);
-        _expr->out(depth + 1, branches);
-        printRibsBeforeNode(depth, branches);
-        (*branches)[depth] = true;
-        _loop->out(depth + 1, branches);
+        printNodeWithRibs(depth, branches, false, _expr);
+        printNodeWithRibs(depth, branches, true, _loop);
     }
     else
     {
-        printRibsBeforeNode(depth, branches);
-        _loop->out(depth + 1, branches);
-        printRibsBeforeNode(depth, branches);
-        (*branches)[depth] = true;
-        _expr->out(depth + 1, branches);
+        printNodeWithRibs(depth, branches, false, _loop);
+        printNodeWithRibs(depth, branches, true, _expr);
     }
 }
 
 void ForStatement::out(unsigned int depth, vector<bool>* branches)
 {
     makeNodeTop(depth, branches, "for");
-
-    printRibsBeforeNode(depth, branches);
-    _expr->out(depth + 1, branches);
-    printRibsBeforeNode(depth, branches);
-    _expr2->out(depth + 1, branches);
+    printNodeWithRibs(depth, branches, false, _expr);
+    printNodeWithRibs(depth, branches, false, _expr2);
     if(_expr3 != NULL)
-    {
-        printRibsBeforeNode(depth, branches);
-        _expr3->out(depth + 1, branches);
-    }
-    printRibsBeforeNode(depth, branches);
-    (*branches)[depth] = true;
-    _loop->out(depth + 1, branches);
+        printNodeWithRibs(depth, branches, false, _expr3);
+    printNodeWithRibs(depth, branches, true, _loop);
 }
 
 void CompoundStatement::out(unsigned int depth, vector<bool>* branches)
 {
     makeNodeTop(depth, branches, "{}");
-
     for(unsigned int i = 0; i < _items->size() - 1; ++i)
-    {
-        printRibsBeforeNode(depth, branches);
-        (*_items)[i]->out(depth + 1, branches);
-    }
-    printRibsBeforeNode(depth, branches);
-    (*branches)[depth] = true;
-    (*_items)[_items->size() - 1]->out(depth + 1, branches);
+        printNodeWithRibs(depth, branches, false, (*_items)[i]);
+    printNodeWithRibs(depth, branches, true, (*_items)[_items->size() - 1]);
 }
 
 }

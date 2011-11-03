@@ -40,4 +40,11 @@ void Node::makeNodeTop(unsigned int depth, vector<bool>* branches, const string&
     cout << (depth == 0 ? "" : "+-") << "{" << s << "}" << endl;
 }
 
+void Node::printNodeWithRibs(unsigned int depth, vector<bool>* branches, bool isLast, Node* node)
+{
+    printRibsBeforeNode(depth, branches);
+    (*branches)[depth] = isLast;
+    node->out(depth + 1, branches);
+}
+
 }
