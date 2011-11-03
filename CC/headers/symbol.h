@@ -13,6 +13,7 @@ class Symbol
 public:
     string name;
     Symbol(string name_): name(name_) {}
+    virtual ~Symbol() {}
     virtual void out(int indent);
 };
 
