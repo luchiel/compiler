@@ -52,8 +52,6 @@ init_declarator_list = init_declarator [',' init_declarator_list] ;
 
 init_declarator = declarator ['=' initializer] ;
 
-//from here
-
 type_specifier =
     VOID | INT | FLOAT |
     struct_specifier ;
@@ -88,8 +86,6 @@ parameter_declaration = declaration_specifiers [declarator | abstract_declarator
 identifier_list = IDENTIFIER [',' identifier_list] ;
 
 type_name = type_specifier [abstract_declarator] ;
-
-//to here
 
 abstract_declarator = pointer | [pointer] direct_abstract_declarator ;
 

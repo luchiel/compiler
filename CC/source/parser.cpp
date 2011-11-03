@@ -161,6 +161,7 @@ Node* Parser::parseUnaryExpression()
             node->_only = parseUnaryExpression();
             break;
         case TOK_SIZEOF:
+            //SIZEOF (unary_expression | '(' type_name ')') ;
             node = new UnaryNode();
             node->_type = tokenType();
             _tokens->next();
@@ -398,7 +399,6 @@ Node* Parser::parseStatement()
     return parseExpressionStatement();
 }
 
-//from here
 /*
 Node* Parser::parseTypeSpecifier()
 {
@@ -571,6 +571,161 @@ Node* Parser::parseTypeName()
     return node;
 }
 */
+/*
+Node* Parser::parseAbstractDeclarator()
+{
+    //pointer | [pointer] direct_abstract_declarator ;
+    tmp = parsePointer();
+    node = parseDirectAbstractDeclarator();
+    //do
+    return node;
+}
+
+Node* Parser::parseDirectAbstractDeclarator()
+{
+    //'(' abstract_declarator ')' |
+    //[direct_abstract_declarator] '[' ['*' | assignment_expression] ']' |
+    //[direct_abstract_declarator] '(' [parameter_list] ')' ;
+    if(tokenType() == TOK_L_BRACKET)
+    {
+        _tokens->next();
+        node = parseAbstractDeclarator();
+        consumeTokenOfType(TOK_R_BRACKET, "')' expected");
+    }
+    node = parseDirectAbstractDeclarator(); //and if none?
+    if(tokenType() == TOK_L_SQUARE)
+    {
+        _tokens->next();
+        if(tokenType() == TOK_ASTERISK)
+        {}
+        else
+        {
+            tmp = parseAssignmentExpression();
+            //if(tmp != NULL)
+                //attach
+        }
+        consumeTokenOfType(TOK_R_SQUARE, "']' expected");
+    }
+    else if(tokenType() == TOK_L_BRACKET)
+    {
+        _tokens->next();
+        tmp = parseParameterList();
+        //if(tmp != NULL)
+            //attach
+        consumeTokenOfType(TOK_R_BRACKET, "')' expected");
+    }
+    else
+    {
+        return NULL;
+        //or throw
+    }
+}
+
+Node* Parser::parseInitializer()
+{
+    if(tokenType() == TOK_L_BRACE)
+    {
+        _tokens->next();
+        node = parseInitializerList();
+        if(tokenType() == TOK_COMMA)
+            _tokens->next();
+        consumeTokenOfType(TOK_R_BRACE, "'}' expected");
+        return node;
+    }
+    else
+    {
+        return parseAssignmentExpression();
+    }
+}
+
+Node* Parser::parseInitializerList()
+{
+    //initializer_list ',' [designation] initializer |
+    //[designation] initializer ;
+}
+
+Node* Parser::parseDesignation()
+{
+    node = parseDesignatorList();
+    consumeTokenOfType(TOK_ASSIGN, "'=' expected");
+}
+
+Node* Parser::parseDesignatorList()
+{
+    tmp = parseDesignator();
+    if(tmp == NULL)
+        return NULL;
+    while(tmp != NULL)
+    {
+        node->list->push_back(tmp);
+        tmp = parseDesignator();
+    }
+    return node;
+}
+
+Node* Parser::parseDesignator()
+{
+    if(tokenType() == TOK_L_SQUARE)
+    {
+        _tokens->next();
+        tmp = parseConditionalExpression();
+        if(tmp == NULL)
+            throw makeException("expression expected");
+        //attach
+        consumeTokenOfType(TOK_R_SQUARE, "']' expected");
+    }
+    else if(tokenType() == TOK_DOT)
+    {
+        _tokens->next();
+        //attach IDENTIFIER
+    }
+    else
+        return NULL;
+    return node;
+}
+
+Node* Parser::parseTranslationUnit()
+{
+    tmp = parseExternalDeclaration();
+    if(tmp == NULL)
+        return NULL;
+    while(tmp != NULL)
+    {
+        node->list->push_back(tmp);
+        tmp = parseDeclaration();
+    }
+}
+
+Node* Parser::parseExternalDeclaration()
+{
+    node = parseFunctionDefinition();
+    if(node != NULL)
+        return node;
+    return parseDeclaration();
+}
+
+Node* Parser::parseFunctionDefinition()
+{
+    //declaration_specifiers declarator [declaration_list] compound_statement ;
+    tmp = parseDeclarationSpecifiers();
+    tmp2 = parseDeclarator();
+    tmp3 = parseDeclarationList();
+    tmp4 = parseCompoundStatement();
+    return node;
+}
+
+Node* Parser::parseDeclarationList()
+{
+    tmp = parseDeclaration();
+    if(tmp == NULL)
+        return NULL;
+    while(tmp != NULL)
+    {
+        node->list->push_back(tmp);
+        tmp = parseDeclaration();
+    }
+    return node;
+}
 
 Node* Parser::parseIdentifierList()
 {
@@ -589,5 +744,60 @@ Node* Parser::parseIdentifierList()
     }
     return node;
 }
+
+
+Node* Parser::parseArgumentExpressionList()
+{
+    tmp = parseAssignmentExpression();
+    if(tmp == NULL)
+        return NULL;
+    while(tokenType() == TOK_COMMA)
+    {
+        _tokens->next();
+        node->list->push_back(tmp);
+        tmp = parseAssignmentExpression();
+        if(tmp == NULL)
+            throw makeException("expression expected");
+    }
+    return node;
+}
+
+Node* Parser::parseDeclaration()
+{
+    tmp = parseDeclarationSpecifiers();
+    tmp2 = parseInitDeclaratorList();
+    //attach
+    consumeTokenOfType(TOK_SEP, "';' expected");
+}
+
+Node* Parser::parseDeclarationSpecifiers()
+{
+    //type_specifier [declaration_specifiers] |
+    //function_specifier [declaration_specifiers] ;
+}
+
+Node* Parser::parseInitDeclaratorList()
+{
+    tmp = parseInitDeclarator();
+    if(tmp == NULL)
+        return NULL;
+    while(tokenType() == TOK_COMMA)
+    {
+        _tokens->next();
+        node->list->push_back(tmp);
+        tmp = parseInitDeclarator();
+        if(tmp == NULL)
+            throw makeException("init expected");
+    }
+    return node;
+}
+
+Node* Parser::parseInitDeclarator()
+{
+    tmp = parseDeclarator();
+    if(tokenType() == TOK_ASSIGN)
+        tmp2 = parseInitializer();
+}
+*/
 
 }
