@@ -122,7 +122,7 @@ Node* Parser::parsePostfixExpression()
                 _tokens->next();
                 if(tokenType() != TOK_R_BRACKET)
                 {
-                    node->_tail = parseExpression(); //List();
+                    node->_tail = parseExpression();
                     if(tokenType() != TOK_R_BRACKET)
                         throw makeException("')' expected");
                 }
@@ -256,13 +256,12 @@ ParserException Parser::makeException(const string& e)
 
 Node* Parser::parseExpressionStatement()
 {
-    ExpressionStatement* node = new ExpressionStatement();
     if(tokenType() == TOK_SEP)
     {
         _tokens->next();
-        return node;
+        return new EmptyExpressionStatement();
     }
-    node->_expr = parseExpression();
+    ExpressionStatement* node = new ExpressionStatement(parseExpression());
     consumeTokenOfType(TOK_SEP, "';' expected");
     return node;
 }
@@ -271,21 +270,19 @@ Node* Parser::parseJumpStatement()
 {
     if(tokenType() == TOK_RETURN)
     {
-        ReturnStatement* node = new ReturnStatement();
         _tokens->next();
         if(tokenType() == TOK_SEP)
         {
             _tokens->next();
-            return node;
+            return new JumpStatement(TOK_RETURN);
         }
-        node->_expr = parseExpression();
+        ReturnStatement* node = new ReturnStatement(parseExpression());
         consumeTokenOfType(TOK_SEP, "';' expected");
         return node;
     }
     else if(tokenType() == TOK_CONTINUE || tokenType() == TOK_BREAK)
     {
-        JumpStatement* node = new JumpStatement();
-        node->_type = tokenType();
+        JumpStatement* node = new JumpStatement(tokenType());
         _tokens->next();
         consumeTokenOfType(TOK_SEP, "';' expected");
         return node;

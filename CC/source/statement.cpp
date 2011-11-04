@@ -19,34 +19,28 @@ void SelectionStatement::out(unsigned int depth, vector<bool>* branches)
 
 void JumpStatement::out(unsigned int depth, vector<bool>* branches)
 {
-    makeNodeTop(depth, branches, _type == TOK_BREAK ? "break" : "continue");
+    makeNodeTop(depth, branches,
+        _type == TOK_BREAK ? "break" : _type == TOK_CONTINUE ? "continue" : "return"
+    );
     (*branches)[depth] = true;
 }
 
 void ReturnStatement::out(unsigned int depth, vector<bool>* branches)
 {
     makeNodeTop(depth, branches, "return");
+    printNodeWithRibs(depth, branches, true, _expr);
+}
 
-    if(_expr != NULL)
-        printRibsBeforeNode(depth, branches);
-
+void EmptyExpressionStatement::out(unsigned int depth, vector<bool>* branches)
+{
+    makeNodeTop(depth, branches, ";");
     (*branches)[depth] = true;
-
-    if(_expr != NULL)
-        _expr->out(depth + 1, branches);
 }
 
 void ExpressionStatement::out(unsigned int depth, vector<bool>* branches)
 {
     makeNodeTop(depth, branches, ";");
-
-    if(_expr != NULL)
-        printRibsBeforeNode(depth, branches);
-
-    (*branches)[depth] = true;
-
-    if(_expr != NULL)
-        _expr->out(depth + 1, branches);
+    printNodeWithRibs(depth, branches, true, _expr);
 }
 
 void IterationStatement::out(unsigned int depth, vector<bool>* branches)

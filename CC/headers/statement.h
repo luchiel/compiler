@@ -24,15 +24,22 @@ class JumpStatement: public Node
 {
 public:
     TokenType _type;
-    JumpStatement(): _type(TOK_UNDEF) {}
+    JumpStatement(TokenType type): _type(type) {}
     virtual void out(unsigned int depth, vector<bool>* branches);
 };
 
-class ReturnStatement: public JumpStatement
+class ReturnStatement: public Node
 {
 public:
     Node* _expr;
-    ReturnStatement(): _expr(NULL) { _type = TOK_RETURN; }
+    ReturnStatement(Node* expr): _expr(expr) {}
+    virtual void out(unsigned int depth, vector<bool>* branches);
+};
+
+class EmptyExpressionStatement: public Node
+{
+public:
+    EmptyExpressionStatement() {}
     virtual void out(unsigned int depth, vector<bool>* branches);
 };
 
@@ -40,7 +47,7 @@ class ExpressionStatement: public Node
 {
 public:
     Node* _expr;
-    ExpressionStatement(): _expr(NULL) {}
+    ExpressionStatement(Node* expr): _expr(expr) {}
     virtual void out(unsigned int depth, vector<bool>* branches);
 };
 
