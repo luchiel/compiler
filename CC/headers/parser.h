@@ -2,6 +2,7 @@
 #define PARSER_H
 
 #include "iostream"
+#include "declaration.h"
 #include "expression.h"
 #include "tokenizer.h"
 #include "exception.h"
@@ -42,7 +43,15 @@ public:
     Node* parseIterationStatement();
     Node* parseStatement();
 
-    Node* parseIdentifierList();
+    Designator* parseDesignator();
+    Designation* parseDesignation();
+
+    Node* parseInitializer();
+    InitializerList* parseInitializerList();
+    //Node* parseTranslationUnit();
+    //Node* parseExternalDeclaration();
+
+    //Node* parseIdentifierList();
 
     ParserException makeException(const string& e);
     void consumeTokenOfType(TokenType type, const string& except);

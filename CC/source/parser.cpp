@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <utility>
 #include "parser.h"
 #include "expression.h"
 #include "statement.h"
@@ -37,11 +38,6 @@ void Parser::consumeTokenOfType(TokenType type, const string& except)
     if(tokenType() != type)
         throw makeException(except);
     _tokens->next();
-}
-
-Node* Parser::parseDeclaration()
-{
-    return NULL;
 }
 
 Node* Parser::parseBinaryExpression(int priority)
@@ -396,6 +392,84 @@ Node* Parser::parseStatement()
     return parseExpressionStatement();
 }
 
+Designator* Parser::parseDesignator()
+{
+    if(tokenType() == TOK_L_SQUARE)
+    {
+        _tokens->next();
+        Node* sub = parseConditionalExpression();
+        if(sub == NULL)
+            throw makeException("expression expected");
+        consumeTokenOfType(TOK_R_SQUARE, "']' expected");
+        return new Designator(TOK_L_SQUARE, sub);
+    }
+    else if(tokenType() == TOK_DOT)
+    {
+        _tokens->next();
+        if(tokenType() != TOK_IDENT)
+            throw makeException("identifier expected");
+        Node* sub = new IdentNode(_tokens->get().text);
+        _tokens->next();
+        return new Designator(TOK_DOT, sub);
+    }
+    return NULL;
+}
+
+Designation* Parser::parseDesignation()
+{
+    Designator* d = parseDesignator();
+    if(d == NULL)
+        return NULL;
+    Designation* node = new Designation();
+    while(d != NULL)
+    {
+        node->add(d);
+        d = parseDesignator();
+    }
+    consumeTokenOfType(TOK_ASSIGN, "'=' expected");
+    return node;
+}
+
+Node* Parser::parseInitializer()
+{
+    if(tokenType() == TOK_L_BRACE)
+    {
+        _tokens->next();
+        InitializerList* node = parseInitializerList();
+        if(tokenType() == TOK_COMMA)
+            _tokens->next();
+        consumeTokenOfType(TOK_R_BRACE, "'}' expected");
+        return node;
+    }
+    else
+        return parseAssignmentExpression();
+}
+
+InitializerList* Parser::parseInitializerList()
+{
+    Designation* d = parseDesignation();
+    Node* i = parseInitializer();
+    if(i == NULL)
+    {
+        if(d != NULL)
+            throw makeException("initializer expected");
+        else
+            return NULL;
+    }
+    InitializerList* node = new InitializerList();
+    node->add(new pair<Designation*, Node*>(d, i));
+    while(tokenType() == TOK_COMMA)
+    {
+        _tokens->next();
+        d = parseDesignation();
+        i = parseInitializer();
+        if(i == NULL)
+            throw makeException("initializer expected");
+        node->add(new pair<Designation*, Node*>(d, i));
+    }
+    return node;
+}
+
 /*
 Node* Parser::parseTypeSpecifier()
 {
@@ -436,13 +510,13 @@ Node* Parser::parseStructSpecifier()
 
 Node* Parser::parseStructDeclarationList()
 {
-    Node* tmp = parseStructDeclaration();
+    Node* tmp = parseStructDeclarator();
     if(tmp == NULL)
         return NULL;
     do
     {
         node->list->push_back(tmp);
-        tmp = parseStructDeclaration();
+        tmp = parseStructDeclarator();
     }
     while(tmp != NULL);
     return node;
@@ -459,76 +533,6 @@ Node* Parser::parseStructDeclarator()
         tmp = parseConditionalExpression();
     }
     return node;
-}
-
-Node* Parser::parseDeclarator()
-{
-    //[pointer] direct_declarator;
-    tmp = parsePointer();
-    node = parseDirectDeclarator();
-    //something
-    return node;
-}
-
-Node* Parser::parsePointer()
-{
-    //'*' [pointer] ;
-    if(tokenType() != TOK_ASTERISK)
-        return NULL;
-    _tokens->next();
-    tmp = parsePointer();
-    return node;
-}
-
-Node* Parser::parseDirectDeclarator()
-{
-    if(tokenType() == TOK_IDENT)
-    {
-        //
-    }
-    else if(tokenType() == TOK_L_BRACKET)
-    {
-        //
-    }
-    else
-    {
-        tmp = parseDirectDeclarator();
-        if(tokenType() == TOK_L_SQUARE)
-        {
-            _tokens->next();
-            if(tokenType() == TOK_R_SQUARE)
-                _tokens->next();
-            else if(tokenType() == TOK_ASTERISK)
-            {
-                //do
-                _tokens->next();
-            }
-            else
-            {
-                tmp = parseAssignmentExpression();
-            }
-            return node;
-        }
-        else if(tokenType() == TOK_L_BRACKET)
-        {
-            _tokens->next();
-            if(tokenType() == TOK_R_BRACKET)
-                _tokens->next();
-            else
-            {
-                tmp = parseIdentifierList();
-                if(tmp == NULL)
-                    tmp = parseParameterList();
-                if(tmp == NULL)
-                    //what now?
-                    throw makeException("something's wrong");
-            }
-            return node;
-        }
-        else
-            //or return NULL?
-            throw makeException("'[' or '(' expected");
-    }
 }
 
 Node* Parser::parseParameterList()
@@ -618,98 +622,152 @@ Node* Parser::parseDirectAbstractDeclarator()
     }
 }
 
-Node* Parser::parseInitializer()
+TranslationUnit* Parser::parseTranslationUnit()
 {
-    if(tokenType() == TOK_L_BRACE)
-    {
-        _tokens->next();
-        node = parseInitializerList();
-        if(tokenType() == TOK_COMMA)
-            _tokens->next();
-        consumeTokenOfType(TOK_R_BRACE, "'}' expected");
-        return node;
-    }
-    else
-    {
-        return parseAssignmentExpression();
-    }
-}
-
-Node* Parser::parseInitializerList()
-{
-    //initializer_list ',' [designation] initializer |
-    //[designation] initializer ;
-}
-
-Node* Parser::parseDesignation()
-{
-    node = parseDesignatorList();
-    consumeTokenOfType(TOK_ASSIGN, "'=' expected");
-}
-
-Node* Parser::parseDesignatorList()
-{
-    tmp = parseDesignator();
+    TranslationUnit* node = new TranslationUnit();
+    ExternalDeclaration* tmp = parseExternalDeclaration();
     if(tmp == NULL)
         return NULL;
     while(tmp != NULL)
     {
-        node->list->push_back(tmp);
-        tmp = parseDesignator();
-    }
-    return node;
-}
-
-Node* Parser::parseDesignator()
-{
-    if(tokenType() == TOK_L_SQUARE)
-    {
-        _tokens->next();
-        tmp = parseConditionalExpression();
-        if(tmp == NULL)
-            throw makeException("expression expected");
-        //attach
-        consumeTokenOfType(TOK_R_SQUARE, "']' expected");
-    }
-    else if(tokenType() == TOK_DOT)
-    {
-        _tokens->next();
-        //attach IDENTIFIER
-    }
-    else
-        return NULL;
-    return node;
-}
-
-Node* Parser::parseTranslationUnit()
-{
-    tmp = parseExternalDeclaration();
-    if(tmp == NULL)
-        return NULL;
-    while(tmp != NULL)
-    {
-        node->list->push_back(tmp);
-        tmp = parseDeclaration();
+        node->add(tmp);
+        tmp = parseExternalDeclaration();
     }
 }
 
-Node* Parser::parseExternalDeclaration()
+ExternalDeclaration* Parser::parseExternalDeclaration()
 {
-    node = parseFunctionDefinition();
+    ExternalDeclaration* node = parseFunctionDefinition();
     if(node != NULL)
         return node;
     return parseDeclaration();
 }
 
-Node* Parser::parseFunctionDefinition()
+FunctionDefinition* Parser::parseFunctionDefinition()
 {
-    //declaration_specifiers declarator [declaration_list] compound_statement ;
-    tmp = parseDeclarationSpecifiers();
-    tmp2 = parseDeclarator();
-    tmp3 = parseDeclarationList();
-    tmp4 = parseCompoundStatement();
+    DeclarationSpecifiers* decSpec = parseDeclarationSpecifiers();
+    Declarator* dec = parseDeclarator();
+    DeclarationList* decList = parseDeclarationList(); //can be null
+    CompoundStatement* stat = parseCompoundStatement();
+    if(stat == NULL)
+        return NULL;
+    if(decSpec == NULL || dec == NULL)
+        throw makeException("bad declaration"); //brief
+    return new FunctionDefinition(decSpec, dec, decList, stat);
+}*/
+
+Node* Parser::parseDeclaration()
+{
+    //DeclarationSpecifiers* decSpec = parseDeclarationSpecifiers();
+    //if(decSpec == NULL)
+    //    return NULL; //required by BlockItem
+    //InitDeclaratorList* init = parseInitDeclaratorList();
+    //consumeTokenOfType(TOK_SEP, "';' expected");
+    //return new Declaration(decSpec, init);
+    return NULL;
+}
+/*
+InitDeclaratorList* Parser::parseInitDeclaratorList()
+{
+    InitDeclarator* dec = parseInitDeclarator();
+    if(dec == NULL)
+        return NULL;
+    InitDeclaratorList* node = new InitDeclaratorList();
+    while(tokenType() == TOK_COMMA)
+    {
+        _tokens->next();
+        node->add(dec);
+        dec = parseInitDeclarator();
+        if(dec == NULL)
+            throw makeException("init expected");
+    }
     return node;
 }
+
+Declarator* Parser::parseInitDeclarator()
+{
+    Declarator* dec = parseDeclarator();
+    if(dec == NULL)
+        return NULL;
+    if(tokenType() == TOK_ASSIGN)
+    {
+        _tokens->next();
+        return InitDeclarator(dec, parseInitializer()); //exception if null
+    }
+    return dec;
+}
+
+Declarator* Parser::parseDeclarator()
+{
+    //[pointer] direct_declarator;
+    Pointer* p = parsePointer();
+    DirectDeclarator* dd = parseDirectDeclarator();
+    if(p == NULL)
+        return dd;
+    return Declarator(dd, p);
+}
+
+Node* Parser::parsePointer()
+{
+    //'*' [pointer] ;
+    if(tokenType() != TOK_ASTERISK)
+        return NULL;
+    _tokens->next();
+    tmp = parsePointer();
+    return node;
+}
+
+Node* Parser::parseDirectDeclarator()
+{
+    if(tokenType() == TOK_IDENT)
+    {
+        //
+    }
+    else if(tokenType() == TOK_L_BRACKET)
+    {
+        //
+    }
+    else
+    {
+        tmp = parseDirectDeclarator();
+        if(tokenType() == TOK_L_SQUARE)
+        {
+            _tokens->next();
+            if(tokenType() == TOK_R_SQUARE)
+                _tokens->next();
+            else if(tokenType() == TOK_ASTERISK)
+            {
+                //do
+                _tokens->next();
+            }
+            else
+            {
+                tmp = parseAssignmentExpression();
+            }
+            return node;
+        }
+        else if(tokenType() == TOK_L_BRACKET)
+        {
+            _tokens->next();
+            if(tokenType() == TOK_R_BRACKET)
+                _tokens->next();
+            else
+            {
+                tmp = parseIdentifierList();
+                if(tmp == NULL)
+                    tmp = parseParameterList();
+                if(tmp == NULL)
+                    //what now?
+                    throw makeException("something's wrong");
+            }
+            return node;
+        }
+        else
+            //or return NULL?
+            throw makeException("'[' or '(' expected");
+    }
+}
+
 
 Node* Parser::parseDeclarationList()
 {
@@ -729,14 +787,14 @@ Node* Parser::parseIdentifierList()
     if(tokenType() != TOK_IDENT)
         return NULL;
     IdentifierList* node = new IdentifierList();
-    node->_list->push_back(new IdentNode(_tokens->get().text));
+    node->add(new IdentNode(_tokens->get().text));
     _tokens->next();
     while(tokenType() == TOK_COMMA)
     {
         _tokens->next();
         if(tokenType() != TOK_IDENT)
             throw makeException("identifier expected");
-        node->_list->push_back(new IdentNode(_tokens->get().text));
+        node->add(new IdentNode(_tokens->get().text));
         _tokens->next();
     }
     return node;
@@ -759,42 +817,12 @@ Node* Parser::parseArgumentExpressionList()
     return node;
 }
 
-Node* Parser::parseDeclaration()
-{
-    tmp = parseDeclarationSpecifiers();
-    tmp2 = parseInitDeclaratorList();
-    //attach
-    consumeTokenOfType(TOK_SEP, "';' expected");
-}
-
 Node* Parser::parseDeclarationSpecifiers()
 {
     //type_specifier [declaration_specifiers] |
     //function_specifier [declaration_specifiers] ;
 }
 
-Node* Parser::parseInitDeclaratorList()
-{
-    tmp = parseInitDeclarator();
-    if(tmp == NULL)
-        return NULL;
-    while(tokenType() == TOK_COMMA)
-    {
-        _tokens->next();
-        node->list->push_back(tmp);
-        tmp = parseInitDeclarator();
-        if(tmp == NULL)
-            throw makeException("init expected");
-    }
-    return node;
-}
-
-Node* Parser::parseInitDeclarator()
-{
-    tmp = parseDeclarator();
-    if(tokenType() == TOK_ASSIGN)
-        tmp2 = parseInitializer();
-}
 */
 
 }
