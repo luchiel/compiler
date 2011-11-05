@@ -8,9 +8,21 @@
 #include "tokenizer.h"
 #include "token.h"
 #include "operations.h"
+#include "symbol.h"
+#include "symbol_table.h"
 
 namespace LuCCompiler
 {
+
+Symbol* Parser::getSymbol(const string& name)
+{
+    return _symbols->getSymbol(name, _tokens->get().line, _tokens->get().col + 1);
+}
+
+void Parser::addSymbol(Symbol* symbol)
+{
+    _symbols->addSymbol(symbol, _tokens->get().line, _tokens->get().col + 1);
+}
 
 void Parser::out()
 {
@@ -21,6 +33,7 @@ void Parser::out()
 Parser::Parser(Tokenizer* tokens)
 {
     _tokens = tokens;
+    _symbols = initPrimarySymbolTable();
 }
 
 void Parser::parse()
@@ -250,6 +263,12 @@ ParserException Parser::makeException(const string& e)
     return ParserException(_tokens->get().line, _tokens->get().col + 1, e);
 }
 
+void Parser::nullException(void* pointerToCheck, const string& e)
+{
+    if(pointerToCheck == NULL)
+        throw makeException(e);
+}
+
 Node* Parser::parseExpressionStatement()
 {
     if(tokenType() == TOK_SEP)
@@ -398,8 +417,7 @@ Designator* Parser::parseDesignator()
     {
         _tokens->next();
         Node* sub = parseConditionalExpression();
-        if(sub == NULL)
-            throw makeException("expression expected");
+        nullException(sub, "expression expected");
         consumeTokenOfType(TOK_R_SQUARE, "']' expected");
         return new Designator(TOK_L_SQUARE, sub);
     }
@@ -463,77 +481,92 @@ InitializerList* Parser::parseInitializerList()
         _tokens->next();
         d = parseDesignation();
         i = parseInitializer();
-        if(i == NULL)
-            throw makeException("initializer expected");
+        nullException(i, "initializer expected");
         node->add(new pair<Designation*, Node*>(d, i));
     }
     return node;
 }
 
-/*
-Node* Parser::parseTypeSpecifier()
+SymbolType* Parser::parseTypeSpecifier()
 {
     switch(tokenType())
     {
-        case TOK_INT:
-        case TOK_FLOAT:
-        case TOK_VOID:
-            //do something
-            return node;
-        default:
-            return parseStructSpecifier();
+        case TOK_INT:   return getSymbol("int");
+        case TOK_FLOAT: return getSymbol("float");
+        case TOK_VOID:  return getSymbol("void");
+        default:        return parseStructSpecifier();
     }
 }
 
-Node* Parser::parseStructSpecifier()
+SymbolTypeStruct* Parser::parseStructSpecifier()
 {
     if(tokenType() != TOK_STRUCT)
-        return NULL; //or throw
+        return NULL;
     _tokens->next();
-    bool hasIdent = false;
+
+    string name("");
     it(tokenType() == TOK_IDENT)
     {
-        //do something
+        name = _tokens->get().text;
         _tokens->next();
-        hasIdent = true;
     }
+    SymbolTypeStruct* node = new SymbolTypeStruct(name);
+    addSymbol(node);
     if(tokenType() == TOK_L_BRACE)
     {
         _tokens->next();
-        Node* tmp = parseStructDeclarationList();
+        _symbols->push(node->fields);
+
+        bool added = true;
+        while(added)
+            added = parseStructDeclaration();
+        if(node->fields->size() == 0)
+            throw makeException("declaration expected");
+
         consumeTokenOfType(TOK_R_BRACE, "'}' expected");
+        _symbols->pop();
     }
-    else if(!hasIdent)
-        throw makeException("Identifier or declaration expected");
+    else if(name == "")
+        throw makeException("identifier or declaration expected");
     return node;
 }
 
-Node* Parser::parseStructDeclarationList()
+bool Parser::parseStructDeclaration()
 {
-    Node* tmp = parseStructDeclarator();
-    if(tmp == NULL)
-        return NULL;
-    do
-    {
-        node->list->push_back(tmp);
-        tmp = parseStructDeclarator();
-    }
-    while(tmp != NULL);
-    return node;
-}
+    SymbolType* type = parseTypeSpecifier();
+    if(type == NULL)
+        return false;
 
-Node* Parser::parseStructDeclarator()
-{
-    //declarator | [declarator] ':' conditional_expression ;
-    //check grammar
-    node = parseDeclarator();
-    if(tokenType() == TOK_COLON)
+    Declarator* d = parseDeclarator();
+    nullException(d, "declarator expected");
+
+    addSymbol(type, d);
+    while(tokenType() == TOK_COMMA)
     {
         _tokens->next();
-        tmp = parseConditionalExpression();
+        d = parseDeclarator();
+        nullException(d, "declarator expected");
+        //sum type from declarator data and specifier
+        addSymbol(SymbolVariable(type, d));
     }
-    return node;
+
+    consumeTokenOfType(TOK_SEP, "';' expected");
 }
+
+/*
+Node* Parser::parseInitDeclarator()
+{
+    Declarator* dec = parseDeclarator();
+    if(dec == NULL)
+        return NULL;
+    if(tokenType() == TOK_ASSIGN)
+    {
+        _tokens->next();
+        return InitDeclarator(dec, parseInitializer()); //exception if null
+    }
+    return dec;
+}
+
 
 Node* Parser::parseParameterList()
 {
@@ -682,19 +715,6 @@ InitDeclaratorList* Parser::parseInitDeclaratorList()
             throw makeException("init expected");
     }
     return node;
-}
-
-Declarator* Parser::parseInitDeclarator()
-{
-    Declarator* dec = parseDeclarator();
-    if(dec == NULL)
-        return NULL;
-    if(tokenType() == TOK_ASSIGN)
-    {
-        _tokens->next();
-        return InitDeclarator(dec, parseInitializer()); //exception if null
-    }
-    return dec;
 }
 
 Declarator* Parser::parseDeclarator()
