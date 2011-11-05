@@ -20,17 +20,31 @@ protected:
 
 public:
     SymbolTable* parent;
-
     Symbol* getSymbol(const string& name, int line, int col);
     void addSymbol(Symbol* symbol, int line, int col);
+    void size() { return _symbols.size(); }
     void out(int indent);
 
     SymbolTable(): _innerIdx(0), parent(NULL) {}
-    SymbolTable(SymbolTable* parent_): _innerIdx(0), parent(parent_) {}
     ~SymbolTable();
 };
 
-SymbolTable* initPrimarySymbolTable();
+class SymbolTableStack
+{
+private:
+    SymbolTable* _root;
+    SymbolTable* _current;
+public:
+    Symbol* getSymbol(const string& name, int line, int col);
+    void addSymbol(Symbol* symbol, int line, int col);
+    void push(SymbolTable* t);
+    void pop();
+
+    SymbolTableStack(SymbolTable* root, SymbolTable* current): _root(root), _current(current) {}
+    ~SymbolTableStack() { delete _root; }
+};
+
+SymbolTableStack* initPrimarySymbolTableStack();
 
 //int -> float
 //[] -> *
@@ -38,7 +52,7 @@ SymbolTable* initPrimarySymbolTable();
 class SymbolFunction: public Symbol
 {
 public:
-    SymbolTable* locals; //attach it to global
+    SymbolTable* locals;
     SymbolFunction(string name_): Symbol(name_), locals(new SymbolTable()) {}
     virtual void out(int indent);
 };
@@ -46,8 +60,8 @@ public:
 class SymbolTypeStruct: public SymbolType
 {
 public:
-    SymbolTable* fields; //attach it to global
-    SymbolTypeStruct(string name_): SymbolType(name_), fields(new SymbolTable()) {}
+    SymbolTable* fields;
+    SymbolTypeStruct(const string& name_): SymbolType(name_), fields(new SymbolTable()) {}
     virtual void out(int indent);
 };
 

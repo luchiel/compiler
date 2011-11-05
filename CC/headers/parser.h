@@ -6,6 +6,7 @@
 #include "expression.h"
 #include "tokenizer.h"
 #include "exception.h"
+#include "symbol_table.h"
 
 namespace LuCCompiler
 {
@@ -15,6 +16,7 @@ class Parser
 private:
     Node* _root;
     Tokenizer* _tokens;
+    SymbolTableStack* _symbols;
 
     TokenType tokenType() { return _tokens->get().type; }
 
@@ -54,9 +56,13 @@ public:
     //Node* parseIdentifierList();
 
     ParserException makeException(const string& e);
+    void nullException(void* pointerToCheck, const string& e);
     void consumeTokenOfType(TokenType type, const string& except);
 
     void out();
+
+    Symbol* getSymbol(const string& name);
+    void addSymbol(Symbol* symbol);
 };
 
 }

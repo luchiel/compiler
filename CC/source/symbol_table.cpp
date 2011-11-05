@@ -1,4 +1,5 @@
 #include <sstream>
+#include <assert.h>
 #include "exception.h"
 #include "symbol_table.h"
 #include "symbol.h"
@@ -43,7 +44,29 @@ SymbolTable::~SymbolTable()
     //cycle? Carefully delete everyone?
 }
 
-SymbolTable* initPrimarySymbolTable()
+Symbol* SymbolTableStack::getSymbol(const string& name, int line, int col)
+{
+    return _current->getSymbol(name, line, col);
+}
+
+void SymbolTableStack::addSymbol(Symbol* symbol, int line, int col)
+{
+    _current->addSymbol(symbol, line, col);
+}
+
+void SymbolTableStack::push(SymbolTable* t)
+{
+    t->parent = _current;
+    _current = t;
+}
+
+void SymbolTableStack::pop()
+{
+    assert(_current->parent != NULL);
+    _current = _current->parent;
+}
+
+SymbolTableStack* initPrimarySymbolTableStack()
 {
     SymbolTable* primarySymbolTable = new SymbolTable();
 
@@ -51,7 +74,7 @@ SymbolTable* initPrimarySymbolTable()
     primarySymbolTable->addSymbol(new SymbolType("float"), 0, 0);
     primarySymbolTable->addSymbol(new SymbolType("void"), 0, 0);
 
-    return primarySymbolTable;
+    return new SymbolTableStack(primarySymbolTable, primarySymbolTable);
 }
 
 }
