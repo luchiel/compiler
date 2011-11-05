@@ -96,14 +96,10 @@ direct_abstract_declarator =
 
 initializer = assignment_expression | '{' initializer_list '}' | '{' initializer_list ',' '}' ;
 
-initializer_list =
-    initializer_list ',' [designation] initializer |
-    [designation] initializer ;
+initializer_list = [designation] initializer [',' initializer_list] ;
 
 designation = designator_list '=' ;
-
 designator_list = designator [designator_list] ;
-
 designator = '[' conditional_expression ']' | '.' IDENTIFIER ;
 
 translation_unit = external_declaration [translation_unit] ;
