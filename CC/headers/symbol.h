@@ -27,7 +27,7 @@ class SymbolVariable: public Symbol
 {
 public:
     SymbolType* type;
-    SymbolVariable(string name_): Symbol(name_) {}
+    SymbolVariable(SymbolType* type_, string name_): Symbol(name_), type(type_) {}
     virtual void out(int indent);
 };
 
