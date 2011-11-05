@@ -2,6 +2,7 @@
 #define NODE_H
 
 #include <vector>
+#include <string>
 
 using namespace std;
 
