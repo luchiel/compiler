@@ -1,0 +1,8 @@
+type <int>
+type <float>
+type <void>
+type <0>
+	pointer to array [
+		{int 20}
+	] of <void>
+variable e of type <0>

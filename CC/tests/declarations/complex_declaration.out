@@ -1,0 +1,27 @@
+type <int>
+type <float>
+type <void>
+type <0>
+	array [
+		{int 20}
+	] of <int>
+variable c of type <0>
+type <1>
+	array [
+		{?:}
+		| 
+		+-{==}
+		| | 
+		| +-{*}
+		| | | 
+		| | +-{int 5}
+		| | | 
+		| | +-{int 6}
+		| | 
+		| +-{int 30}
+		| 
+		+-{int 4}
+		| 
+		+-{int 3}
+	] of pointer to <int>
+variable b of type <1>

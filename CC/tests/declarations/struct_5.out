@@ -1,0 +1,11 @@
+type <int>
+type <float>
+type <void>
+type <a>
+	struct a
+		type <b>
+			struct b
+				variable u of type <int>
+		variable u of type <b>
+		variable f of type <b>
+variable c of type <a>

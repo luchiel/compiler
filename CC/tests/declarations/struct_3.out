@@ -1,0 +1,9 @@
+type <int>
+type <float>
+type <void>
+type <a>
+	struct a
+		variable aa of type <int>
+variable some_var of type <a>
+variable some_other_var of type <a>
+variable a of type <int>

@@ -1,0 +1,14 @@
+type <int>
+type <float>
+type <void>
+type <0>
+	array [
+		{+}
+		| 
+		+-{int 5}
+		| 
+		+-{int 6}
+	] of pointer to array [
+		{int 20}
+	] of pointer to <void>
+variable d of type <0>

@@ -1,0 +1,18 @@
+type <int>
+type <float>
+type <void>
+type <a>
+	struct a
+		type <0>
+			array [
+			] of pointer to float
+		variable r of type <0>
+		type <1>
+			struct 1
+				variable g of type <int>
+		variable f of type <1>
+type <0>
+	array [
+		{int 10}
+	] of a
+variable b of type <0>

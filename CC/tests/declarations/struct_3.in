@@ -1,0 +1,3 @@
+struct a { int aa; } some_var;
+struct a some_other_var;
+int a;

@@ -1,0 +1,8 @@
+type <int>
+type <float>
+type <void>
+type <0>
+	array [
+		{int 10}
+	] of pointer to pointer to <float>
+variable b of type <0>

@@ -1,0 +1,4 @@
+type <int>
+type <float>
+type <void>
+variable a of type <int>

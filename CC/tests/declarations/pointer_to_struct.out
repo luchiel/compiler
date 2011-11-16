@@ -1,0 +1,10 @@
+type <int>
+type <float>
+type <void>
+type <a>
+	struct a
+		variable b of type <int>
+variable c of type <a>
+type <0>
+	pointer to <a>
+variable d of type <0>

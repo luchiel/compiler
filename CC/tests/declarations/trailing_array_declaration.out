@@ -1,0 +1,14 @@
+type <int>
+type <float>
+type <void>
+type <0>
+	array [
+		{+}
+		| 
+		+-{int 5}
+		| 
+		+-{int 6}
+	] of array [
+		{int 20}
+	] of pointer to pointer to <void>
+variable c of type <0>

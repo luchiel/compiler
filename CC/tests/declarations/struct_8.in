@@ -1,0 +1,2 @@
+struct a {int b;} d;
+struct a {float b;} e;

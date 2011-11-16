@@ -1,0 +1,5 @@
+struct a
+{
+    struct b u;
+    struct b { int u; } f;
+} c;
