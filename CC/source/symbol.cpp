@@ -1,3 +1,4 @@
+#include <cstdio>
 #include <iostream>
 #include "symbol.h"
 #include "symbol_table.h"
@@ -9,8 +10,8 @@ namespace LuCCompiler
 
 void Symbol::out(int indent)
 {
-    for(int i = indent; i > 0; --i)
-        cout << "\t";
+    while(indent-- > 0)
+        cout << '\t';
 }
 
 void SymbolType::out(int indent)
@@ -30,7 +31,7 @@ void SymbolVariable::out(int indent)
     {
         cout << " initialized by\n";
         vector<bool> finishedBranches;
-        _initializer->out(0, &finishedBranches);
+        _initializer->out(0, &finishedBranches, indent + 1);
     }
     else
         cout << "\n";
@@ -38,40 +39,47 @@ void SymbolVariable::out(int indent)
 
 void SymbolTypeArray::out(int indent)
 {
-    SymbolType::out(indent);
-    Symbol::out(indent + 1);
+    SymbolType::out(indent++);
+    Symbol::out(indent);
     cout << "array [" << endl;
     vector<bool> finishedBranches;
-    length->out(0, &finishedBranches);
-    Symbol::out(indent + 1);
-    cout << "] of\n";
-    elementType->out(indent + 1);
+    if(length != NULL)
+        length->out(0, &finishedBranches, indent + 1);
+    Symbol::out(indent);
+    cout << "] of ";
+    if(elementType->name != "")
+        cout << elementType->name << endl;
+    else
+        elementType->out(-1);
 }
 
 void SymbolTypeStruct::out(int indent)
 {
-    SymbolType::out(indent);
-    Symbol::out(indent + 1);
+    SymbolType::out(indent++);
+    Symbol::out(indent);
     cout << "struct " << name << endl;
     fields->out(indent + 1);
 }
 
 void SymbolTypePointer::out(int indent)
 {
-    SymbolType::out(indent);
-    Symbol::out(indent + 1);
-    cout << "pointer to\n";
-    type->out(indent + 1);
+    SymbolType::out(indent++);
+    Symbol::out(indent);
+    cout << "pointer to ";
+    if(type->name != "")
+        cout << type->name << endl;
+    else
+        type->out(-1);
 }
 
 void SymbolTypeFunction::out(int indent)
 {
-    SymbolType::out(indent);
-    Symbol::out(indent + 1);
+    SymbolType::out(indent++);
+    Symbol::out(indent);
     cout << "function " << name << " of type " << type->name << endl;
     locals->out(indent + 1);
     vector<bool> finishedBranches;
-    body->out(0, &finishedBranches);
+    body->out(0, &finishedBranches, indent + 1);
 }
 
 }
