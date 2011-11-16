@@ -169,13 +169,16 @@ SymbolType* Parser::parsePointer(SymbolType* type)
     return type;
 }
 
-SymbolType* Parser::parseDeclarator(SymbolType* type)
+SymbolType* Parser::parseDeclarator(SymbolType* type, int isAbstract)
 {
+    //1 = abstract, -1 = not abstract, 0 - both
     SymbolType** initial = &type;
     type = parsePointer(type);
 
     if(tokenType() == TOK_IDENT)
     {
+        if(isAbstract == 1)
+            throw makeException("abstract declarator expected");
         if(_varName != "")
             throw makeException("unexpected identifier");
         _varName = _tokens->get().text;
@@ -206,17 +209,36 @@ SymbolType* Parser::parseDeclarator(SymbolType* type)
             _symbols->push(function->locals);
             if(tokenType() != TOK_R_BRACKET)
             {
-                //parseParameterList();
+                string tempVarName(_varName);
+                parseParameterDeclaration();
+                while(tokenType() == TOK_COMMA)
+                {
+                    _tokens->next();
+                    parseParameterDeclaration();
+                }
+                _varName = tempVarName;
             }
             _symbols->pop();
             consumeTokenOfType(TOK_R_BRACKET, "')' expected");
             type = function;
         }
     }
-    if(_varName == "")
+    if(_varName == "" && isAbstract == -1)
         throw makeException("non-abstract declarator expected");
 
     return type;
+}
+
+void Parser::parseParameterDeclaration()
+{
+    SymbolType* type = parseTypeSpecifier();
+    if(type == NULL)
+        return;
+    type = parseDeclarator(type, 0);
+    safeAddSymbol(type);
+    //what if function?
+    addSymbol(new SymbolVariable(type, _varName));
+    _varName = "";
 }
 
 Node* Parser::parseInitializerPart()
@@ -273,6 +295,16 @@ bool Parser::parseDeclaration(bool definitionAllowed)
 void Parser::parseTranslationUnit()
 {
     while(parseDeclaration(true));
+}
+
+SymbolType* Parser::parseTypeName()
+{
+    SymbolType* type = parseTypeSpecifier();
+    if(type == NULL)
+        return NULL;
+    type = parseDeclarator(type, 1);
+    safeAddSymbol(type);
+    return type;
 }
 
 }

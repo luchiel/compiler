@@ -57,13 +57,15 @@ public:
     InitializerList* parseInitializerList();
 
     SymbolType* parseTypeSpecifier();
+    SymbolType* parseTypeName();
     SymbolTypeStruct* parseStructSpecifier();
     bool parseStructDeclaration();
     SymbolType* parsePointer(SymbolType* type);
-    SymbolType* parseDeclarator(SymbolType* type);
+    SymbolType* parseDeclarator(SymbolType* type, int isAbstract = -1);
     bool parseDeclaration(bool definitionAllowed);
     Node* parseInitializerPart();
     void addTypeAndInitializedVariable(SymbolType* type, Node* initializer);
+    void parseParameterDeclaration();
     void parseTranslationUnit();
 
     ParserException makeException(const string& e);

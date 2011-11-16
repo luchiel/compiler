@@ -49,26 +49,19 @@ struct_declaration = type_specifier struct_declarator_list ';' ;
 struct_declarator_list = declarator [',' struct_declarator_list] ;
 pointer = '*' [pointer] ;
 declarator = [pointer] direct_declarator;
-
+abstract_declarator = pointer | [pointer] direct_abstract_declarator ;
 direct_declarator =
     IDENTIFIER |
     '(' declarator ')' |
     direct_declarator '[' [assignment_expression] ']' |
     direct_declarator '(' [parameter_list] ')' ;
-
-parameter_list = parameter_declaration [',' parameter_list] ;
-
-parameter_declaration = type_specifier [declarator | abstract_declarator] ;
-
-type_name = type_specifier [abstract_declarator] ;
-
-abstract_declarator = pointer | [pointer] direct_abstract_declarator ;
-
 direct_abstract_declarator =
     '(' abstract_declarator ')' |
     [direct_abstract_declarator] '[' [assignment_expression] ']' |
     [direct_abstract_declarator] '(' [parameter_list] ')' ;
-
+parameter_list = parameter_declaration [',' parameter_list] ;
+parameter_declaration = type_specifier [declarator | abstract_declarator] ;
+type_name = type_specifier [abstract_declarator] ;
 translation_unit = external_declaration [translation_unit] ;
 external_declaration = function_definition | declaration ;
 function_definition = type_specifier declarator compound_statement ;
