@@ -8,72 +8,73 @@ using namespace std;
 namespace LuCCompiler
 {
 
-void SelectionStatement::out(unsigned int depth, vector<bool>* branches)
+void SelectionStatement::out(unsigned int depth, vector<bool>* branches, int indent)
 {
-    makeNodeTop(depth, branches, "if");
-    printNodeWithRibs(depth, branches, false, _expr);
-    printNodeWithRibs(depth, branches, _else == NULL, _then);
+    makeNodeTop(depth, branches, "if", indent);
+    printNodeWithRibs(depth, branches, false, _expr, indent);
+    printNodeWithRibs(depth, branches, _else == NULL, _then, indent);
     if(_else != NULL)
-        printNodeWithRibs(depth, branches, true, _else);
+        printNodeWithRibs(depth, branches, true, _else, indent);
 }
 
-void JumpStatement::out(unsigned int depth, vector<bool>* branches)
+void JumpStatement::out(unsigned int depth, vector<bool>* branches, int indent)
 {
     makeNodeTop(depth, branches,
-        _type == TOK_BREAK ? "break" : _type == TOK_CONTINUE ? "continue" : "return"
+        _type == TOK_BREAK ? "break" : _type == TOK_CONTINUE ? "continue" : "return",
+        indent
     );
     (*branches)[depth] = true;
 }
 
-void ReturnStatement::out(unsigned int depth, vector<bool>* branches)
+void ReturnStatement::out(unsigned int depth, vector<bool>* branches, int indent)
 {
-    makeNodeTop(depth, branches, "return");
-    printNodeWithRibs(depth, branches, true, _expr);
+    makeNodeTop(depth, branches, "return", indent);
+    printNodeWithRibs(depth, branches, true, _expr, indent);
 }
 
-void EmptyExpressionStatement::out(unsigned int depth, vector<bool>* branches)
+void EmptyExpressionStatement::out(unsigned int depth, vector<bool>* branches, int indent)
 {
-    makeNodeTop(depth, branches, ";");
+    makeNodeTop(depth, branches, ";", indent);
     (*branches)[depth] = true;
 }
 
-void ExpressionStatement::out(unsigned int depth, vector<bool>* branches)
+void ExpressionStatement::out(unsigned int depth, vector<bool>* branches, int indent)
 {
-    makeNodeTop(depth, branches, ";");
-    printNodeWithRibs(depth, branches, true, _expr);
+    makeNodeTop(depth, branches, ";", indent);
+    printNodeWithRibs(depth, branches, true, _expr, indent);
 }
 
-void IterationStatement::out(unsigned int depth, vector<bool>* branches)
+void IterationStatement::out(unsigned int depth, vector<bool>* branches, int indent)
 {
-    makeNodeTop(depth, branches, _type == TOK_WHILE ? "while" : "do");
+    makeNodeTop(depth, branches, _type == TOK_WHILE ? "while" : "do", indent);
     if(_type == TOK_WHILE)
     {
-        printNodeWithRibs(depth, branches, false, _expr);
-        printNodeWithRibs(depth, branches, true, _loop);
+        printNodeWithRibs(depth, branches, false, _expr, indent);
+        printNodeWithRibs(depth, branches, true, _loop, indent);
     }
     else
     {
-        printNodeWithRibs(depth, branches, false, _loop);
-        printNodeWithRibs(depth, branches, true, _expr);
+        printNodeWithRibs(depth, branches, false, _loop, indent);
+        printNodeWithRibs(depth, branches, true, _expr, indent);
     }
 }
 
-void ForStatement::out(unsigned int depth, vector<bool>* branches)
+void ForStatement::out(unsigned int depth, vector<bool>* branches, int indent)
 {
-    makeNodeTop(depth, branches, "for");
-    printNodeWithRibs(depth, branches, false, _expr);
-    printNodeWithRibs(depth, branches, false, _expr2);
+    makeNodeTop(depth, branches, "for", indent);
+    printNodeWithRibs(depth, branches, false, _expr, indent);
+    printNodeWithRibs(depth, branches, false, _expr2, indent);
     if(_expr3 != NULL)
-        printNodeWithRibs(depth, branches, false, _expr3);
-    printNodeWithRibs(depth, branches, true, _loop);
+        printNodeWithRibs(depth, branches, false, _expr3, indent);
+    printNodeWithRibs(depth, branches, true, _loop, indent);
 }
 
-void CompoundStatement::out(unsigned int depth, vector<bool>* branches)
+void CompoundStatement::out(unsigned int depth, vector<bool>* branches, int indent)
 {
-    makeNodeTop(depth, branches, "{}");
+    makeNodeTop(depth, branches, "{}", indent);
     for(unsigned int i = 0; i < _items->size() - 1; ++i)
-        printNodeWithRibs(depth, branches, false, (*_items)[i]);
-    printNodeWithRibs(depth, branches, true, (*_items)[_items->size() - 1]);
+        printNodeWithRibs(depth, branches, false, (*_items)[i], indent);
+    printNodeWithRibs(depth, branches, true, (*_items)[_items->size() - 1], indent);
 }
 
 }
