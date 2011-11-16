@@ -17,6 +17,7 @@ private:
     Node* _root;
     Tokenizer* _tokens;
     SymbolTableStack* _symbols;
+    string _varName;
 
     TokenType tokenType() { return _tokens->get().type; }
 
@@ -24,7 +25,7 @@ public:
     void parse();
     void parseExpr();
 
-    Parser(Tokenizer* tokens);
+    Parser(Tokenizer* tokens): _varName("");
 
     Node* parsePrimaryExpression();
     Node* parsePostfixExpression();

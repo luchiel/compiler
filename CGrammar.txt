@@ -62,12 +62,12 @@ declarator = [pointer] direct_declarator;
 direct_declarator =
     IDENTIFIER |
     '(' declarator ')' |
-    direct_declarator '[' ['*' | assignment_expression] ']' |
+    direct_declarator '[' [assignment_expression] ']' |
     direct_declarator '(' [parameter_list | identifier_list] ')' ;
 
 pointer = '*' [pointer] ;
 
-parameter_list = parameter_declaration {',' parameter_list} ;
+parameter_list = parameter_declaration [',' parameter_list] ;
 
 parameter_declaration = declaration_specifiers [declarator | abstract_declarator] ;
 
@@ -79,7 +79,7 @@ abstract_declarator = pointer | [pointer] direct_abstract_declarator ;
 
 direct_abstract_declarator =
     '(' abstract_declarator ')' |
-    [direct_abstract_declarator] '[' ['*' | assignment_expression] ']' |
+    [direct_abstract_declarator] '[' [assignment_expression] ']' |
     [direct_abstract_declarator] '(' [parameter_list] ')' ;
 
 init_declarator = declarator ['=' initializer] ;

@@ -2,6 +2,7 @@
 #define SYMBOL_H
 
 #include <string>
+#include "expression.h"
 
 using namespace std;
 
@@ -34,9 +35,10 @@ public:
 class SymbolTypeArray: public SymbolType
 {
 public:
-    int length;
     SymbolType* elementType;
-    SymbolTypeArray(string name_): SymbolType(name_), elementType(NULL) {}
+    AssignmentNode* length;
+    SymbolTypeArray(SymbolType* type_, string name_):
+        SymbolType(name_), elementType(type_), length(NULL) {}
     virtual void out(int indent);
 };
 

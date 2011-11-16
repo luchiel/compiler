@@ -139,26 +139,24 @@ bool Parser::parseStructDeclaration()
     if(type == NULL)
         return false;
 
-    Declarator* d = parseDeclarator();
-    nullException(d, "declarator expected");
-
-    addSymbol(type, d);
+    type = parseDeclarator(type);
+    nullException(type, "declarator expected");
+    addSymbol(type);
+    addSymbol(new SymbolVariable(type, _varName));
     while(tokenType() == TOK_COMMA)
     {
         _tokens->next();
-        d = parseDeclarator();
+        type = parseDeclarator(type);
         nullException(d, "declarator expected");
-        //sum type from declarator data and specifier
-        addSymbol(SymbolVariable(type, d));
+        addSymbol(type);
+        addSymbol(new SymbolVariable(type, _varName));
     }
 
     consumeTokenOfType(TOK_SEP, "';' expected");
 }
 
-Declarator* Parser::parseStructDeclarator(SymbolType* type)
+SymbolType* Parser::parsePointer(SymbolType* type)
 {
-    //pointer to pointer to pointer to хрень со скобками
-    SymbolType* initial = type;
     SymbolTypePointer* p = NULL;
     while(tokenType() == TOK_ASTERISK)
     {
@@ -167,84 +165,98 @@ Declarator* Parser::parseStructDeclarator(SymbolType* type)
         p->type = type;
         type = p;
     }
-    //а теперь хрень
-
-    //and add the symbol
+    return type;
 }
 
-Declarator* Parser::parseDeclarator()
+SymbolType* Parser::parseDeclarator(SymbolType* type)
 {
-    //[pointer] direct_declarator;
-    Pointer* p = parsePointer();
-    DirectDeclarator* dd = parseDirectDeclarator();
-    if(p == NULL)
-        return dd;
-    return Declarator(dd, p);
-}
+    SymbolType** initial = &type;
+    type = parsePointer(type);
 
-Node* Parser::parsePointer()
-{
-    //'*' [pointer] ;
-    if(tokenType() != TOK_ASTERISK)
-        return NULL;
-    _tokens->next();
-    tmp = parsePointer();
-    return node;
-}
-
-Node* Parser::parseDirectDeclarator()
-{
     if(tokenType() == TOK_IDENT)
     {
-        //
+        if(_varName != "")
+            throw makeException("unexpected identifier");
+        _varName = _tokens->get().name;
+        _tokens->next();
     }
     else if(tokenType() == TOK_L_BRACKET)
     {
         _tokens->next();
-        tmp = parseDeclarator();
+        SymbolType* tmp = parseDeclarator(*initial);
+        *initial = tmp;
         consumeTokenOfType(TOK_R_BRACKET, "')' expected");
     }
-    else
+    while(tokenType() == TOK_L_SQUARE || tokenType() == TOK_L_BRACKET)
     {
-        tmp = parseDirectDeclarator();
         if(tokenType() == TOK_L_SQUARE)
         {
             _tokens->next();
-            if(tokenType() == TOK_R_SQUARE)
-                _tokens->next();
-            else if(tokenType() == TOK_ASTERISK)
-            {
-                //do
-                _tokens->next();
-            }
-            else
-            {
-                tmp = parseAssignmentExpression();
-            }
-            return node;
-        }
-        else if(tokenType() == TOK_L_BRACKET)
-        {
-            _tokens->next();
-            if(tokenType() == TOK_R_BRACKET)
-                _tokens->next();
-            else
-            {
-                tmp = parseIdentifierList();
-                if(tmp == NULL)
-                    tmp = parseParameterList();
-                if(tmp == NULL)
-                    //what now?
-                    throw makeException("something's wrong");
-            }
-            return node;
+            SymbolTypeArray* array = new SymbolTypeArray(type, "");
+            if(tokenType() != TOK_R_SQUARE)
+                array->length = parseAssignmentExpression();
+            consumeTokenOfType(TOK_R_SQUARE, "']' expected");
+            type = array;
         }
         else
-            //or return NULL?
-            throw makeException("'[' or '(' expected");
+        {
+            _tokens->next();
+            SymbolFunction* function = new SymbolFunction("");
+            _symbols->push(function->locals);
+            if(tokenType() != TOK_R_BRACKET)
+            {
+                if(tokenType() == TOK_IDENT)
+                {
+                    addSymbol(SymbolVariable(NULL, _tokens->get().name));
+                    _tokens->next();
+                    while(tokenType() == TOK_COMMA)
+                    {
+                        _tokens->next();
+                        if(tokenType() != TOK_IDENT)
+                            throw makeException("identifier expected");
+                        addSymbol(SymbolVariable(NULL, _tokens->get().name));
+                        _tokens->next();
+                    }
+                }
+                else
+                {
+                    parseParameterList();
+                }
+            }
+            _symbols->pop();
+            consumeTokenOfType(TOK_R_BRACKET, "')' expected");
+            type = function;
+        }
     }
-    return NULL;
+    //_varName has name :3
+    return type;
 }
+
+/*void Parser::parseParameterList()
+{
+    //
+    //
+    while(tokenType() == TOK_COMMA)
+    {
+        _tokens->next();
+    }
+
+parameter_declaration = declaration_specifiers [declarator | abstract_declarator] ;
+
+abstract_declarator = pointer | [pointer] direct_abstract_declarator ;
+
+direct_abstract_declarator =
+    '(' abstract_declarator ')' |
+    [direct_abstract_declarator] '[' [assignment_expression] ']' |
+    [direct_abstract_declarator] '(' [parameter_list] ')' ;
+
+}
+
+void Parser::parseDeclarationSpecifiers()
+{
+    declaration_specifiers = type_specifier [declaration_specifiers];
+}
+*/
 
 /*
 Node* Parser::parseInitDeclarator()
@@ -453,12 +465,6 @@ Node* Parser::parseArgumentExpressionList()
             throw makeException("expression expected");
     }
     return node;
-}
+}*/
 
-Node* Parser::parseDeclarationSpecifiers()
-{
-    //type_specifier [declaration_specifiers] |
-    //function_specifier [declaration_specifiers] ;
-}
-*/
 }
