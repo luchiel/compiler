@@ -38,7 +38,7 @@ void SymbolTypePointer::out(int indent)
     cout << "pointer to type " << type->name << endl;
 }
 
-void SymbolFunction::out(int indent)
+void SymbolTypeFunction::out(int indent)
 {
     Symbol::out(indent);
     cout << "function " << name << endl;

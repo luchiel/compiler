@@ -6,6 +6,7 @@
 #include "expression.h"
 #include "tokenizer.h"
 #include "exception.h"
+#include "symbol.h"
 #include "symbol_table.h"
 
 namespace LuCCompiler
@@ -25,7 +26,7 @@ public:
     void parse();
     void parseExpr();
 
-    Parser(Tokenizer* tokens): _varName("");
+    Parser(Tokenizer* tokens);
 
     Node* parsePrimaryExpression();
     Node* parsePostfixExpression();
@@ -51,10 +52,12 @@ public:
 
     Node* parseInitializer();
     InitializerList* parseInitializerList();
-    //Node* parseTranslationUnit();
-    //Node* parseExternalDeclaration();
 
-    //Node* parseIdentifierList();
+    SymbolType* parseTypeSpecifier();
+    SymbolTypeStruct* parseStructSpecifier();
+    bool parseStructDeclaration();
+    SymbolType* parsePointer(SymbolType* type);
+    SymbolType* parseDeclarator(SymbolType* type);
 
     ParserException makeException(const string& e);
     void nullException(void* pointerToCheck, const string& e);

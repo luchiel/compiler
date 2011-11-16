@@ -36,7 +36,7 @@ class SymbolTypeArray: public SymbolType
 {
 public:
     SymbolType* elementType;
-    AssignmentNode* length;
+    Node* length;
     SymbolTypeArray(SymbolType* type_, string name_):
         SymbolType(name_), elementType(type_), length(NULL) {}
     virtual void out(int indent);

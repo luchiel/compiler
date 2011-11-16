@@ -93,9 +93,9 @@ SymbolType* Parser::parseTypeSpecifier()
 {
     switch(tokenType())
     {
-        case TOK_INT:   return getSymbol("int");
-        case TOK_FLOAT: return getSymbol("float");
-        case TOK_VOID:  return getSymbol("void");
+        case TOK_INT:   return static_cast<SymbolType*>(getSymbol("int"));
+        case TOK_FLOAT: return static_cast<SymbolType*>(getSymbol("float"));
+        case TOK_VOID:  return static_cast<SymbolType*>(getSymbol("void"));
         default:        return parseStructSpecifier();
     }
 }
@@ -107,7 +107,7 @@ SymbolTypeStruct* Parser::parseStructSpecifier()
     _tokens->next();
 
     string name("");
-    it(tokenType() == TOK_IDENT)
+    if(tokenType() == TOK_IDENT)
     {
         name = _tokens->get().text;
         _tokens->next();
@@ -139,20 +139,21 @@ bool Parser::parseStructDeclaration()
     if(type == NULL)
         return false;
 
+    //check is_pointer_to_function
     type = parseDeclarator(type);
-    nullException(type, "declarator expected");
     addSymbol(type);
     addSymbol(new SymbolVariable(type, _varName));
+    _varName = "";
     while(tokenType() == TOK_COMMA)
     {
         _tokens->next();
         type = parseDeclarator(type);
-        nullException(d, "declarator expected");
         addSymbol(type);
         addSymbol(new SymbolVariable(type, _varName));
+        _varName = "";
     }
-
     consumeTokenOfType(TOK_SEP, "';' expected");
+    return true;
 }
 
 SymbolType* Parser::parsePointer(SymbolType* type)
@@ -177,7 +178,7 @@ SymbolType* Parser::parseDeclarator(SymbolType* type)
     {
         if(_varName != "")
             throw makeException("unexpected identifier");
-        _varName = _tokens->get().name;
+        _varName = _tokens->get().text;
         _tokens->next();
     }
     else if(tokenType() == TOK_L_BRACKET)
@@ -201,26 +202,26 @@ SymbolType* Parser::parseDeclarator(SymbolType* type)
         else
         {
             _tokens->next();
-            SymbolFunction* function = new SymbolFunction("");
+            SymbolTypeFunction* function = new SymbolTypeFunction(type, "");
             _symbols->push(function->locals);
             if(tokenType() != TOK_R_BRACKET)
             {
                 if(tokenType() == TOK_IDENT)
                 {
-                    addSymbol(SymbolVariable(NULL, _tokens->get().name));
+                    addSymbol(new SymbolVariable(NULL, _tokens->get().text));
                     _tokens->next();
                     while(tokenType() == TOK_COMMA)
                     {
                         _tokens->next();
                         if(tokenType() != TOK_IDENT)
                             throw makeException("identifier expected");
-                        addSymbol(SymbolVariable(NULL, _tokens->get().name));
+                        addSymbol(new SymbolVariable(NULL, _tokens->get().text));
                         _tokens->next();
                     }
                 }
                 else
                 {
-                    parseParameterList();
+                    //parseParameterList();
                 }
             }
             _symbols->pop();
@@ -228,7 +229,9 @@ SymbolType* Parser::parseDeclarator(SymbolType* type)
             type = function;
         }
     }
-    //_varName has name :3
+    if(_varName == "")
+        throw makeException("non-abstract declarator expected");
+
     return type;
 }
 

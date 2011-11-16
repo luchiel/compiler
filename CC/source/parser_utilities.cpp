@@ -28,10 +28,10 @@ void Parser::out()
     _root->out(0, &finishedBranches);
 }
 
-Parser::Parser(Tokenizer* tokens)
+Parser::Parser(Tokenizer* tokens): _varName("")
 {
     _tokens = tokens;
-    _symbols = initPrimarySymbolTable();
+    _symbols = initPrimarySymbolTableStack();
 }
 
 void Parser::parse()

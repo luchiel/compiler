@@ -49,11 +49,13 @@ SymbolTableStack* initPrimarySymbolTableStack();
 //int -> float
 //[] -> *
 
-class SymbolFunction: public Symbol
+class SymbolTypeFunction: public SymbolType
 {
 public:
+    SymbolType* type;
     SymbolTable* locals;
-    SymbolFunction(string name_): Symbol(name_), locals(new SymbolTable()) {}
+    SymbolTypeFunction(SymbolType* type_, string name_):
+        SymbolType(name_), type(type_), locals(new SymbolTable()) {}
     virtual void out(int indent);
 };
 
