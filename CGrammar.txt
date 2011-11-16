@@ -62,8 +62,7 @@ declarator = [pointer] direct_declarator;
 direct_declarator =
     IDENTIFIER |
     '(' declarator ')' |
-    direct_declarator '[' [assignment_expression] ']' |
-    direct_declarator '[' ['*'] ']' |
+    direct_declarator '[' ['*' | assignment_expression] ']' |
     direct_declarator '(' [parameter_list | identifier_list] ')' ;
 
 pointer = '*' [pointer] ;
