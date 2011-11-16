@@ -95,13 +95,13 @@ SymbolType* Parser::parseTypeSpecifier()
     {
         case TOK_INT:
             _tokens->next();
-            return static_cast<SymbolType*>(getSymbol("int"));
+            return static_cast<SymbolType*>(getSymbol("int", true));
         case TOK_FLOAT:
             _tokens->next();
-            return static_cast<SymbolType*>(getSymbol("float"));
+            return static_cast<SymbolType*>(getSymbol("float", true));
         case TOK_VOID:
             _tokens->next();
-            return static_cast<SymbolType*>(getSymbol("void"));
+            return static_cast<SymbolType*>(getSymbol("void", true));
         default:
             return parseStructSpecifier();
     }
@@ -114,16 +114,25 @@ SymbolTypeStruct* Parser::parseStructSpecifier()
     _tokens->next();
 
     string name("");
+    SymbolTypeStruct* node = NULL;
+    bool found = true;
     if(tokenType() == TOK_IDENT)
     {
         name = _tokens->get().text;
         _tokens->next();
+        node = static_cast<SymbolTypeStruct*>(findSymbol(name, true));
     }
-    SymbolTypeStruct* node = new SymbolTypeStruct(name);
-    addSymbol(node);
+    if(node == NULL)
+    {
+        node = new SymbolTypeStruct(name);
+        addSymbol(node, true);
+        found = false;
+    }
     if(tokenType() == TOK_L_BRACE)
     {
         _tokens->next();
+        if(found && node->fields->size() != 0)
+            throw makeException("redefinition of struct " + name);
         _symbols->push(node->fields);
 
         bool added = true;
@@ -148,14 +157,14 @@ bool Parser::parseStructDeclaration()
 
     //check is_pointer_to_function
     type = parseDeclarator(type);
-    safeAddSymbol(type);
+    safeAddSymbol(type, true);
     addSymbol(new SymbolVariable(type, _varName));
     _varName = "";
     while(tokenType() == TOK_COMMA)
     {
         _tokens->next();
         type = parseDeclarator(type);
-        safeAddSymbol(type);
+        safeAddSymbol(type, true);
         addSymbol(new SymbolVariable(type, _varName));
         _varName = "";
     }
@@ -179,8 +188,8 @@ SymbolType* Parser::parsePointer(SymbolType* type)
 SymbolType* Parser::parseDeclarator(SymbolType* type, int isAbstract)
 {
     //1 = abstract, -1 = not abstract, 0 - both
-    SymbolType** initial = &type;
-    type = parsePointer(type);
+    SymbolType* initial = type;
+    type = parsePointer(initial);
 
     if(tokenType() == TOK_IDENT)
     {
@@ -194,8 +203,14 @@ SymbolType* Parser::parseDeclarator(SymbolType* type, int isAbstract)
     else if(tokenType() == TOK_L_BRACKET)
     {
         _tokens->next();
-        SymbolType* tmp = parseDeclarator(*initial);
-        *initial = tmp;
+        SymbolType* tmp = parseDeclarator(initial);
+        SymbolType* tmp2 = type;
+        if(type != initial)
+        {
+            while(static_cast<SymbolTypePointer*>(tmp2)->type != initial)
+                tmp2 = (static_cast<SymbolTypePointer*>(tmp2))->type;
+            static_cast<SymbolTypePointer*>(tmp2)->type = tmp;
+        }
         consumeTokenOfType(TOK_R_BRACKET, "')' expected");
     }
     while(tokenType() == TOK_L_SQUARE || tokenType() == TOK_L_BRACKET)
@@ -242,7 +257,7 @@ void Parser::parseParameterDeclaration()
     if(type == NULL)
         return;
     type = parseDeclarator(type, 0);
-    safeAddSymbol(type);
+    safeAddSymbol(type, true);
     //what if function?
     addSymbol(new SymbolVariable(type, _varName));
     _varName = "";
@@ -262,7 +277,7 @@ Node* Parser::parseInitializerPart()
 
 void Parser::addTypeAndInitializedVariable(SymbolType* type, Node* initializer)
 {
-    safeAddSymbol(type);
+    safeAddSymbol(type, true);
     //function declaration? not variable...
     addSymbol(new SymbolVariable(type, _varName, initializer));
     _varName = "";
@@ -283,7 +298,7 @@ bool Parser::parseDeclaration(bool definitionAllowed)
         SymbolTypeFunction* function = new SymbolTypeFunction(type, _varName);
         _varName = "";
         function->body = parseCompoundStatement();
-        addSymbol(function);
+        addSymbol(function, true);
         return true;
     }
 
@@ -310,7 +325,7 @@ SymbolType* Parser::parseTypeName()
     if(type == NULL)
         return NULL;
     type = parseDeclarator(type, 1);
-    safeAddSymbol(type);
+    safeAddSymbol(type, true);
     return type;
 }
 

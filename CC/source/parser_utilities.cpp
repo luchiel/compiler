@@ -12,25 +12,25 @@ using namespace std;
 namespace LuCCompiler
 {
 
-Symbol* Parser::getSymbol(const string& name)
+Symbol* Parser::getSymbol(const string& name, bool type)
 {
-    return _symbols->getSymbol(name, _tokens->get().line, _tokens->get().col + 1);
+    return _symbols->getSymbol(name, _tokens->get().line, _tokens->get().col + 1, type);
 }
 
-void Parser::addSymbol(Symbol* symbol)
+void Parser::addSymbol(Symbol* symbol, bool type)
 {
-    _symbols->addSymbol(symbol, _tokens->get().line, _tokens->get().col + 1);
+    _symbols->addSymbol(symbol, _tokens->get().line, _tokens->get().col + 1, type);
 }
 
-Symbol* Parser::findSymbol(const string& name)
+Symbol* Parser::findSymbol(const string& name, bool type)
 {
-    return _symbols->findSymbol(name);
+    return _symbols->findSymbol(name, type);
 }
 
-void Parser::safeAddSymbol(Symbol* symbol)
+void Parser::safeAddSymbol(Symbol* symbol, bool type)
 {
-    if(!findSymbol(symbol->name))
-        addSymbol(symbol);
+    if(!findSymbol(symbol->name, type))
+        addSymbol(symbol, type);
 }
 
 void Parser::out()

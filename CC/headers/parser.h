@@ -22,10 +22,10 @@ private:
 
     TokenType tokenType() { return _tokens->get().type; }
 
-    Symbol* getSymbol(const string& name);
-    Symbol* findSymbol(const string& name);
-    void addSymbol(Symbol* symbol);
-    void safeAddSymbol(Symbol* symbol);
+    Symbol* getSymbol(const string& name, bool type = false);
+    Symbol* findSymbol(const string& name, bool type = false);
+    void addSymbol(Symbol* symbol, bool type = false);
+    void safeAddSymbol(Symbol* symbol, bool type = false);
 
 public:
     void parse();
