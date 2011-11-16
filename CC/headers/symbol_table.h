@@ -22,7 +22,7 @@ public:
     SymbolTable* parent;
     Symbol* getSymbol(const string& name, int line, int col);
     void addSymbol(Symbol* symbol, int line, int col);
-    void size() { return _symbols.size(); }
+    int size() { return _symbols.size(); }
     void out(int indent);
 
     SymbolTable(): _innerIdx(0), parent(NULL) {}
