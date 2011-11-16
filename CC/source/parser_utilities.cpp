@@ -35,17 +35,30 @@ void Parser::safeAddSymbol(Symbol* symbol)
 
 void Parser::out()
 {
-    vector<bool> finishedBranches;
-    _root->out(0, &finishedBranches);
+    if(_root != NULL)
+    {
+        vector<bool> finishedBranches;
+        _root->out(0, &finishedBranches);
+    }
+    else
+    {
+        _symbols->out();
+    }
 }
 
 Parser::Parser(Tokenizer* tokens): _varName("")
 {
     _tokens = tokens;
     _symbols = initPrimarySymbolTableStack();
+    _root = NULL;
 }
 
 void Parser::parse()
+{
+    parseTranslationUnit();
+}
+
+void Parser::parseStat()
 {
     _root = parseStatement();
 }

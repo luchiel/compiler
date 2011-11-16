@@ -92,11 +92,13 @@ void Tester::runFile(string& testBlock)
             }
             while(t.get().type != TOK_EOF);
         }
-        else if(testBlock == "expressions" || testBlock == "statements")
+        else
         {
             Parser p(&t);
             if(testBlock == "expressions")
                 p.parseExpr();
+            else if(testBlock == "statements")
+                p.parseStat();
             else
                 p.parse();
             p.out();

@@ -42,6 +42,7 @@ public:
     Symbol* findSymbol(const string& name);
     void push(SymbolTable* t);
     void pop();
+    void out();
 
     SymbolTableStack(SymbolTable* root, SymbolTable* current): _root(root), _current(current) {}
     ~SymbolTableStack() { delete _root; }

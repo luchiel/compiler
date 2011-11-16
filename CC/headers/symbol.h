@@ -22,6 +22,7 @@ class SymbolType: public Symbol
 {
 public:
     SymbolType(string name_): Symbol(name_) {}
+    virtual void out(int indent);
 };
 
 class SymbolVariable: public Symbol

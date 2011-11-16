@@ -89,6 +89,11 @@ void SymbolTableStack::pop()
     _current = _current->parent;
 }
 
+void SymbolTableStack::out()
+{
+    _root->out(0);
+}
+
 SymbolTableStack* initPrimarySymbolTableStack()
 {
     SymbolTable* primarySymbolTable = new SymbolTable();

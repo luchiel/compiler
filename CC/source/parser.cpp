@@ -93,10 +93,17 @@ SymbolType* Parser::parseTypeSpecifier()
 {
     switch(tokenType())
     {
-        case TOK_INT:   return static_cast<SymbolType*>(getSymbol("int"));
-        case TOK_FLOAT: return static_cast<SymbolType*>(getSymbol("float"));
-        case TOK_VOID:  return static_cast<SymbolType*>(getSymbol("void"));
-        default:        return parseStructSpecifier();
+        case TOK_INT:
+            _tokens->next();
+            return static_cast<SymbolType*>(getSymbol("int"));
+        case TOK_FLOAT:
+            _tokens->next();
+            return static_cast<SymbolType*>(getSymbol("float"));
+        case TOK_VOID:
+            _tokens->next();
+            return static_cast<SymbolType*>(getSymbol("void"));
+        default:
+            return parseStructSpecifier();
     }
 }
 

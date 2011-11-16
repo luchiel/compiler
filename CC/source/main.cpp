@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
         if(!strcmp(argv[1], "--test"))
         {
             if(argc == 1)
-                printf("Do something\n");
+                printf("What block would you like to test?\n");
             else
                 runTests(argv[2]);
         }
