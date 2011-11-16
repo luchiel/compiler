@@ -51,7 +51,7 @@ void Node::printNodeWithRibs(unsigned int depth, vector<bool>* branches, bool is
 {
     printRibsBeforeNode(depth, branches, indent);
     (*branches)[depth] = isLast;
-    node->out(depth + 1, branches);
+    node->out(depth + 1, branches, indent);
 }
 
 }

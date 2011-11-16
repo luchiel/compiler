@@ -64,7 +64,7 @@ public:
     CompoundStatement* body;
     SymbolTypeFunction(SymbolType* type_, string name_):
         SymbolType(name_), type(type_), locals(new SymbolTable()) {}
-    virtual void out(int indent);
+    virtual void out(int indent, bool noFirst = true);
 };
 
 class SymbolTypeStruct: public SymbolType
@@ -72,7 +72,7 @@ class SymbolTypeStruct: public SymbolType
 public:
     SymbolTable* fields;
     SymbolTypeStruct(const string& name_): SymbolType(name_), fields(new SymbolTable()) {}
-    virtual void out(int indent);
+    virtual void out(int indent, bool noFirst = true);
 };
 
 }

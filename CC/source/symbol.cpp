@@ -8,24 +8,26 @@ using namespace std;
 namespace LuCCompiler
 {
 
-void Symbol::out(int indent)
+void Symbol::out(int indent, bool noFirst)
 {
     while(indent-- > 0)
         cout << '\t';
 }
 
-void SymbolType::out(int indent)
+void SymbolType::out(int indent, bool noFirst)
 {
     if(name != "")
     {
-        Symbol::out(indent);
+        if(!noFirst)
+            Symbol::out(indent);
         cout << "type <" << name << ">\n";
     }
 }
 
-void SymbolVariable::out(int indent)
+void SymbolVariable::out(int indent, bool noFirst)
 {
-    Symbol::out(indent);
+    if(!noFirst)
+        Symbol::out(indent);
     cout << "variable " << name << " of type <" << type->name << ">";
     if(_initializer != NULL)
     {
@@ -37,10 +39,11 @@ void SymbolVariable::out(int indent)
         cout << "\n";
 }
 
-void SymbolTypeArray::out(int indent)
+void SymbolTypeArray::out(int indent, bool noFirst)
 {
     SymbolType::out(indent++);
-    Symbol::out(indent);
+    if(!noFirst)
+        Symbol::out(indent);
     cout << "array [" << endl;
     vector<bool> finishedBranches;
     if(length != NULL)
@@ -48,35 +51,39 @@ void SymbolTypeArray::out(int indent)
     Symbol::out(indent);
     cout << "] of ";
     if(elementType->name != "")
-        cout << elementType->name << endl;
+        cout << "<" << elementType->name << ">\n";
     else
-        elementType->out(-1);
+        elementType->out(indent - 1);
 }
 
-void SymbolTypeStruct::out(int indent)
+void SymbolTypeStruct::out(int indent, bool noFirst)
 {
     SymbolType::out(indent++);
-    Symbol::out(indent);
+    if(!noFirst)
+        Symbol::out(indent);
     cout << "struct " << name << endl;
     fields->out(indent + 1);
 }
 
-void SymbolTypePointer::out(int indent)
+void SymbolTypePointer::out(int indent, bool noFirst)
 {
     SymbolType::out(indent++);
-    Symbol::out(indent);
+    if(!noFirst)
+        Symbol::out(indent);
     cout << "pointer to ";
     if(type->name != "")
-        cout << type->name << endl;
+        cout << "<" << type->name << ">\n";
     else
-        type->out(-1);
+        type->out(indent - 1);
 }
 
-void SymbolTypeFunction::out(int indent)
+void SymbolTypeFunction::out(int indent, bool noFirst)
 {
     SymbolType::out(indent++);
-    Symbol::out(indent);
-    cout << "function " << name << " of type " << type->name << endl;
+    if(!noFirst)
+        Symbol::out(indent);
+    //type->out?
+    cout << "function " << name << " of type <" << type->name << ">\n";
     locals->out(indent + 1);
     vector<bool> finishedBranches;
     body->out(0, &finishedBranches, indent + 1);

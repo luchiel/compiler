@@ -49,7 +49,7 @@ Symbol* SymbolTable::findSymbol(const string& name, bool type)
 void SymbolTable::out(int indent)
 {
     for(unsigned int i = 0; i < _ordered.size(); ++i)
-        _ordered[i]->out(indent);
+        _ordered[i]->out(indent, false);
 }
 
 SymbolTable::~SymbolTable()
