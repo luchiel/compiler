@@ -40,38 +40,25 @@ expression = assignment_expression [',' expression] ;
 
 argument_expression_list = assignment_expression [',' argument_expression_list] ;
 
-declaration = declaration_specifiers [init_declarator_list] ';' ;
-
-declaration_specifiers = type_specifier [declaration_specifiers];
-
-init_declarator_list = init_declarator [',' init_declarator_list] ;
-
-type_specifier =
-    VOID | INT | FLOAT |
-    struct_specifier ;
-
+type_specifier = VOID | INT | FLOAT | struct_specifier ;
 struct_specifier =
     STRUCT [IDENTIFIER] '{' struct_declaration_list '}' |
     STRUCT IDENTIFIER ;
 struct_declaration_list = struct_declaration [struct_declaration_list] ;
 struct_declaration = type_specifier struct_declarator_list ';' ;
 struct_declarator_list = declarator [',' struct_declarator_list] ;
-
+pointer = '*' [pointer] ;
 declarator = [pointer] direct_declarator;
 
 direct_declarator =
     IDENTIFIER |
     '(' declarator ')' |
     direct_declarator '[' [assignment_expression] ']' |
-    direct_declarator '(' [parameter_list | identifier_list] ')' ;
-
-pointer = '*' [pointer] ;
+    direct_declarator '(' [parameter_list] ')' ;
 
 parameter_list = parameter_declaration [',' parameter_list] ;
 
-parameter_declaration = declaration_specifiers [declarator | abstract_declarator] ;
-
-identifier_list = IDENTIFIER [',' identifier_list] ;
+parameter_declaration = type_specifier [declarator | abstract_declarator] ;
 
 type_name = type_specifier [abstract_declarator] ;
 
@@ -82,22 +69,17 @@ direct_abstract_declarator =
     [direct_abstract_declarator] '[' [assignment_expression] ']' |
     [direct_abstract_declarator] '(' [parameter_list] ')' ;
 
+translation_unit = external_declaration [translation_unit] ;
+external_declaration = function_definition | declaration ;
+function_definition = type_specifier declarator compound_statement ;
+declaration = type_specifier [init_declarator_list] ';' ;
+init_declarator_list = init_declarator [',' init_declarator_list] ;
 init_declarator = declarator ['=' initializer] ;
-
 initializer = assignment_expression | '{' initializer_list '}' | '{' initializer_list ',' '}' ;
 initializer_list = [designation] initializer [',' initializer_list] ;
 designation = designator_list '=' ;
 designator_list = designator [designator_list] ;
 designator = '[' conditional_expression ']' | '.' IDENTIFIER ;
-
-translation_unit = external_declaration [translation_unit] ;
-
-external_declaration = function_definition | declaration ;
-
-function_definition =
-    declaration_specifiers declarator [declaration_list] compound_statement ;
-
-declaration_list = declaration [declaration_list] ;
 
 statement =
     compound_statement |

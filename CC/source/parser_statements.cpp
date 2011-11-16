@@ -46,20 +46,23 @@ Node* Parser::parseJumpStatement()
 
 Node* Parser::parseBlockItem()
 {
-    Node* r = parseDeclaration();
-    if(r == NULL)
+    if(!parseDeclaration(false))
         return parseStatement();
-    return r;
+    return NULL;
 }
 
-Node* Parser::parseCompoundStatement()
+CompoundStatement* Parser::parseCompoundStatement()
 {
     if(tokenType() == TOK_L_BRACE)
     {
         CompoundStatement* node = new CompoundStatement();
         _tokens->next();
         while(tokenType() != TOK_R_BRACE)
-            node->_items->push_back(parseBlockItem());
+        {
+            Node* bi = parseBlockItem();
+            if(bi != NULL)
+                node->_items->push_back(bi);
+        }
         consumeTokenOfType(TOK_R_BRACE, "'}' expected");
         return node;
     }

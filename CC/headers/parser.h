@@ -22,6 +22,11 @@ private:
 
     TokenType tokenType() { return _tokens->get().type; }
 
+    Symbol* getSymbol(const string& name);
+    Symbol* findSymbol(const string& name);
+    void addSymbol(Symbol* symbol);
+    void safeAddSymbol(Symbol* symbol);
+
 public:
     void parse();
     void parseExpr();
@@ -37,10 +42,8 @@ public:
     Node* parseAssignmentExpression();
     Node* parseExpression();
 
-    Node* parseDeclaration();
-
     Node* parseBlockItem();
-    Node* parseCompoundStatement();
+    CompoundStatement* parseCompoundStatement();
     Node* parseSelectionStatement();
     Node* parseJumpStatement();
     Node* parseExpressionStatement();
@@ -58,15 +61,16 @@ public:
     bool parseStructDeclaration();
     SymbolType* parsePointer(SymbolType* type);
     SymbolType* parseDeclarator(SymbolType* type);
+    bool parseDeclaration(bool definitionAllowed);
+    Node* parseInitializerPart();
+    void addTypeAndInitializedVariable(SymbolType* type, Node* initializer);
+    void parseTranslationUnit();
 
     ParserException makeException(const string& e);
     void nullException(void* pointerToCheck, const string& e);
     void consumeTokenOfType(TokenType type, const string& except);
 
     void out();
-
-    Symbol* getSymbol(const string& name);
-    void addSymbol(Symbol* symbol);
 };
 
 }

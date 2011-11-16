@@ -26,9 +26,14 @@ public:
 
 class SymbolVariable: public Symbol
 {
+protected:
+    Node* _initializer;
 public:
     SymbolType* type;
-    SymbolVariable(SymbolType* type_, string name_): Symbol(name_), type(type_) {}
+    SymbolVariable(SymbolType* type_, string name_):
+        Symbol(name_), _initializer(NULL), type(type_) {}
+    SymbolVariable(SymbolType* type_, string name_, Node* initializer_):
+        Symbol(name_), _initializer(initializer_), type(type_) {}
     virtual void out(int indent);
 };
 

@@ -32,6 +32,15 @@ Symbol* SymbolTable::getSymbol(const string& name, int line, int col)
     return _symbols[name];
 }
 
+Symbol* SymbolTable::findSymbol(const string& name)
+{
+    map<string, Symbol*>::iterator s;
+    s = _symbols.find(name);
+    if(s != _symbols.end())
+        return s->second;
+    return NULL;
+}
+
 void SymbolTable::out(int indent)
 {
     for(unsigned int i = 0; i < _ordered.size(); ++i)
@@ -42,6 +51,20 @@ SymbolTable::~SymbolTable()
 {
     //objects. How to kill?
     //cycle? Carefully delete everyone?
+}
+
+Symbol* SymbolTableStack::findSymbol(const string& name)
+{
+    SymbolTable* c = _current;
+    Symbol* r = c->findSymbol(name);
+    while(r == NULL)
+    {
+        if(c == _root)
+            break;
+        c = c->parent;
+        r = c->findSymbol(name);
+    }
+    return r;
 }
 
 Symbol* SymbolTableStack::getSymbol(const string& name, int line, int col)

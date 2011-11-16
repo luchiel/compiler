@@ -5,6 +5,7 @@
 #include <map>
 #include <string>
 #include "symbol.h"
+#include "statement.h"
 
 using namespace std;
 
@@ -22,6 +23,7 @@ public:
     SymbolTable* parent;
     Symbol* getSymbol(const string& name, int line, int col);
     void addSymbol(Symbol* symbol, int line, int col);
+    Symbol* findSymbol(const string& name);
     int size() { return _symbols.size(); }
     void out(int indent);
 
@@ -37,6 +39,7 @@ private:
 public:
     Symbol* getSymbol(const string& name, int line, int col);
     void addSymbol(Symbol* symbol, int line, int col);
+    Symbol* findSymbol(const string& name);
     void push(SymbolTable* t);
     void pop();
 
@@ -54,6 +57,7 @@ class SymbolTypeFunction: public SymbolType
 public:
     SymbolType* type;
     SymbolTable* locals;
+    CompoundStatement* body;
     SymbolTypeFunction(SymbolType* type_, string name_):
         SymbolType(name_), type(type_), locals(new SymbolTable()) {}
     virtual void out(int indent);

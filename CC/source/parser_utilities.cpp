@@ -22,6 +22,17 @@ void Parser::addSymbol(Symbol* symbol)
     _symbols->addSymbol(symbol, _tokens->get().line, _tokens->get().col + 1);
 }
 
+Symbol* Parser::findSymbol(const string& name)
+{
+    return _symbols->findSymbol(name);
+}
+
+void Parser::safeAddSymbol(Symbol* symbol)
+{
+    if(!findSymbol(symbol->name))
+        addSymbol(symbol);
+}
+
 void Parser::out()
 {
     vector<bool> finishedBranches;
