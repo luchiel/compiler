@@ -63,7 +63,7 @@ public:
     SymbolTable* locals;
     CompoundStatement* body;
     SymbolTypeFunction(SymbolType* type_, string name_):
-        SymbolType(name_), type(type_), locals(new SymbolTable()) {}
+        SymbolType(name_), type(type_), locals(new SymbolTable()), body(NULL) {}
     virtual void out(int indent, bool noFirst = true);
 };
 

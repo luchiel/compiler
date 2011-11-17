@@ -72,7 +72,12 @@ void ForStatement::out(unsigned int depth, vector<bool>* branches, int indent)
 void CompoundStatement::out(unsigned int depth, vector<bool>* branches, int indent)
 {
     makeNodeTop(depth, branches, "{}", indent);
-    for(unsigned int i = 0; i < _items->size() - 1; ++i)
+    if(_items->size() == 0)
+    {
+        (*branches)[depth] = true;
+        return;
+    }
+    for(int i = 0; i < _items->size() - 1; ++i)
         printNodeWithRibs(depth, branches, false, (*_items)[i], indent);
     printNodeWithRibs(depth, branches, true, (*_items)[_items->size() - 1], indent);
 }

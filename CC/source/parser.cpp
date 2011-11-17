@@ -232,6 +232,7 @@ SymbolType* Parser::parseDeclarator(SymbolType* type, int isAbstract)
             if(tokenType() != TOK_R_BRACKET)
             {
                 string tempVarName(_varName);
+                _varName = "";
                 parseParameterDeclaration();
                 while(tokenType() == TOK_COMMA)
                 {
@@ -291,14 +292,16 @@ bool Parser::parseDeclaration(bool definitionAllowed)
     SymbolType* type = parseDeclarator(initial);
     Node* initializer = parseInitializerPart();
 
-    if(initializer == NULL && tokenType() != TOK_COMMA && tokenType() == TOK_L_BRACE)
+    if(initializer == NULL && tokenType() == TOK_L_BRACE)
     {
         if(!definitionAllowed)
             throw makeException("unexpected function definition");
-        SymbolTypeFunction* function = new SymbolTypeFunction(type, _varName);
+        //is function?
+        SymbolTypeFunction* function = static_cast<SymbolTypeFunction*>(type);
+        function->name = _varName;
         _varName = "";
         function->body = parseCompoundStatement();
-        addSymbol(function, true);
+        addSymbol(function);
         return true;
     }
 

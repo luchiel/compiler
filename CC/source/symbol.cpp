@@ -79,14 +79,26 @@ void SymbolTypePointer::out(int indent, bool noFirst)
 
 void SymbolTypeFunction::out(int indent, bool noFirst)
 {
-    SymbolType::out(indent++);
     if(!noFirst)
-        Symbol::out(indent);
-    //type->out?
-    cout << "function " << name << " of type <" << type->name << ">\n";
-    locals->out(indent + 1);
+        Symbol::out(indent++);
+    else
+        SymbolType::out(indent++);
+    cout << "function " << name << "\n";
+    Symbol::out(indent);
+    cout << "returns ";
+    type->out(indent);
+    Symbol::out(indent);
+    cout << "arguments, locals\n";
+    if(locals->size() != 0)
+        locals->out(indent + 1);
+    else
+    {
+        Symbol::out(indent + 1);
+        cout << "<no args/locals>\n";
+    }
     vector<bool> finishedBranches;
-    body->out(0, &finishedBranches, indent + 1);
+    if(body != NULL)
+        body->out(0, &finishedBranches, indent);
 }
 
 }
