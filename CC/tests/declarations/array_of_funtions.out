@@ -1,0 +1,11 @@
+type <int>
+type <float>
+type <void>
+type <0>
+	array [
+		{int 10}
+	] of pointer to function 
+	returns type <float>
+	arguments, locals
+		variable b of type <int>
+variable a of type <0>

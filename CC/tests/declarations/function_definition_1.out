@@ -1,0 +1,8 @@
+type <int>
+type <float>
+type <void>
+function cool_function
+	returns type <int>
+	arguments, locals
+		<no args/locals>
+	{{}}

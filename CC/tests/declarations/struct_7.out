@@ -5,7 +5,7 @@ type <a>
 	struct a
 		type <0>
 			array [
-			] of pointer to float
+			] of pointer to <float>
 		variable r of type <0>
 		type <1>
 			struct 1
@@ -14,5 +14,5 @@ type <a>
 type <0>
 	array [
 		{int 10}
-	] of a
+	] of <a>
 variable b of type <0>

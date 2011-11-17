@@ -5,4 +5,14 @@ type <0>
 	pointer to array [
 		{int 20}
 	] of <void>
-variable e of type <0>
+variable e1 of type <0>
+type <1>
+	array [
+		{int 20}
+	] of pointer to <void>
+variable e2 of type <1>
+type <2>
+	array [
+		{int 20}
+	] of pointer to <void>
+variable e3 of type <2>
