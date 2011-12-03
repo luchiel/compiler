@@ -178,8 +178,7 @@ SymbolType* Parser::parsePointer(SymbolType* type)
     while(tokenType() == TOK_ASTERISK)
     {
         _tokens->next();
-        p = new SymbolTypePointer("");
-        p->type = type;
+        p = new SymbolTypePointer(type, "");
         type = p;
     }
     return type;
@@ -188,8 +187,9 @@ SymbolType* Parser::parsePointer(SymbolType* type)
 SymbolType* Parser::parseDeclarator(SymbolType* type, int isAbstract)
 {
     //1 = abstract, -1 = not abstract, 0 - both
-    SymbolType* initial = type;
-    type = parsePointer(initial);
+    SymbolType* left = parsePointer(type);
+    SymbolType* center = NULL;
+    SymbolType* right = left;
 
     if(tokenType() == TOK_IDENT)
     {
@@ -203,31 +203,15 @@ SymbolType* Parser::parseDeclarator(SymbolType* type, int isAbstract)
     else if(tokenType() == TOK_L_BRACKET)
     {
         _tokens->next();
-        SymbolType* tmp = parseDeclarator(initial);
-        SymbolType* tmp2 = type;
-        if(type != initial)
-        {
-            while(static_cast<SymbolTypePointer*>(tmp2)->type != initial)
-                tmp2 = (static_cast<SymbolTypePointer*>(tmp2))->type;
-            static_cast<SymbolTypePointer*>(tmp2)->type = tmp;
-        }
+        center = parseDeclarator(new SymbolUnknownType());
         consumeTokenOfType(TOK_R_BRACKET, "')' expected");
     }
     while(tokenType() == TOK_L_SQUARE || tokenType() == TOK_L_BRACKET)
     {
-        if(tokenType() == TOK_L_SQUARE)
+        if(tokenType() == TOK_L_BRACKET)
         {
             _tokens->next();
-            SymbolTypeArray* array = new SymbolTypeArray(type, "");
-            if(tokenType() != TOK_R_SQUARE)
-                array->length = parseAssignmentExpression();
-            consumeTokenOfType(TOK_R_SQUARE, "']' expected");
-            type = array;
-        }
-        else
-        {
-            _tokens->next();
-            SymbolTypeFunction* function = new SymbolTypeFunction(type, "");
+            SymbolTypeFunction* function = new SymbolTypeFunction(new SymbolUnknownType(), "");
             _symbols->push(function->locals);
             if(tokenType() != TOK_R_BRACKET)
             {
@@ -243,13 +227,37 @@ SymbolType* Parser::parseDeclarator(SymbolType* type, int isAbstract)
             }
             _symbols->pop();
             consumeTokenOfType(TOK_R_BRACKET, "')' expected");
-            type = function;
+            if(right != left)
+                static_cast<TypedSymbolType*>(right->getUndefined())->type = function;
+            else
+                right = function;
+        }
+        else
+        {
+            _tokens->next();
+            SymbolTypeArray* array = new SymbolTypeArray(new SymbolUnknownType(), "");
+            if(tokenType() != TOK_R_SQUARE)
+                array->length = parseAssignmentExpression();
+            consumeTokenOfType(TOK_R_SQUARE, "']' expected");
+            if(right != left)
+                static_cast<TypedSymbolType*>(right->getUndefined())->type = array;
+            else
+                right = array;
         }
     }
+    if(right != left)
+        static_cast<TypedSymbolType*>(right->getUndefined())->type = left;
+
     if(_varName == "" && isAbstract == -1)
         throw makeException("non-abstract declarator expected");
 
-    return type;
+    if(center != NULL)
+    {
+        static_cast<TypedSymbolType*>(center->getUndefined())->type = right;
+        return center;
+    }
+
+    return right;
 }
 
 void Parser::parseParameterDeclaration()

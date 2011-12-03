@@ -23,6 +23,21 @@ class SymbolType: public Symbol
 public:
     SymbolType(string name_): Symbol(name_) {}
     virtual void out(int indent, bool noFirst = true);
+    virtual SymbolType* getUndefined() { return NULL; }
+    virtual bool isUndefined() { return false; }
+};
+
+class TypedSymbolType: public SymbolType
+{
+public:
+    SymbolType* type;
+    TypedSymbolType(SymbolType* type_, string name_): SymbolType(name_), type(type_) {}
+    virtual SymbolType* getUndefined()
+    {
+        if(type->isUndefined())
+            return this;
+        return type->getUndefined();
+    }
 };
 
 class SymbolVariable: public Symbol
@@ -38,22 +53,27 @@ public:
     virtual void out(int indent, bool noFirst = true);
 };
 
-class SymbolTypeArray: public SymbolType
+class SymbolTypeArray: public TypedSymbolType
 {
 public:
-    SymbolType* elementType;
     Node* length;
     SymbolTypeArray(SymbolType* type_, string name_):
-        SymbolType(name_), elementType(type_), length(NULL) {}
+        TypedSymbolType(type_, name_), length(NULL) {}
     virtual void out(int indent, bool noFirst = true);
 };
 
-class SymbolTypePointer: public SymbolType
+class SymbolTypePointer: public TypedSymbolType
 {
 public:
-    SymbolType* type;
-    SymbolTypePointer(string name_): SymbolType(name_), type(NULL) {}
+    SymbolTypePointer(SymbolType* type_, string name_): TypedSymbolType(type_, name_) {}
     virtual void out(int indent, bool noFirst = true);
+};
+
+class SymbolUnknownType: public SymbolType
+{
+public:
+    SymbolUnknownType(): SymbolType("") {}
+    virtual bool isUndefined() { return true; }
 };
 
 }

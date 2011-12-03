@@ -41,24 +41,24 @@ void SymbolVariable::out(int indent, bool noFirst)
 
 void SymbolTypeArray::out(int indent, bool noFirst)
 {
-    SymbolType::out(indent++);
+    SymbolType::out(indent, noFirst);
     if(!noFirst)
-        Symbol::out(indent);
+        Symbol::out(indent + 1);
     cout << "array [" << endl;
     vector<bool> finishedBranches;
     if(length != NULL)
-        length->out(0, &finishedBranches, indent + 1);
-    Symbol::out(indent);
+        length->out(0, &finishedBranches, indent + 2);
+    Symbol::out(indent + 1);
     cout << "] of ";
-    if(elementType->name != "")
-        cout << "<" << elementType->name << ">\n";
+    if(type->name != "")
+        cout << "<" << type->name << ">\n";
     else
-        elementType->out(indent - 1);
+        type->out(indent);
 }
 
 void SymbolTypeStruct::out(int indent, bool noFirst)
 {
-    SymbolType::out(indent++);
+    SymbolType::out(indent++, noFirst);
     if(!noFirst)
         Symbol::out(indent);
     cout << "struct " << name << endl;
@@ -67,23 +67,24 @@ void SymbolTypeStruct::out(int indent, bool noFirst)
 
 void SymbolTypePointer::out(int indent, bool noFirst)
 {
-    SymbolType::out(indent++);
+    SymbolType::out(indent, noFirst);
     if(!noFirst)
-        Symbol::out(indent);
+        Symbol::out(indent + 1);
     cout << "pointer to ";
     if(type->name != "")
         cout << "<" << type->name << ">\n";
     else
-        type->out(indent - 1);
+        type->out(indent + 1);
 }
 
 void SymbolTypeFunction::out(int indent, bool noFirst)
 {
     if(!noFirst)
-        Symbol::out(indent++);
+        Symbol::out(indent);
     else
-        SymbolType::out(indent++);
+        SymbolType::out(indent++, noFirst);
     cout << "function " << name << "\n";
+    indent++;
     Symbol::out(indent);
     cout << "returns ";
     type->out(indent);
