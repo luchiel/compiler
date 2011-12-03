@@ -3,8 +3,8 @@ type <float>
 type <void>
 type <0>
 	pointer to array [
-		{int 20}
-	] of <void>
+			{int 20}
+		] of <void>
 variable e1 of type <0>
 type <1>
 	array [

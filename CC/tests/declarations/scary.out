@@ -6,8 +6,8 @@ type <0>
 	] of array [
 		{int 8}
 	] of pointer to pointer to function 
-		returns pointer to array [
-		] of poiter to void
-		arguments, locals
-			<no args/locals>
+				returns pointer to array [
+						] of pointer to <void>
+				arguments, locals
+					<no args/locals>
 variable foo of type <0>

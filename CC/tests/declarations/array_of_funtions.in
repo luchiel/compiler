@@ -1,1 +1,4 @@
-float *a(int b)[10];
+float (*a(int b))[10] {}
+float *b(int b)[10] {}
+float *(c(int b)[10]) {}
+float (*d)(int b)[10];

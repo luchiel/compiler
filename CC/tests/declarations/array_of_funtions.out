@@ -1,11 +1,32 @@
 type <int>
 type <float>
 type <void>
-type <0>
-	array [
-		{int 10}
-	] of pointer to function 
-	returns type <float>
+function a
+	returns pointer to array [
+				{int 10}
+			] of <float>
 	arguments, locals
 		variable b of type <int>
-variable a of type <0>
+	{{}}
+function b
+	returns array [
+			{int 10}
+		] of pointer to <float>
+	arguments, locals
+		variable b of type <int>
+	{{}}
+function c
+	returns array [
+			{int 10}
+		] of pointer to <float>
+	arguments, locals
+		variable b of type <int>
+	{{}}
+type <0>
+	pointer to function 
+			returns array [
+					{int 10}
+				] of <float>
+			arguments, locals
+				variable b of type <int>
+variable d of type <0>

@@ -5,10 +5,10 @@ type <0>
 	array [
 		{int 20}
 	] of pointer to array [
-		{+}
-		| 
-		+-{int 5}
-		| 
-		+-{int 6}
-	] of pointer to <int>
+			{+}
+			| 
+			+-{int 5}
+			| 
+			+-{int 6}
+		] of pointer to <int>
 variable d of type <0>
