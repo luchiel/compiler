@@ -84,6 +84,11 @@ void TernaryNode::out(unsigned int depth, vector<bool>* branches, int indent)
 void CastNode::out(unsigned int depth, vector<bool>* branches, int indent)
 {
     makeNodeTop(depth, branches, "cast", indent);
+
+    printRibsBeforeNode(depth, branches, indent);
+    printRibs(depth + 1, branches, indent);
+    cout << (depth == 0 ? "" : "+-") << "<" << type->name << ">\n";
+    printNodeWithRibs(depth, branches, true, element, indent);
 }
 
 }

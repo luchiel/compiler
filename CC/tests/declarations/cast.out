@@ -1,0 +1,28 @@
+type <int>
+type <float>
+type <void>
+type <0>
+	array [
+		{int 10}
+	] of <int>
+function main
+	returns type <int>
+	arguments, locals
+		<no args/locals>
+	{{}}
+	| 
+	+-{;}
+	| | 
+	| +-{cast}
+	|   | 
+	|   +-<int>
+	|   | 
+	|   +-{a}
+	| 
+	+-{;}
+	  | 
+	  +-{cast}
+	    | 
+	    +-<0>
+	    | 
+	    +-{b}
