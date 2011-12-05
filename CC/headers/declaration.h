@@ -14,16 +14,29 @@ namespace LuCCompiler
 
 class Designator: public Node
 {
-private:
-    TokenType _type; //[ or .
-    Node* _sub;
 public:
-    Designator(TokenType type, Node* sub): _type(type), _sub(sub) {}
+    TokenType type; //[ or .
+    Node* sub;
+    Designator(TokenType type_, Node* sub_): type(type_), sub(sub_) {}
 };
 
-typedef NodeWithList<Designator> Designation;
+typedef NodeWithList<Designator> DesignationT;
 
-typedef NodeWithList< pair<Designation*, Node*> > InitializerList;
+class Designation: public DesignationT
+{
+public:
+    Designation(): DesignationT() {}
+    virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
+};
+
+typedef NodeWithList< pair<Designation*, Node*> > InitializerListT;
+
+class InitializerList: public InitializerListT
+{
+public:
+    InitializerList(): InitializerListT() {}
+    virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
+};
 
 }
 
