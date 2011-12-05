@@ -1,0 +1,5 @@
+int main()
+{
+int n = 6, m = 5;
+for(int j = 2, i = 0; i < n, j < m; ++i, j++);
+}

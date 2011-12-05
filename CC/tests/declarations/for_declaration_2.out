@@ -1,0 +1,46 @@
+type <int>
+type <float>
+type <void>
+function main
+	returns type <int>
+	arguments
+		<no args>
+	{{}}
+		variable n of type <int> initialized by
+			{int 6}
+		variable m of type <int> initialized by
+			{int 5}
+	| 
+	+-{for}
+		variable j of type <int> initialized by
+			{int 2}
+		variable i of type <int> initialized by
+			{int 0}
+	  | 
+	  +-{;}
+	  | | 
+	  | +-{,}
+	  |   | 
+	  |   +-{<}
+	  |   | | 
+	  |   | +-{i}
+	  |   | | 
+	  |   | +-{n}
+	  |   | 
+	  |   +-{<}
+	  |     | 
+	  |     +-{j}
+	  |     | 
+	  |     +-{m}
+	  | 
+	  +-{,}
+	  | | 
+	  | +-{++x}
+	  | | | 
+	  | | +-{i}
+	  | | 
+	  | +-{x++}
+	  |   | 
+	  |   +-{j}
+	  | 
+	  +-{;}

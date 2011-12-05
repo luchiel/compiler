@@ -65,9 +65,12 @@ public:
 class ForStatement: public IterationStatement
 {
 public:
+    SymbolTable* _iterators;
     Node* _expr2;
     Node* _expr3;
-    ForStatement(): IterationStatement(), _expr2(NULL), _expr3(NULL) { _type = TOK_FOR; }
+    ForStatement():
+        IterationStatement(), _iterators(new SymbolTable()),
+        _expr2(NULL), _expr3(NULL) { _type = TOK_FOR; }
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
 };
 

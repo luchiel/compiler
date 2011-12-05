@@ -306,7 +306,7 @@ bool Parser::parseDeclaration(bool definitionAllowed)
     if(initial == NULL)
         return false;
     SymbolType* type = parseDeclarator(initial, canBeAbstract);
-    if(_varName == "")
+    if(_varName == "") //if non-abstract here, then except earlier
     {
         safeAddSymbol(type, true);
         consumeTokenOfType(TOK_SEP, "';' expected");

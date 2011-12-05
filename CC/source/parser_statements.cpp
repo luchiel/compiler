@@ -2,6 +2,7 @@
 #include "parser.h"
 #include "token.h"
 #include "statement.h"
+#include "symbol.h"
 
 using namespace std;
 
@@ -123,14 +124,15 @@ Node* Parser::parseIterationStatement()
         ForStatement* forNode = new ForStatement();
         _tokens->next();
         consumeTokenOfType(TOK_L_BRACKET, "'(' expected");
-        //declaration expression_statement
-        //declaration expression_statement expression
-        forNode->_expr = parseExpressionStatement();
+        _symbols->push(forNode->_iterators);
+        if(!parseDeclaration(false))
+            forNode->_expr = parseExpressionStatement();
         forNode->_expr2 = parseExpressionStatement();
         if(tokenType() != TOK_R_BRACKET)
             forNode->_expr3 = parseExpression();
         consumeTokenOfType(TOK_R_BRACKET, "')' expected");
         forNode->_loop = parseStatement();
+        _symbols->pop();
         return forNode;
     }
     return NULL;

@@ -62,7 +62,10 @@ void IterationStatement::out(unsigned int depth, vector<bool>* branches, int ind
 void ForStatement::out(unsigned int depth, vector<bool>* branches, int indent)
 {
     makeNodeTop(depth, branches, "for", indent);
-    printNodeWithRibs(depth, branches, false, _expr, indent);
+    if(_expr != NULL)
+        printNodeWithRibs(depth, branches, false, _expr, indent);
+    else
+        _iterators->out(indent + 1);
     printNodeWithRibs(depth, branches, false, _expr2, indent);
     if(_expr3 != NULL)
         printNodeWithRibs(depth, branches, false, _expr3, indent);
