@@ -5,7 +5,6 @@
 #include <map>
 #include <string>
 #include "symbol.h"
-#include "statement.h"
 
 using namespace std;
 
@@ -55,24 +54,6 @@ SymbolTableStack* initPrimarySymbolTableStack();
 
 //int -> float
 //[] -> *
-
-class SymbolTypeFunction: public TypedSymbolType
-{
-public:
-    SymbolTable* locals;
-    CompoundStatement* body;
-    SymbolTypeFunction(SymbolType* type_, string name_):
-        TypedSymbolType(type_, name_), locals(new SymbolTable()), body(NULL) {}
-    virtual void out(int indent, bool noFirst = true);
-};
-
-class SymbolTypeStruct: public SymbolType
-{
-public:
-    SymbolTable* fields;
-    SymbolTypeStruct(const string& name_): SymbolType(name_), fields(new SymbolTable()) {}
-    virtual void out(int indent, bool noFirst = true);
-};
 
 }
 

@@ -1,7 +1,7 @@
 #include <cstdio>
 #include <iostream>
 #include "symbol.h"
-#include "symbol_table.h"
+#include "complex_symbol.h"
 
 using namespace std;
 
@@ -89,13 +89,13 @@ void SymbolTypeFunction::out(int indent, bool noFirst)
     cout << "returns ";
     type->out(indent);
     Symbol::out(indent);
-    cout << "arguments, locals\n";
-    if(locals->size() != 0)
-        locals->out(indent + 1);
+    cout << "arguments\n";
+    if(args->size() != 0)
+        args->out(indent + 1);
     else
     {
         Symbol::out(indent + 1);
-        cout << "<no args/locals>\n";
+        cout << "<no args>\n";
     }
     vector<bool> finishedBranches;
     if(body != NULL)

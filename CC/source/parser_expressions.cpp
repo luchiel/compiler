@@ -55,7 +55,7 @@ Node* Parser::parsePrimaryExpression()
         case TOK_IDENT:
             node = new IdentNode(_tokens->get().text); break;
         case TOK_L_BRACKET:
-            _tokens->next(); //( eaten
+            _tokens->next();
             node = parseExpression();
             if(tokenType() != TOK_R_BRACKET)
                 throw makeException("')' expected");
@@ -63,7 +63,7 @@ Node* Parser::parsePrimaryExpression()
         default:
             throw makeException("Unexpected token " + TOKEN_TYPE_NAME[tokenType()]);
     }
-    _tokens->next(); //token eaten
+    _tokens->next();
     return node;
 }
 
@@ -116,6 +116,7 @@ Node* Parser::parsePostfixExpression()
 Node* Parser::parseUnaryExpression()
 {
     UnaryNode* node = NULL;
+    SizeofNode* size = NULL;
     switch(tokenType())
     {
         case TOK_INC:
@@ -126,14 +127,19 @@ Node* Parser::parseUnaryExpression()
             node->_only = parseUnaryExpression();
             break;
         case TOK_SIZEOF:
-            //SIZEOF (unary_expression | '(' type_name ')') ;
-            node = new UnaryNode();
-            node->_type = tokenType();
             _tokens->next();
-            consumeTokenOfType(TOK_L_BRACKET, "'(' expected");
-            node->_only = parseUnaryExpression();
-            consumeTokenOfType(TOK_R_BRACKET, "')' expected");
-            break;
+            size = new SizeofNode();
+            if(tokenType() != TOK_L_BRACKET)
+                size->_only = parseUnaryExpression();
+            else
+            {
+                _tokens->next();
+                size->_symbolType = parseTypeName();
+                if(size->_symbolType == NULL)
+                    size->_only = parseUnaryExpression();
+                consumeTokenOfType(TOK_R_BRACKET, "')' expected");
+            }
+            return size;
         case TOK_PLUS:
         case TOK_MINUS:
         case TOK_TILDA:
@@ -153,7 +159,6 @@ Node* Parser::parseUnaryExpression()
 
 Node* Parser::parseCastExpression()
 {
-    //cast_expression = unary_expression | '(' type_name ')' cast_expression ;
     if(tokenType() == TOK_L_BRACKET)
     {
         _tokens->lookForward();
@@ -191,7 +196,6 @@ Node* Parser::parseAssignmentExpression()
 {
     AssignmentNode* node = NULL;
     Node* tmp = parseConditionalExpression();
-    //cout << (tokenType() == EOF ? "qu" : operationName(tokenType())) << " ";
     switch(tokenType())
     {
         case TOK_ASSIGN:

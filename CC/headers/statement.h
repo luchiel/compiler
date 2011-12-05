@@ -4,6 +4,7 @@
 #include <vector>
 #include "token.h"
 #include "node.h"
+#include "symbol_table.h"
 
 using namespace std;
 
@@ -73,8 +74,9 @@ public:
 class CompoundStatement: public Node
 {
 public:
+    SymbolTable* _locals;
     vector<Node*>* _items;
-    CompoundStatement() { _items = new vector<Node*>; }
+    CompoundStatement(): _locals(new SymbolTable()), _items(new vector<Node*>) {}
     ~CompoundStatement() { delete _items; }
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
 };

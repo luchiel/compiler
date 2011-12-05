@@ -8,6 +8,7 @@
 #include "exception.h"
 #include "symbol.h"
 #include "symbol_table.h"
+#include "complex_symbol.h"
 
 namespace LuCCompiler
 {
@@ -26,6 +27,8 @@ private:
     Symbol* findSymbol(const string& name, bool type = false);
     void addSymbol(Symbol* symbol, bool type = false);
     void safeAddSymbol(Symbol* symbol, bool type = false);
+
+    enum DecKind { D_ABSTRACT, D_NOT_ABSTRACT, D_BOTH };
 
 public:
     void parse();
@@ -62,7 +65,7 @@ public:
     SymbolTypeStruct* parseStructSpecifier();
     bool parseStructDeclaration();
     SymbolType* parsePointer(SymbolType* type);
-    SymbolType* parseDeclarator(SymbolType* type, int isAbstract = -1);
+    SymbolType* parseDeclarator(SymbolType* type, DecKind isAbstract = D_NOT_ABSTRACT);
     bool parseDeclaration(bool definitionAllowed);
     Node* parseInitializerPart();
     void addTypeAndInitializedVariable(SymbolType* type, Node* initializer);

@@ -87,8 +87,21 @@ void CastNode::out(unsigned int depth, vector<bool>* branches, int indent)
 
     printRibsBeforeNode(depth, branches, indent);
     printRibs(depth + 1, branches, indent);
-    cout << (depth == 0 ? "" : "+-") << "<" << type->name << ">\n";
+    cout << "+-<" << type->name << ">\n";
     printNodeWithRibs(depth, branches, true, element, indent);
+}
+
+void SizeofNode::out(unsigned int depth, vector<bool>* branches, int indent)
+{
+    makeNodeTop(depth, branches, operationName(_type), indent);
+    if(_only != NULL)
+        printNodeWithRibs(depth, branches, true, _only, indent);
+    else
+    {
+        printRibsBeforeNode(depth, branches, indent);
+        printRibs(depth + 1, branches, indent);
+        cout << "+-<" << _symbolType->name << ">\n";
+    }
 }
 
 }

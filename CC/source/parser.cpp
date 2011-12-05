@@ -7,6 +7,7 @@
 #include "token.h"
 #include "symbol.h"
 #include "symbol_table.h"
+#include "complex_symbol.h"
 
 using namespace std;
 
@@ -189,16 +190,15 @@ SymbolType* Parser::parsePointer(SymbolType* type)
     return type;
 }
 
-SymbolType* Parser::parseDeclarator(SymbolType* type, int isAbstract)
+SymbolType* Parser::parseDeclarator(SymbolType* type, DecKind isAbstract)
 {
-    //1 = abstract, -1 = not abstract, 0 - both
     SymbolType* left = parsePointer(type);
     SymbolType* center = NULL;
     SymbolType* right = left;
 
     if(tokenType() == TOK_IDENT)
     {
-        if(isAbstract == 1)
+        if(isAbstract == D_ABSTRACT)
             throw makeException("abstract declarator expected");
         if(_varName != "")
             throw makeException("unexpected identifier");
@@ -217,7 +217,7 @@ SymbolType* Parser::parseDeclarator(SymbolType* type, int isAbstract)
         {
             _tokens->next();
             SymbolTypeFunction* function = new SymbolTypeFunction(new SymbolUnknownType(), "");
-            _symbols->push(function->locals);
+            _symbols->push(function->args);
             if(tokenType() != TOK_R_BRACKET)
             {
                 string tempVarName(_varName);
@@ -253,7 +253,7 @@ SymbolType* Parser::parseDeclarator(SymbolType* type, int isAbstract)
     if(right != left)
         static_cast<TypedSymbolType*>(right->getUndefined())->type = left;
 
-    if(_varName == "" && isAbstract == -1)
+    if(_varName == "" && isAbstract == D_NOT_ABSTRACT)
         throw makeException("non-abstract declarator expected");
 
     if(center != NULL)
@@ -270,7 +270,7 @@ void Parser::parseParameterDeclaration()
     SymbolType* type = parseTypeSpecifier();
     if(type == NULL)
         return;
-    type = parseDeclarator(type, 0);
+    type = parseDeclarator(type, D_BOTH);
     safeAddSymbol(type, true);
     //what if function?
     addSymbol(new SymbolVariable(type, _varName));
@@ -299,10 +299,19 @@ void Parser::addTypeAndInitializedVariable(SymbolType* type, Node* initializer)
 
 bool Parser::parseDeclaration(bool definitionAllowed)
 {
+    DecKind canBeAbstract = D_NOT_ABSTRACT;
+    if(tokenType() == TOK_STRUCT)
+        canBeAbstract = D_BOTH;
     SymbolType* initial = parseTypeSpecifier();
     if(initial == NULL)
         return false;
-    SymbolType* type = parseDeclarator(initial);
+    SymbolType* type = parseDeclarator(initial, canBeAbstract);
+    if(_varName == "")
+    {
+        safeAddSymbol(type, true);
+        consumeTokenOfType(TOK_SEP, "';' expected");
+        return true;
+    }
     Node* initializer = parseInitializerPart();
 
     if(initializer == NULL && tokenType() == TOK_L_BRACE)
@@ -340,7 +349,7 @@ SymbolType* Parser::parseTypeName()
     SymbolType* type = parseTypeSpecifier();
     if(type == NULL)
         return NULL;
-    type = parseDeclarator(type, 1);
+    type = parseDeclarator(type, D_ABSTRACT);
     safeAddSymbol(type, true);
     return type;
 }

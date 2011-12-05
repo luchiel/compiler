@@ -71,6 +71,14 @@ public:
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
 };
 
+class SizeofNode: public UnaryNode
+{
+public:
+    SymbolType* _symbolType;
+    SizeofNode(): UnaryNode(), _symbolType(NULL) { _type = TOK_SIZEOF; }
+    virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
+};
+
 class BinaryNode: public Node
 {
 public:
