@@ -40,7 +40,7 @@ expression = assignment_expression [',' expression] ;
 
 argument_expression_list = assignment_expression [',' argument_expression_list] ;
 
-type_specifier = VOID | INT | FLOAT | struct_specifier ;
+type_specifier = VOID | INT | FLOAT | struct_specifier | TYPE_NAME;
 struct_specifier =
     STRUCT [IDENTIFIER] '{' struct_declaration_list '}' |
     STRUCT IDENTIFIER ;

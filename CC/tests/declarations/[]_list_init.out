@@ -1,0 +1,36 @@
+type <int>
+type <float>
+type <void>
+type <0>
+	array [
+		{int 5}
+	] of array [
+		{int 4}
+	] of <int>
+variable e of type <0> initialized by
+	{
+		[
+			{int 3}
+		]
+		[
+			{int 1}
+		]
+		=
+		{int 6}
+		,
+		[
+			{int 2}
+		]
+		=
+		{
+			{int 1}
+			,
+			{int 1}
+			,
+			{int 1}
+			,
+			{int 1}
+			,
+		}
+		,
+	}

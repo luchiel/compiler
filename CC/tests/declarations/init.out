@@ -1,0 +1,15 @@
+type <int>
+type <float>
+type <void>
+variable a of type <int> initialized by
+	{int 10}
+variable b of type <int> initialized by
+	{+}
+	| 
+	+-{int 6}
+	| 
+	+-{int 6}
+variable f of type <int> initialized by
+	{int 1}
+variable g of type <int> initialized by
+	{int 2}

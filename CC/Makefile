@@ -7,7 +7,7 @@ SOURCES = $(notdir $(wildcard $(SOURCES_PATH)/*.cpp))
 OBJECTS = $(addprefix $(OBJECTS_PATH)/, $(patsubst %.cpp, %.o, $(SOURCES)))
 INCLUDES = -Iheaders
 
-CXXFLAGS += -Wall -Wextra -Wno-unused $(INCLUDES)
+CXXFLAGS += -Wall -Wextra -Wno-unused -Wno-switch $(INCLUDES)
 
 all: $(APPNAME)
 

@@ -1,0 +1,37 @@
+type <int>
+type <float>
+type <void>
+type <0>
+	array [
+		{int 5}
+	] of <int>
+variable c of type <0> initialized by
+	{
+		{int 5}
+		,
+		{int 5}
+		,
+		{int 5}
+		,
+		{int 5}
+		,
+		{int 5}
+		,
+	}
+type <1>
+	array [
+		{int 5}
+	] of <int>
+variable d of type <1> initialized by
+	{
+		{int 5}
+		,
+		{int 5}
+		,
+		{int 5}
+		,
+		{int 5}
+		,
+		{int 5}
+		,
+	}

@@ -1,0 +1,10 @@
+struct a
+{
+    float *r[];
+    struct { int g; } f;
+} b[10];
+
+int main(a r)
+{
+    a something;
+}

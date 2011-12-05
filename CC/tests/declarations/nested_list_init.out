@@ -1,0 +1,17 @@
+type <int>
+type <float>
+type <void>
+type <0>
+	struct 0
+		type <0>
+			struct 0
+				variable g of type <int>
+		variable c of type <0>
+variable ii of type <0> initialized by
+	{
+		{
+			{int 7}
+			,
+		}
+		,
+	}

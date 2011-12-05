@@ -1,0 +1,1 @@
+struct { int c; int d; } h = { .c = 5, .d = 6 };
