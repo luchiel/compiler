@@ -5,6 +5,7 @@
 #include <vector>
 #include "token.h"
 #include "node.h"
+#include "symbol.h"
 
 using namespace std;
 
@@ -101,6 +102,15 @@ class ExpressionNode: public BinaryNode
 {
 public:
     ExpressionNode(): BinaryNode() {}
+};
+
+class CastNode: public Node
+{
+public:
+    SymbolType* type;
+    Node* element;
+    CastNode(SymbolType* type_): Node(), type(type_) {}
+    virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
 };
 
 }

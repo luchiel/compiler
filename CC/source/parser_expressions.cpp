@@ -1,5 +1,6 @@
 #include "parser.h"
 #include "token.h"
+#include "symbol.h"
 #include "expression.h"
 #include "operations.h"
 
@@ -153,6 +154,20 @@ Node* Parser::parseUnaryExpression()
 Node* Parser::parseCastExpression()
 {
     //cast_expression = unary_expression | '(' type_name ')' cast_expression ;
+    if(tokenType() == TOK_L_BRACKET)
+    {
+        _tokens->lookForward();
+        SymbolType* type = parseTypeName();
+        if(type == NULL)
+        {
+            _tokens->rollBack();
+            return parseUnaryExpression();
+        }
+        CastNode* cast = new CastNode(type);
+        consumeTokenOfType(TOK_R_BRACKET, "')' expected");
+        cast->element = parseCastExpression();
+        return cast;
+    }
     return parseUnaryExpression();
 }
 

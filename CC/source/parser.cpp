@@ -56,8 +56,6 @@ Node* Parser::parseInitializer()
     {
         _tokens->next();
         InitializerList* node = parseInitializerList();
-        if(tokenType() == TOK_COMMA)
-            _tokens->next();
         consumeTokenOfType(TOK_R_BRACE, "'}' expected");
         return node;
     }
@@ -81,6 +79,8 @@ InitializerList* Parser::parseInitializerList()
     while(tokenType() == TOK_COMMA)
     {
         _tokens->next();
+        if(tokenType() == TOK_R_BRACE)
+            return node;
         d = parseDesignation();
         i = parseInitializer();
         nullException(i, "initializer expected");
@@ -102,17 +102,22 @@ SymbolType* Parser::parseTypeSpecifier()
         case TOK_VOID:
             _tokens->next();
             return static_cast<SymbolType*>(getSymbol("void", true));
-        default:
+        case TOK_STRUCT:
+            _tokens->next();
             return parseStructSpecifier();
+        case TOK_IDENT:
+            Symbol* tmp;
+            tmp = findSymbol(_tokens->get().text, true);
+            if(tmp != NULL)
+                _tokens->next();
+            return static_cast<SymbolType*>(tmp);
+        default:
+            return NULL;
     }
 }
 
 SymbolTypeStruct* Parser::parseStructSpecifier()
 {
-    if(tokenType() != TOK_STRUCT)
-        return NULL;
-    _tokens->next();
-
     string name("");
     SymbolTypeStruct* node = NULL;
     bool found = true;
