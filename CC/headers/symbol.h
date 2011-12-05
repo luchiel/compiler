@@ -2,7 +2,7 @@
 #define SYMBOL_H
 
 #include <string>
-#include "expression.h"
+#include "node.h"
 
 using namespace std;
 

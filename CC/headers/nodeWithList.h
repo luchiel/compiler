@@ -12,11 +12,10 @@ namespace LuCCompiler
 template<typename T> class NodeWithList: public Node
 {
 protected:
-    vector<T*>* _list;
+    vector<T*> _list;
 public:
-    NodeWithList() { _list = new vector<T*>; }
-    ~NodeWithList() { delete _list; }
-    void add(T* node) { _list->push_back(node); };
+    NodeWithList() {}
+    void add(T* node) { _list.push_back(node); };
 };
 
 }

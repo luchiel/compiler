@@ -31,6 +31,8 @@ private:
 
     InnerState _state;
     Token _current;
+    Token _prev;
+    Token _next;
     string _buffer;
 
     unsigned int _index;
@@ -64,6 +66,8 @@ public:
 
     Token& get();
     Token& next();
+    void lookForward();
+    void rollBack();
 
     Tokenizer(const string& filename);
     ~Tokenizer();

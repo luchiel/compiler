@@ -287,7 +287,8 @@ char Tokenizer::trySymbol(unsigned int pos)
     return pos < _buffer.size() ? _buffer[pos] : ' ';
 }
 
-Tokenizer::Tokenizer(const string& filename): _state(IS_NONE), _current(Token()), _buffer(""), _index(0), _currentLine(0)
+Tokenizer::Tokenizer(const string& filename):
+    _state(IS_NONE), _current(Token()), _prev(Token()), _next(Token()), _buffer(""), _index(0), _currentLine(0)
 {
     const string OPERATIONS = "+-=/*><%&^|!~.?[]";
 
@@ -524,8 +525,33 @@ Token& Tokenizer::get()
 
 Token& Tokenizer::next()
 {
+    if(_prev.type != TOK_UNDEF)
+        _prev.type = TOK_UNDEF;
+    if(_next.type != TOK_UNDEF)
+    {
+        _current = _next;
+        _next.type = TOK_UNDEF;
+        return _current;
+    }
     read();
     return _current;
+}
+
+void Tokenizer::lookForward()
+{
+    if(_prev.type != TOK_UNDEF)
+        throw makeException(-1, "One look fwd only");
+    _prev = _current;
+    read();
+}
+
+void Tokenizer::rollBack()
+{
+    if(_prev.type == TOK_UNDEF)
+        throw makeException(-1, "One rollback only");
+    _next = _current;
+    _current = _prev;
+    _prev.type = TOK_UNDEF;
 }
 
 Tokenizer::~Tokenizer()
