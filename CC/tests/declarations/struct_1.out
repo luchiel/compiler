@@ -1,1 +1,5 @@
-Error: ParseError:1:9 non-abstract declarator expected
+type <int>
+type <float>
+type <void>
+type <a>
+	struct a

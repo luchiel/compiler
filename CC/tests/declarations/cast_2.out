@@ -1,0 +1,18 @@
+type <int>
+type <float>
+type <void>
+function main
+	returns type <int>
+	arguments
+		<no args>
+	{{}}
+		variable g of type <float> initialized by
+			{cast}
+			| 
+			+-<float>
+			| 
+			+-{cast}
+			  | 
+			  +-<int>
+			  | 
+			  +-{int 5}

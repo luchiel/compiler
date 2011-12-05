@@ -8,6 +8,6 @@ type <0>
 	] of pointer to pointer to function 
 				returns pointer to array [
 						] of pointer to <void>
-				arguments, locals
-					<no args/locals>
+				arguments
+					<no args>
 variable foo of type <0>

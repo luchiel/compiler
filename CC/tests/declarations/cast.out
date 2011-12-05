@@ -1,28 +1,45 @@
 type <int>
 type <float>
 type <void>
-type <0>
-	array [
-		{int 10}
-	] of <int>
 function main
 	returns type <int>
-	arguments, locals
-		<no args/locals>
+	arguments
+		<no args>
 	{{}}
-	| 
-	+-{;}
-	| | 
-	| +-{cast}
-	|   | 
-	|   +-<int>
-	|   | 
-	|   +-{a}
-	| 
-	+-{;}
-	  | 
-	  +-{cast}
-	    | 
-	    +-<0>
-	    | 
-	    +-{b}
+		variable a of type <int> initialized by
+			{cast}
+			| 
+			+-<int>
+			| 
+			+-{int 0}
+		type <0>
+			array [
+				{int 5}
+			] of <int>
+		variable b of type <0> initialized by
+			{
+				{int 4}
+				,
+				{int 3}
+				,
+				{int 5}
+				,
+				{int 6}
+				,
+				{int 7}
+				,
+			}
+		type <1>
+			array [
+				{int 5}
+			] of <float>
+		type <2>
+			array [
+				{int 5}
+			] of <float>
+		variable c of type <2> initialized by
+			{cast}
+			| 
+			+-<1>
+			| 
+			+-{b}

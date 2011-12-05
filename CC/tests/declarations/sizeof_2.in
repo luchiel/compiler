@@ -1,0 +1,2 @@
+struct f { int a; int b; };
+int main(){ int a = sizeof(f); a = sizeof a; }

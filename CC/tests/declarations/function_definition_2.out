@@ -3,7 +3,7 @@ type <float>
 type <void>
 function cool_function
 	returns type <int>
-	arguments, locals
+	arguments
 		variable a of type <int>
 		variable b of type <int>
 	{{}}

@@ -5,21 +5,21 @@ function a
 	returns pointer to array [
 				{int 10}
 			] of <float>
-	arguments, locals
+	arguments
 		variable b of type <int>
 	{{}}
 function b
 	returns array [
 			{int 10}
 		] of pointer to <float>
-	arguments, locals
+	arguments
 		variable b of type <int>
 	{{}}
 function c
 	returns array [
 			{int 10}
 		] of pointer to <float>
-	arguments, locals
+	arguments
 		variable b of type <int>
 	{{}}
 type <0>
@@ -27,6 +27,6 @@ type <0>
 			returns array [
 					{int 10}
 				] of <float>
-			arguments, locals
+			arguments
 				variable b of type <int>
 variable d of type <0>

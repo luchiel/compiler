@@ -1,8 +1,12 @@
 type <int>
 type <float>
 type <void>
-function cool_function
+function main
 	returns type <int>
 	arguments
 		<no args>
 	{{}}
+		variable a of type <int> initialized by
+			{sizeof}
+			| 
+			+-<float>

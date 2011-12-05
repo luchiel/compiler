@@ -1,0 +1,26 @@
+type <int>
+type <float>
+type <void>
+type <f>
+	struct f
+		variable a of type <int>
+		variable b of type <int>
+function main
+	returns type <int>
+	arguments
+		<no args>
+	{{}}
+		variable a of type <int> initialized by
+			{sizeof}
+			| 
+			+-<f>
+	| 
+	+-{;}
+	  | 
+	  +-{=}
+	    | 
+	    +-{a}
+	    | 
+	    +-{sizeof}
+	      | 
+	      +-{a}
