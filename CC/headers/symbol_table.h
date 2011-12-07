@@ -11,18 +11,21 @@ using namespace std;
 namespace LuCCompiler
 {
 
+enum NameType { NT_TAG, NT_NAME };
+
 class SymbolTable
 {
 protected:
-    map<string, Symbol*> _symbols;
+    map< pair<string, NameType>, Symbol*> _symbols;
     vector<Symbol*> _ordered;
     int _innerIdx;
 
 public:
     SymbolTable* parent;
     Symbol* getSymbol(const string& name, int line, int col);
-    void addSymbol(Symbol* symbol, int line, int col);
+    void addSymbol(Symbol* symbol, NameType nt, int line, int col);
     Symbol* findSymbol(const string& name);
+    Symbol* findSymbol(const string& name, NameType nt);
 
     int size() { return _ordered.size(); }
     void out(int indent);
@@ -38,8 +41,9 @@ private:
     SymbolTable* _current;
 public:
     Symbol* getSymbol(const string& name, int line, int col);
-    void addSymbol(Symbol* symbol, int line, int col);
+    void addSymbol(Symbol* symbol, NameType nt, int line, int col);
     Symbol* findSymbol(const string& name);
+    Symbol* findSymbol(const string& name, NameType nt);
 
     void push(SymbolTable* t);
     void pop();

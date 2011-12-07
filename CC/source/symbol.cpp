@@ -62,6 +62,8 @@ void SymbolTypeStruct::out(int indent, bool noFirst)
     if(!noFirst)
         Symbol::out(indent);
     cout << "struct " << name << endl;
+    Symbol::out(indent + 1);
+    cout << "tag " << tag << endl;
     fields->out(indent + 1);
 }
 

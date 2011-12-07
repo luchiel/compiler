@@ -17,9 +17,9 @@ Symbol* Parser::getSymbol(const string& name)
     return _symbols->getSymbol(name, _tokens->get().line, _tokens->get().col + 1);
 }
 
-void Parser::addSymbol(Symbol* symbol)
+void Parser::addSymbol(Symbol* symbol, NameType nt)
 {
-    _symbols->addSymbol(symbol, _tokens->get().line, _tokens->get().col + 1);
+    _symbols->addSymbol(symbol, nt, _tokens->get().line, _tokens->get().col + 1);
 }
 
 Symbol* Parser::findSymbol(const string& name)
@@ -27,10 +27,15 @@ Symbol* Parser::findSymbol(const string& name)
     return _symbols->findSymbol(name);
 }
 
-void Parser::safeAddSymbol(Symbol* symbol)
+Symbol* Parser::findSymbol(const string& name, NameType nt)
 {
-    if(!findSymbol(symbol->name))
-        addSymbol(symbol);
+    return _symbols->findSymbol(name, nt);
+}
+
+void Parser::safeAddSymbol(Symbol* symbol, NameType nt)
+{
+    if(!findSymbol(symbol->name, nt))
+        addSymbol(symbol, nt);
 }
 
 void Parser::out()

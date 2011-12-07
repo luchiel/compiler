@@ -9,9 +9,9 @@
 namespace LuCCompiler
 {
 
-void SymbolTable::addSymbol(Symbol* symbol, int line, int col)
+void SymbolTable::addSymbol(Symbol* symbol, NameType nt, int line, int col)
 {
-    if(_symbols.find(symbol->name) != _symbols.end())
+    if(_symbols.find(make_pair(symbol->name, nt)) != _symbols.end())
         throw RedefinedSymbolException(line, col, symbol->name);
 
     if(symbol->name == "")
@@ -21,21 +21,35 @@ void SymbolTable::addSymbol(Symbol* symbol, int line, int col)
         symbol->name = ss.str();
         _innerIdx++;
     }
-    _symbols[symbol->name] = symbol;
+    _symbols[make_pair(symbol->name, nt)] = symbol;
     _ordered.push_back(symbol);
 }
 
 Symbol* SymbolTable::getSymbol(const string& name, int line, int col)
 {
-    if(_symbols.find(name) == _symbols.end())
+    Symbol* s = findSymbol(name);
+    if(s == NULL)
         throw UndefinedSymbolException(line, col, name);
-    return _symbols[name];
+    else
+        return s;
 }
 
 Symbol* SymbolTable::findSymbol(const string& name)
 {
-    map<string, Symbol*>::iterator s;
-    s = _symbols.find(name);
+    map< pair<string, NameType>, Symbol*>::iterator s;
+    s = _symbols.find(make_pair(name, NT_NAME));
+    if(s != _symbols.end())
+        return s->second;
+    s = _symbols.find(make_pair(name, NT_TAG));
+    if(s != _symbols.end())
+        return s->second;
+    return NULL;
+}
+
+Symbol* SymbolTable::findSymbol(const string& name, NameType nt)
+{
+    map< pair<string, NameType>, Symbol*>::iterator s;
+    s = _symbols.find(make_pair(name, nt));
     if(s != _symbols.end())
         return s->second;
     return NULL;
@@ -67,6 +81,20 @@ Symbol* SymbolTableStack::findSymbol(const string& name)
     return r;
 }
 
+Symbol* SymbolTableStack::findSymbol(const string& name, NameType nt)
+{
+    SymbolTable* c = _current;
+    Symbol* r = c->findSymbol(name, nt);
+    while(r == NULL)
+    {
+        if(c == _root)
+            break;
+        c = c->parent;
+        r = c->findSymbol(name, nt);
+    }
+    return r;
+}
+
 Symbol* SymbolTableStack::getSymbol(const string& name, int line, int col)
 {
     Symbol* s = findSymbol(name);
@@ -75,9 +103,9 @@ Symbol* SymbolTableStack::getSymbol(const string& name, int line, int col)
     return s;
 }
 
-void SymbolTableStack::addSymbol(Symbol* symbol, int line, int col)
+void SymbolTableStack::addSymbol(Symbol* symbol, NameType nt, int line, int col)
 {
-    _current->addSymbol(symbol, line, col);
+    _current->addSymbol(symbol, nt, line, col);
 }
 
 void SymbolTableStack::push(SymbolTable* t)
@@ -101,9 +129,9 @@ SymbolTableStack* initPrimarySymbolTableStack()
 {
     SymbolTable* primarySymbolTable = new SymbolTable();
 
-    primarySymbolTable->addSymbol(new SymbolType("int"), 0, 0);
-    primarySymbolTable->addSymbol(new SymbolType("float"), 0, 0);
-    primarySymbolTable->addSymbol(new SymbolType("void"), 0, 0);
+    primarySymbolTable->addSymbol(new SymbolType("int"), NT_NAME, 0, 0);
+    primarySymbolTable->addSymbol(new SymbolType("float"), NT_NAME, 0, 0);
+    primarySymbolTable->addSymbol(new SymbolType("void"), NT_NAME, 0, 0);
 
     return new SymbolTableStack(primarySymbolTable, primarySymbolTable);
 }

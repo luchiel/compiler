@@ -29,8 +29,9 @@ private:
 
     Symbol* getSymbol(const string& name);
     Symbol* findSymbol(const string& name);
-    void addSymbol(Symbol* symbol);
-    void safeAddSymbol(Symbol* symbol);
+    Symbol* findSymbol(const string& name, NameType nt);
+    void addSymbol(Symbol* symbol, NameType nt = NT_NAME);
+    void safeAddSymbol(Symbol* symbol, NameType nt = NT_NAME);
 
     Node* parsePrimaryExpression();
     Node* parsePostfixExpression();
@@ -63,7 +64,7 @@ private:
     SymbolType* parseDeclarator(SymbolType* type, DecKind isAbstract = D_NOT_ABSTRACT);
     bool parseDeclaration(bool definitionAllowed);
     Node* parseInitializerPart();
-    void addTypeAndInitializedVariable(SymbolType* type, Node* initializer);
+    void addTypeAndInitializedVariable(SymbolType* type, Node* initializer, bool isTypedef);
     void parseParameterDeclaration();
     void parseTranslationUnit();
 

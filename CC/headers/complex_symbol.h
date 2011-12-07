@@ -26,8 +26,10 @@ public:
 class SymbolTypeStruct: public SymbolType
 {
 public:
+    string tag;
     SymbolTable* fields;
-    SymbolTypeStruct(const string& name_): SymbolType(name_), fields(new SymbolTable()) {}
+    SymbolTypeStruct(const string& name_, const string& tag_):
+        SymbolType(name_), tag(tag_), fields(new SymbolTable()) {}
     virtual void out(int indent, bool noFirst = true);
 };
 

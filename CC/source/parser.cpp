@@ -108,7 +108,7 @@ SymbolType* Parser::parseTypeSpecifier()
             return parseStructSpecifier();
         case TOK_IDENT:
             Symbol* tmp;
-            tmp = findSymbol(_tokens->get().text);
+            tmp = findSymbol(_tokens->get().text, NT_NAME);
             if(tmp != NULL)
                 _tokens->next();
             return static_cast<SymbolType*>(tmp);
@@ -119,26 +119,26 @@ SymbolType* Parser::parseTypeSpecifier()
 
 SymbolTypeStruct* Parser::parseStructSpecifier()
 {
-    string name("");
+    string tag("");
     SymbolTypeStruct* node = NULL;
     bool found = true;
     if(tokenType() == TOK_IDENT)
     {
-        name = _tokens->get().text;
+        tag = _tokens->get().text;
         _tokens->next();
-        node = static_cast<SymbolTypeStruct*>(findSymbol(name));
+        node = static_cast<SymbolTypeStruct*>(findSymbol(tag, NT_TAG));
     }
     if(node == NULL)
     {
-        node = new SymbolTypeStruct(name);
-        addSymbol(node);
+        node = new SymbolTypeStruct("", tag);
+        addSymbol(node, NT_TAG);
         found = false;
     }
     if(tokenType() == TOK_L_BRACE)
     {
         _tokens->next();
         if(found && node->fields->size() != 0)
-            throw makeException("redefinition of struct " + name);
+            throw makeException("redefinition of struct " + tag);
         _symbols->push(node->fields);
 
         bool added = true;
@@ -150,7 +150,7 @@ SymbolTypeStruct* Parser::parseStructSpecifier()
         consumeTokenOfType(TOK_R_BRACE, "'}' expected");
         _symbols->pop();
     }
-    else if(name == "")
+    else if(tag == "")
         throw makeException("identifier or declaration expected");
     return node;
 }
@@ -289,16 +289,30 @@ Node* Parser::parseInitializerPart()
     return initializer;
 }
 
-void Parser::addTypeAndInitializedVariable(SymbolType* type, Node* initializer)
+void Parser::addTypeAndInitializedVariable(SymbolType* type, Node* initializer, bool isTypedef)
 {
-    safeAddSymbol(type);
     //function declaration? not variable...
-    addSymbol(new SymbolVariable(type, _varName, initializer));
+    if(isTypedef)
+    {
+        type->name = _varName;
+        addSymbol(type);
+    }
+    else
+    {
+        safeAddSymbol(type);
+        addSymbol(new SymbolVariable(type, _varName, initializer));
+    }
     _varName = "";
 }
 
 bool Parser::parseDeclaration(bool definitionAllowed)
 {
+    bool isTypedef = false;
+    if(tokenType() == TOK_TYPEDEF)
+    {
+        _tokens->next();
+        isTypedef = true;
+    }
     DecKind canBeAbstract = D_NOT_ABSTRACT;
     if(tokenType() == TOK_STRUCT)
         canBeAbstract = D_BOTH;
@@ -308,7 +322,9 @@ bool Parser::parseDeclaration(bool definitionAllowed)
     SymbolType* type = parseDeclarator(initial, canBeAbstract);
     if(_varName == "") //if non-abstract here, then except earlier
     {
-        safeAddSymbol(type);
+        if(isTypedef)
+            throw makeException("empty typedef not allowed");
+        //safeAddSymbol(type);
         consumeTokenOfType(TOK_SEP, "';' expected");
         return true;
     }
@@ -316,7 +332,7 @@ bool Parser::parseDeclaration(bool definitionAllowed)
 
     if(initializer == NULL && tokenType() == TOK_L_BRACE)
     {
-        if(!definitionAllowed)
+        if(!definitionAllowed || isTypedef)
             throw makeException("unexpected function definition");
         //is function?
         SymbolTypeFunction* function = static_cast<SymbolTypeFunction*>(type);
@@ -329,13 +345,13 @@ bool Parser::parseDeclaration(bool definitionAllowed)
         return true;
     }
 
-    addTypeAndInitializedVariable(type, initializer);
+    addTypeAndInitializedVariable(type, initializer, isTypedef);
     while(tokenType() == TOK_COMMA)
     {
         _tokens->next();
         type = parseDeclarator(initial);
         initializer = parseInitializerPart();
-        addTypeAndInitializedVariable(type, initializer);
+        addTypeAndInitializedVariable(type, initializer, isTypedef);
     }
     consumeTokenOfType(TOK_SEP, "';' expected");
     return true;
