@@ -6,9 +6,10 @@ function main
 	arguments
 		<no args>
 	{{}}
-		type <f>
-			struct f
-				variable g of type <int>
 		type <0>
-			pointer to <f>
-		variable t of type <0>
+			struct 0
+				tag f
+				variable g of type <int>
+		type <1>
+			pointer to <0>
+		variable t of type <1>

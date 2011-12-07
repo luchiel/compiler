@@ -18,19 +18,19 @@ class SymbolTable
 protected:
     map< pair<string, NameType>, Symbol*> _symbols;
     vector<Symbol*> _ordered;
-    int _innerIdx;
 
 public:
     SymbolTable* parent;
+    bool addSymbol(Symbol* symbol, int line, int col, int name);
+    bool addTag(Symbol* symbol, int line, int col, int name);
     Symbol* getSymbol(const string& name, int line, int col);
-    void addSymbol(Symbol* symbol, NameType nt, int line, int col);
     Symbol* findSymbol(const string& name);
     Symbol* findSymbol(const string& name, NameType nt);
 
     int size() { return _ordered.size(); }
     void out(int indent);
 
-    SymbolTable(): _innerIdx(0), parent(NULL) {}
+    SymbolTable(): parent(NULL) {}
     ~SymbolTable();
 };
 
@@ -39,9 +39,12 @@ class SymbolTableStack
 private:
     SymbolTable* _root;
     SymbolTable* _current;
+    int _innerIdx;
+
 public:
+    void addSymbol(Symbol* symbol, int line, int col);
+    void addTag(Symbol* symbol, int line, int col);
     Symbol* getSymbol(const string& name, int line, int col);
-    void addSymbol(Symbol* symbol, NameType nt, int line, int col);
     Symbol* findSymbol(const string& name);
     Symbol* findSymbol(const string& name, NameType nt);
 
@@ -49,7 +52,8 @@ public:
     void pop();
     void out();
 
-    SymbolTableStack(SymbolTable* root, SymbolTable* current): _root(root), _current(current) {}
+    SymbolTableStack(SymbolTable* root, SymbolTable* current):
+        _root(root), _current(current), _innerIdx(0) {}
     ~SymbolTableStack() { delete _root; }
 };
 

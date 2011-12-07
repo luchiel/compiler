@@ -5,29 +5,51 @@
 #include "exception.h"
 #include "symbol_table.h"
 #include "symbol.h"
+#include "complex_symbol.h"
 
 namespace LuCCompiler
 {
 
-void SymbolTable::addSymbol(Symbol* symbol, NameType nt, int line, int col)
+bool SymbolTable::addSymbol(Symbol* symbol, int line, int col, int name)
 {
-    if(_symbols.find(make_pair(symbol->name, nt)) != _symbols.end())
+    bool r = false;
+    if(_symbols.find(make_pair(symbol->name, NT_NAME)) != _symbols.end())
         throw RedefinedSymbolException(line, col, symbol->name);
 
     if(symbol->name == "")
     {
         stringstream ss;
-        ss << _innerIdx;
+        ss << name;
         symbol->name = ss.str();
-        _innerIdx++;
+        r = true;
     }
-    _symbols[make_pair(symbol->name, nt)] = symbol;
+    _symbols[make_pair(symbol->name, NT_NAME)] = symbol;
     _ordered.push_back(symbol);
+    return r;
+}
+
+bool SymbolTable::addTag(Symbol* symbol, int line, int col, int name)
+{
+    bool r = false;
+    SymbolTypeStruct* s = static_cast<SymbolTypeStruct*>(symbol);
+    if(_symbols.find(make_pair(s->tag, NT_TAG)) != _symbols.end())
+        throw RedefinedSymbolException(line, col, s->tag);
+
+    if(symbol->name == "")
+    {
+        stringstream ss;
+        ss << name;
+        symbol->name = ss.str();
+        r = true;
+    }
+    _symbols[make_pair(s->tag, NT_TAG)] = symbol;
+    _ordered.push_back(symbol);
+    return r;
 }
 
 Symbol* SymbolTable::getSymbol(const string& name, int line, int col)
 {
-    Symbol* s = findSymbol(name);
+    Symbol* s = findSymbol(name, NT_NAME);
     if(s == NULL)
         throw UndefinedSymbolException(line, col, name);
     else
@@ -103,9 +125,16 @@ Symbol* SymbolTableStack::getSymbol(const string& name, int line, int col)
     return s;
 }
 
-void SymbolTableStack::addSymbol(Symbol* symbol, NameType nt, int line, int col)
+void SymbolTableStack::addSymbol(Symbol* symbol, int line, int col)
 {
-    _current->addSymbol(symbol, nt, line, col);
+    if(_current->addSymbol(symbol, line, col, _innerIdx))
+        _innerIdx++;
+}
+
+void SymbolTableStack::addTag(Symbol* symbol, int line, int col)
+{
+    if(_current->addTag(symbol, line, col, _innerIdx))
+        _innerIdx++;
 }
 
 void SymbolTableStack::push(SymbolTable* t)
@@ -129,9 +158,9 @@ SymbolTableStack* initPrimarySymbolTableStack()
 {
     SymbolTable* primarySymbolTable = new SymbolTable();
 
-    primarySymbolTable->addSymbol(new SymbolType("int"), NT_NAME, 0, 0);
-    primarySymbolTable->addSymbol(new SymbolType("float"), NT_NAME, 0, 0);
-    primarySymbolTable->addSymbol(new SymbolType("void"), NT_NAME, 0, 0);
+    primarySymbolTable->addSymbol(new SymbolType("int"), 0, 0, 0);
+    primarySymbolTable->addSymbol(new SymbolType("float"), 0, 0, 0);
+    primarySymbolTable->addSymbol(new SymbolType("void"), 0, 0, 0);
 
     return new SymbolTableStack(primarySymbolTable, primarySymbolTable);
 }

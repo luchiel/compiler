@@ -1,7 +1,7 @@
 ﻿%token IDENTIFIER CONSTANT STRING_LITERAL SIZEOF
-%token INT FLOAT /*DOUBLE*/ VOID
+%token INT FLOAT VOID TYPE_NAME
 %token STRUCT
-%token IF ELSE WHILE DO FOR CONTINUE BREAK RETURN
+%token IF ELSE WHILE DO FOR CONTINUE BREAK RETURN TYPEDEF
 
 primary_expression = IDENTIFIER | CONSTANT | STRING_LITERAL | '(' expression ')' ;
 
@@ -11,18 +11,14 @@ postfix_expression =
     postfix_expression '(' [argument_expression_list] ')' |
     postfix_expression ('->' | '.') IDENTIFIER |
     postfix_expression ('++' | '--') |
-    '(' type_name ')' '{' initializer_list [','] '}' ; //THIS ONE LOOKS VERY SCARY
-
+    '(' type_name ')' '{' initializer_list [','] '}' ;
 unary_expression =
     postfix_expression |
     ('++' | '--') unary_expression |
     unary_operator cast_expression |
     SIZEOF (unary_expression | '(' type_name ')') ;
-
 unary_operator = '&' | '*' | '+' | '-' | '~' | '!' ;
-
 cast_expression = unary_expression | '(' type_name ')' cast_expression ;
-
 multiplicative_expression = cast_expression [('*' | '/' | '%') multiplicative_expression] ;
 additive_expression = multiplicative_expression [('+' | '-') additive_expression] ;
 shift_expression = additive_expression [('<<' | '>>') shift_expression] ;
@@ -73,7 +69,6 @@ initializer_list = [designation] initializer [',' initializer_list] ;
 designation = designator_list '=' ;
 designator_list = designator [designator_list] ;
 designator = '[' conditional_expression ']' | '.' IDENTIFIER ;
-
 statement =
     compound_statement |
     expression_statement | selection_statement |

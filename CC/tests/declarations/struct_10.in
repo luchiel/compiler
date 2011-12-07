@@ -1,0 +1,2 @@
+struct a { struct a *h; } some_var;
+struct b { struct b h; } some_var2;

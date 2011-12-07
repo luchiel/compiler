@@ -1,9 +1,10 @@
 type <int>
 type <float>
 type <void>
-type <a>
-	struct a
+type <0>
+	struct 0
+		tag a
 		variable aa of type <int>
-variable some_var of type <a>
-variable some_other_var of type <a>
+variable some_var of type <0>
+variable some_other_var of type <0>
 variable aaa of type <int>

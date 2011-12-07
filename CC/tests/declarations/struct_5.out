@@ -1,11 +1,13 @@
 type <int>
 type <float>
 type <void>
-type <a>
-	struct a
-		type <b>
-			struct b
+type <0>
+	struct 0
+		tag a
+		type <1>
+			struct 1
+				tag b
 				variable u of type <int>
-		variable u of type <b>
-		variable f of type <b>
-variable c of type <a>
+		variable u of type <1>
+		variable f of type <1>
+variable c of type <0>

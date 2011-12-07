@@ -3,6 +3,7 @@ type <float>
 type <void>
 type <0>
 	struct 0
+		tag 
 		variable c of type <int>
 		variable d of type <int>
 variable h of type <0> initialized by

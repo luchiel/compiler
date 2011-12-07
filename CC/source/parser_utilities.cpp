@@ -5,6 +5,7 @@
 #include "tokenizer.h"
 #include "token.h"
 #include "symbol.h"
+#include "complex_symbol.h"
 #include "symbol_table.h"
 
 using namespace std;
@@ -17,9 +18,14 @@ Symbol* Parser::getSymbol(const string& name)
     return _symbols->getSymbol(name, _tokens->get().line, _tokens->get().col + 1);
 }
 
-void Parser::addSymbol(Symbol* symbol, NameType nt)
+void Parser::addSymbol(Symbol* symbol)
 {
-    _symbols->addSymbol(symbol, nt, _tokens->get().line, _tokens->get().col + 1);
+    _symbols->addSymbol(symbol, _tokens->get().line, _tokens->get().col + 1);
+}
+
+void Parser::addTag(SymbolTypeStruct* symbol)
+{
+    _symbols->addTag(symbol, _tokens->get().line, _tokens->get().col + 1);
 }
 
 Symbol* Parser::findSymbol(const string& name)
@@ -32,10 +38,18 @@ Symbol* Parser::findSymbol(const string& name, NameType nt)
     return _symbols->findSymbol(name, nt);
 }
 
-void Parser::safeAddSymbol(Symbol* symbol, NameType nt)
+void Parser::safeAddSymbol(Symbol* symbol)
 {
-    if(!findSymbol(symbol->name, nt))
-        addSymbol(symbol, nt);
+    SymbolTypeStruct* s = dynamic_cast<SymbolTypeStruct*>(symbol);
+    if(s == NULL || s->tag == "")
+    {
+        if(!findSymbol(symbol->name))
+            addSymbol(symbol);
+    }
+    else
+    {
+        //
+    }
 }
 
 void Parser::out()

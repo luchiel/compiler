@@ -1,8 +1,9 @@
 type <int>
 type <float>
 type <void>
-type <f>
-	struct f
+type <0>
+	struct 0
+		tag f
 		variable a of type <int>
 		variable b of type <int>
 function main
@@ -13,7 +14,7 @@ function main
 		variable a of type <int> initialized by
 			{sizeof}
 			| 
-			+-<f>
+			+-<0>
 	| 
 	+-{;}
 	  | 

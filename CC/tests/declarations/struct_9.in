@@ -4,7 +4,7 @@ struct a
     struct { int g; } f;
 } b[10];
 
-int main(a r)
+int main(struct a r)
 {
-    a something;
+    struct a something;
 }

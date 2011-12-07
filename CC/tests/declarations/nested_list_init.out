@@ -1,13 +1,15 @@
 type <int>
 type <float>
 type <void>
-type <0>
-	struct 0
+type <1>
+	struct 1
+		tag 
 		type <0>
 			struct 0
+				tag 
 				variable g of type <int>
 		variable c of type <0>
-variable ii of type <0> initialized by
+variable ii of type <1> initialized by
 	{
 		{
 			{int 7}

@@ -131,7 +131,8 @@ SymbolTypeStruct* Parser::parseStructSpecifier()
     if(node == NULL)
     {
         node = new SymbolTypeStruct("", tag);
-        addSymbol(node, NT_TAG);
+        if(tag != "")
+            addTag(node);
         found = false;
     }
     if(tokenType() == TOK_L_BRACE)
@@ -324,7 +325,6 @@ bool Parser::parseDeclaration(bool definitionAllowed)
     {
         if(isTypedef)
             throw makeException("empty typedef not allowed");
-        //safeAddSymbol(type);
         consumeTokenOfType(TOK_SEP, "';' expected");
         return true;
     }

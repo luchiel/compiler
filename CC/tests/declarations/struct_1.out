@@ -1,5 +1,6 @@
 type <int>
 type <float>
 type <void>
-type <a>
-	struct a
+type <0>
+	struct 0
+		tag a

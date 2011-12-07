@@ -27,11 +27,12 @@ private:
 
     TokenType tokenType() { return _tokens->get().type; }
 
-    Symbol* getSymbol(const string& name);
+    Symbol* getSymbol(const string& name); //tags not seen
     Symbol* findSymbol(const string& name);
     Symbol* findSymbol(const string& name, NameType nt);
-    void addSymbol(Symbol* symbol, NameType nt = NT_NAME);
-    void safeAddSymbol(Symbol* symbol, NameType nt = NT_NAME);
+    void addSymbol(Symbol* symbol);
+    void addTag(SymbolTypeStruct* symbol);
+    void safeAddSymbol(Symbol* symbol);
 
     Node* parsePrimaryExpression();
     Node* parsePostfixExpression();
