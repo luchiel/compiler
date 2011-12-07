@@ -16,26 +16,21 @@ namespace LuCCompiler
 class Parser
 {
 private:
+    enum DecKind { D_ABSTRACT, D_NOT_ABSTRACT, D_BOTH };
+    enum ParseMode { PM_SYMBOLS, PM_NO_SYMBOLS };
+
     Node* _root;
     Tokenizer* _tokens;
     SymbolTableStack* _symbols;
     string _varName;
+    ParseMode _mode;
 
     TokenType tokenType() { return _tokens->get().type; }
 
-    Symbol* getSymbol(const string& name, bool type = false);
-    Symbol* findSymbol(const string& name, bool type = false);
-    void addSymbol(Symbol* symbol, bool type = false);
-    void safeAddSymbol(Symbol* symbol, bool type = false);
-
-    enum DecKind { D_ABSTRACT, D_NOT_ABSTRACT, D_BOTH };
-
-public:
-    void parse();
-    void parseStat();
-    void parseExpr();
-
-    Parser(Tokenizer* tokens);
+    Symbol* getSymbol(const string& name);
+    Symbol* findSymbol(const string& name);
+    void addSymbol(Symbol* symbol);
+    void safeAddSymbol(Symbol* symbol);
 
     Node* parsePrimaryExpression();
     Node* parsePostfixExpression();
@@ -75,6 +70,13 @@ public:
     ParserException makeException(const string& e);
     void nullException(void* pointerToCheck, const string& e);
     void consumeTokenOfType(TokenType type, const string& except);
+
+public:
+    void parse();
+    void parseStat();
+    void parseExpr();
+
+    Parser(Tokenizer* tokens);
 
     void out();
 };

@@ -12,25 +12,25 @@ using namespace std;
 namespace LuCCompiler
 {
 
-Symbol* Parser::getSymbol(const string& name, bool type)
+Symbol* Parser::getSymbol(const string& name)
 {
-    return _symbols->getSymbol(name, _tokens->get().line, _tokens->get().col + 1, type);
+    return _symbols->getSymbol(name, _tokens->get().line, _tokens->get().col + 1);
 }
 
-void Parser::addSymbol(Symbol* symbol, bool type)
+void Parser::addSymbol(Symbol* symbol)
 {
-    _symbols->addSymbol(symbol, _tokens->get().line, _tokens->get().col + 1, type);
+    _symbols->addSymbol(symbol, _tokens->get().line, _tokens->get().col + 1);
 }
 
-Symbol* Parser::findSymbol(const string& name, bool type)
+Symbol* Parser::findSymbol(const string& name)
 {
-    return _symbols->findSymbol(name, type);
+    return _symbols->findSymbol(name);
 }
 
-void Parser::safeAddSymbol(Symbol* symbol, bool type)
+void Parser::safeAddSymbol(Symbol* symbol)
 {
-    if(!findSymbol(symbol->name, type))
-        addSymbol(symbol, type);
+    if(!findSymbol(symbol->name))
+        addSymbol(symbol);
 }
 
 void Parser::out()
@@ -41,9 +41,7 @@ void Parser::out()
         _root->out(0, &finishedBranches);
     }
     else
-    {
         _symbols->out();
-    }
 }
 
 Parser::Parser(Tokenizer* tokens): _varName("")
@@ -55,16 +53,19 @@ Parser::Parser(Tokenizer* tokens): _varName("")
 
 void Parser::parse()
 {
+    _mode = PM_SYMBOLS;
     parseTranslationUnit();
 }
 
 void Parser::parseStat()
 {
+    _mode = PM_NO_SYMBOLS;
     _root = parseStatement();
 }
 
 void Parser::parseExpr()
 {
+    _mode = PM_NO_SYMBOLS;
     _root = parseExpression();
 }
 

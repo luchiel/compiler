@@ -15,15 +15,14 @@ class SymbolTable
 {
 protected:
     map<string, Symbol*> _symbols;
-    map<string, Symbol*> _types;
     vector<Symbol*> _ordered;
     int _innerIdx;
 
 public:
     SymbolTable* parent;
-    Symbol* getSymbol(const string& name, int line, int col, bool type = false);
-    void addSymbol(Symbol* symbol, int line, int col, bool type = false);
-    Symbol* findSymbol(const string& name, bool type = false);
+    Symbol* getSymbol(const string& name, int line, int col);
+    void addSymbol(Symbol* symbol, int line, int col);
+    Symbol* findSymbol(const string& name);
 
     int size() { return _ordered.size(); }
     void out(int indent);
@@ -38,9 +37,9 @@ private:
     SymbolTable* _root;
     SymbolTable* _current;
 public:
-    Symbol* getSymbol(const string& name, int line, int col, bool type = false);
-    void addSymbol(Symbol* symbol, int line, int col, bool type = false);
-    Symbol* findSymbol(const string& name, bool type = false);
+    Symbol* getSymbol(const string& name, int line, int col);
+    void addSymbol(Symbol* symbol, int line, int col);
+    Symbol* findSymbol(const string& name);
 
     void push(SymbolTable* t);
     void pop();
