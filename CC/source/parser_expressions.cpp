@@ -53,7 +53,14 @@ Node* Parser::parsePrimaryExpression()
         case TOK_FLOAT_CONST:
             node = new FloatNode(_tokens->get().value.floatValue); break;
         case TOK_IDENT:
-            node = new IdentNode(_tokens->get().text); break;
+            if(_mode == PM_NO_SYMBOLS)
+                node = new IdentNode(_tokens->get().text);
+            else
+                node = new IdentNode(
+                    _tokens->get().text,
+                    static_cast<SymbolVariable*>(getSymbol(_tokens->get().text))
+                );
+            break;
         case TOK_L_BRACKET:
             _tokens->next();
             node = parseExpression();
@@ -69,7 +76,6 @@ Node* Parser::parsePrimaryExpression()
 
 Node* Parser::parsePostfixExpression()
 {
-    //'(' type_name ')' '{' initializer_list [','] '}' ;
     PostfixNode* node = new PostfixNode();
     Node* core = parsePrimaryExpression();
     node->_only = core;
@@ -168,9 +174,19 @@ Node* Parser::parseCastExpression()
             _tokens->rollBack();
             return parseUnaryExpression();
         }
-        CastNode* cast = new CastNode(type);
         consumeTokenOfType(TOK_R_BRACKET, "')' expected");
-        cast->element = parseCastExpression();
+        Node* node = NULL;
+        if(tokenType() == TOK_L_BRACE)
+        {
+            _tokens->next();
+            node = parseInitializerList();
+            consumeTokenOfType(TOK_R_BRACE, "'}' expected");
+        }
+        else
+            node = parseCastExpression();
+
+        CastNode* cast = new CastNode(type);
+        cast->element = node;
         return cast;
     }
     return parseUnaryExpression();

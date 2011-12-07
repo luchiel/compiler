@@ -309,6 +309,7 @@ Tokenizer::Tokenizer(const string& filename):
     keywords["break"] = TOK_BREAK;
     keywords["continue"] = TOK_CONTINUE;
     keywords["return"] = TOK_RETURN;
+    keywords["typedef"] = TOK_TYPEDEF;
 
     bind(filename);
 }

@@ -82,6 +82,8 @@ enum TokenType
     TOK_INT,
     TOK_FLOAT,
     TOK_VOID,
+
+    TOK_TYPEDEF,
 };
 
 const string TOKEN_TYPE_NAME[] =
@@ -158,6 +160,8 @@ const string TOKEN_TYPE_NAME[] =
     "int KEYWORD",
     "float KEYWORD",
     "void KEYWORD",
+
+    "typedef KEYWORD",
 };
 
 class Token

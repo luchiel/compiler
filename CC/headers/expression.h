@@ -16,7 +16,8 @@ class IdentNode: public Node
 {
 public:
     string _name;
-    IdentNode(const string& name): _name(name) {}
+    SymbolVariable* _var;
+    IdentNode(const string& name_, SymbolVariable* var_ = NULL): _name(name_), _var(var_) {}
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
 };
 
