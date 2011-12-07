@@ -1,0 +1,4 @@
+int main()
+{
+struct f{ int g; } *t;
+}

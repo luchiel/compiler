@@ -1,0 +1,14 @@
+type <int>
+type <float>
+type <void>
+function main
+	returns type <int>
+	arguments
+		<no args>
+	{{}}
+		type <f>
+			struct f
+				variable g of type <int>
+		type <0>
+			pointer to <f>
+		variable t of type <0>
