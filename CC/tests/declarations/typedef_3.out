@@ -1,0 +1,9 @@
+type <int>
+type <float>
+type <void>
+type <0>
+	struct 0
+		tag a
+		variable b of type <int>
+type <c>
+	alias to type <0>

@@ -1,0 +1,7 @@
+type <int>
+type <float>
+type <void>
+type <c>
+	struct c
+		tag 
+		variable b of type <int>

@@ -32,6 +32,9 @@ public:
 
     SymbolTable(): parent(NULL) {}
     ~SymbolTable();
+
+    friend bool operator==(const SymbolTable& t1, const SymbolTable& t2);
+    friend bool operator!=(const SymbolTable& t1, const SymbolTable& t2) { return !(t1 == t2); }
 };
 
 class SymbolTableStack

@@ -1,0 +1,7 @@
+typedef struct c {int b;} d;
+
+int main()
+{
+	d a;
+	struct c aa;
+}

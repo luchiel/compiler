@@ -42,14 +42,8 @@ void Parser::safeAddSymbol(Symbol* symbol)
 {
     SymbolTypeStruct* s = dynamic_cast<SymbolTypeStruct*>(symbol);
     if(s == NULL || s->tag == "")
-    {
         if(!findSymbol(symbol->name))
             addSymbol(symbol);
-    }
-    else
-    {
-        //
-    }
 }
 
 void Parser::out()

@@ -21,6 +21,8 @@ public:
     SymbolTypeFunction(SymbolType* type_, string name_):
         TypedSymbolType(type_, name_), args(new SymbolTable()), body(NULL) {}
     virtual void out(int indent, bool noFirst = true);
+
+    virtual bool operator==(Symbol& symbol);
 };
 
 class SymbolTypeStruct: public SymbolType
@@ -31,6 +33,8 @@ public:
     SymbolTypeStruct(const string& name_, const string& tag_):
         SymbolType(name_), tag(tag_), fields(new SymbolTable()) {}
     virtual void out(int indent, bool noFirst = true);
+
+    virtual bool operator==(Symbol& symbol);
 };
 
 }

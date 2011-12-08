@@ -110,7 +110,11 @@ SymbolType* Parser::parseTypeSpecifier()
             Symbol* tmp;
             tmp = findSymbol(_tokens->get().text, NT_NAME);
             if(tmp != NULL)
+            {
+                if(dynamic_cast<SymbolVariable*>(tmp) != NULL)
+                    return NULL;
                 _tokens->next();
+            }
             return static_cast<SymbolType*>(tmp);
         default:
             return NULL;
@@ -295,13 +299,30 @@ void Parser::addTypeAndInitializedVariable(SymbolType* type, Node* initializer, 
     //function declaration? not variable...
     if(isTypedef)
     {
-        type->name = _varName;
-        addSymbol(type);
+        if(type->name == "")
+        {
+            type->name = _varName;
+            addSymbol(type);
+        }
+        else
+        {
+            SymbolTypeAlias* t = dynamic_cast<SymbolTypeAlias*>(findSymbol(_varName));
+            if(t == NULL || t->alias != type)
+                addSymbol(new SymbolTypeAlias(type, _varName));
+        }
     }
     else
     {
-        safeAddSymbol(type);
-        addSymbol(new SymbolVariable(type, _varName, initializer));
+        if(dynamic_cast<SymbolTypeFunction*>(type) == NULL)
+        {
+            safeAddSymbol(type);
+            addSymbol(new SymbolVariable(type, _varName, initializer));
+        }
+        else
+        {
+            type->name = _varName;
+            safeAddSymbol(type);
+        }
     }
     _varName = "";
 }
@@ -332,16 +353,19 @@ bool Parser::parseDeclaration(bool definitionAllowed)
 
     if(initializer == NULL && tokenType() == TOK_L_BRACE)
     {
-        if(!definitionAllowed || isTypedef)
+        SymbolTypeFunction* function = dynamic_cast<SymbolTypeFunction*>(type);
+        if(!definitionAllowed || isTypedef || function == NULL)
             throw makeException("unexpected function definition");
-        //is function?
-        SymbolTypeFunction* function = static_cast<SymbolTypeFunction*>(type);
         function->name = _varName;
         _varName = "";
         _symbols->push(function->args);
         function->body = parseCompoundStatement();
         _symbols->pop();
-        addSymbol(function);
+        SymbolTypeFunction* f = dynamic_cast<SymbolTypeFunction*>(findSymbol(function->name));
+        if(f == NULL || f->body != NULL || *f != *function)
+            addSymbol(function);
+        else
+            f->body = function->body;
         return true;
     }
 

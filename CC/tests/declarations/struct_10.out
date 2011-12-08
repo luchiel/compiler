@@ -1,0 +1,15 @@
+type <int>
+type <float>
+type <void>
+type <0>
+	struct 0
+		tag a
+		type <1>
+			pointer to <0>
+		variable h of type <1>
+variable some_var of type <0>
+type <2>
+	struct 2
+		tag b
+		variable h of type <2>
+variable some_var2 of type <2>

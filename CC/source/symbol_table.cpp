@@ -1,4 +1,3 @@
-#include <sstream>
 #include <string>
 #include <assert.h>
 #include <map>
@@ -10,19 +9,24 @@
 namespace LuCCompiler
 {
 
+bool operator==(const SymbolTable& t1, const SymbolTable& t2)
+{
+    if(t1._ordered.size() != t2._ordered.size())
+        return false;
+    for(unsigned int i = 0; i < t1._ordered.size(); ++i)
+    {
+        if(*t1._ordered[i] != *t2._ordered[i])
+            return false;
+    }
+    return true;
+}
+
 bool SymbolTable::addSymbol(Symbol* symbol, int line, int col, int name)
 {
-    bool r = false;
     if(_symbols.find(make_pair(symbol->name, NT_NAME)) != _symbols.end())
         throw RedefinedSymbolException(line, col, symbol->name);
 
-    if(symbol->name == "")
-    {
-        stringstream ss;
-        ss << name;
-        symbol->name = ss.str();
-        r = true;
-    }
+    bool r = symbol->setName(name);
     _symbols[make_pair(symbol->name, NT_NAME)] = symbol;
     _ordered.push_back(symbol);
     return r;
@@ -30,18 +34,11 @@ bool SymbolTable::addSymbol(Symbol* symbol, int line, int col, int name)
 
 bool SymbolTable::addTag(Symbol* symbol, int line, int col, int name)
 {
-    bool r = false;
     SymbolTypeStruct* s = static_cast<SymbolTypeStruct*>(symbol);
     if(_symbols.find(make_pair(s->tag, NT_TAG)) != _symbols.end())
         throw RedefinedSymbolException(line, col, s->tag);
 
-    if(symbol->name == "")
-    {
-        stringstream ss;
-        ss << name;
-        symbol->name = ss.str();
-        r = true;
-    }
+    bool r = symbol->setName(name);
     _symbols[make_pair(s->tag, NT_TAG)] = symbol;
     _ordered.push_back(symbol);
     return r;
@@ -52,8 +49,7 @@ Symbol* SymbolTable::getSymbol(const string& name, int line, int col)
     Symbol* s = findSymbol(name, NT_NAME);
     if(s == NULL)
         throw UndefinedSymbolException(line, col, name);
-    else
-        return s;
+    return s;
 }
 
 Symbol* SymbolTable::findSymbol(const string& name)

@@ -1,0 +1,14 @@
+type <int>
+type <float>
+type <void>
+function a
+	returns type <int>
+	arguments
+		type <0>
+			array [
+			] of <int>
+		variable b of type <0>
+		type <1>
+			pointer to <void>
+		variable c of type <1>
+	{{}}

@@ -1,5 +1,6 @@
 #include <cstdio>
 #include <iostream>
+#include <sstream>
 #include "symbol.h"
 #include "complex_symbol.h"
 
@@ -14,6 +15,23 @@ void Symbol::out(int indent, bool noFirst)
         cout << '\t';
 }
 
+Symbol* Symbol::resolveAlias()
+{
+    return this;
+}
+
+bool Symbol::setName(int name_)
+{
+    if(name == "")
+    {
+        stringstream ss;
+        ss << name_;
+        name = ss.str();
+        return true;
+    }
+    return false;
+}
+
 void SymbolType::out(int indent, bool noFirst)
 {
     if(name != "")
@@ -22,6 +40,18 @@ void SymbolType::out(int indent, bool noFirst)
             Symbol::out(indent);
         cout << "type <" << name << ">\n";
     }
+}
+
+void SymbolTypeAlias::out(int indent, bool noFirst)
+{
+    SymbolType::out(indent, noFirst);
+    Symbol::out(indent + 1, noFirst);
+    cout << "alias to type <" << alias->name << ">\n";
+}
+
+Symbol* SymbolTypeAlias::resolveAlias()
+{
+    return alias->resolveAlias();
 }
 
 void SymbolVariable::out(int indent, bool noFirst)
@@ -102,6 +132,47 @@ void SymbolTypeFunction::out(int indent, bool noFirst)
     vector<bool> finishedBranches;
     if(body != NULL)
         body->out(0, &finishedBranches, indent);
+}
+
+bool SymbolTypeAlias::operator==(Symbol& symbol)
+{
+    return *resolveAlias() == *symbol.resolveAlias();
+}
+
+bool SymbolVariable::operator==(Symbol& symbol)
+{
+    SymbolVariable* s = dynamic_cast<SymbolVariable*>(&symbol);
+    if(s == NULL || s->name != name || *s->type->resolveAlias() != *type->resolveAlias())
+        return false;
+    return true;
+}
+
+bool SymbolTypePointer::operator==(Symbol& symbol)
+{
+    SymbolTypePointer* s = dynamic_cast<SymbolTypePointer*>(symbol.resolveAlias());
+    if(s == NULL || *s->type->resolveAlias() != *type->resolveAlias())
+        return false;
+    return true;
+}
+
+bool SymbolTypeStruct::operator==(Symbol& symbol)
+{
+    SymbolTypeStruct* s = dynamic_cast<SymbolTypeStruct*>(symbol.resolveAlias());
+    if(s == NULL || *s->fields != *fields)
+        return false;
+    return true;
+}
+
+bool SymbolTypeFunction::operator==(Symbol& symbol)
+{
+    SymbolTypeFunction* s = dynamic_cast<SymbolTypeFunction*>(&symbol);
+    if(
+        s == NULL || s->name != name ||
+        *s->type->resolveAlias() != *type->resolveAlias() ||
+        *s->args != *args
+    )
+        return false;
+    return true;
 }
 
 }

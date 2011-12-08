@@ -1,0 +1,16 @@
+type <int>
+type <float>
+type <void>
+type <0>
+	struct 0
+		tag c
+		variable b of type <int>
+type <d>
+	alias to type <0>
+function main
+	returns type <int>
+	arguments
+		<no args>
+	{{}}
+		variable a of type <d>
+		variable aa of type <0>

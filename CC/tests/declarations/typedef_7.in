@@ -1,0 +1,2 @@
+typedef struct c d;
+typedef struct c {int b;} d;

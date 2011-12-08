@@ -1,0 +1,7 @@
+type <int>
+type <float>
+type <void>
+type <a>
+	array [
+		{int 10}
+	] of <int>

@@ -1,0 +1,7 @@
+type <int>
+type <float>
+type <void>
+type <a>
+	alias to type <int>
+type <b>
+	alias to type <int>

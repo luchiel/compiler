@@ -1,0 +1,12 @@
+type <int>
+type <float>
+type <void>
+function a
+	returns type <int>
+	arguments
+		variable b of type <int>
+	{{}}
+	| 
+	+-{return}
+	  | 
+	  +-{int 9}
