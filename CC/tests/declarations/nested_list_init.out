@@ -1,6 +1,8 @@
 type <int>
 type <float>
 type <void>
+type <int*>
+	pointer to <int>
 type <1>
 	struct 1
 		tag 

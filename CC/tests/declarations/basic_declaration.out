@@ -1,4 +1,6 @@
 type <int>
 type <float>
 type <void>
+type <int*>
+	pointer to <int>
 variable a of type <int>

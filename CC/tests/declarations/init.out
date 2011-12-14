@@ -1,6 +1,8 @@
 type <int>
 type <float>
 type <void>
+type <int*>
+	pointer to <int>
 variable a of type <int> initialized by
 	{int 10}
 variable b of type <int> initialized by

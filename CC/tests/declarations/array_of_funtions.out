@@ -1,6 +1,8 @@
 type <int>
 type <float>
 type <void>
+type <int*>
+	pointer to <int>
 function a
 	returns pointer to array [
 				{int 10}
