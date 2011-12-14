@@ -57,11 +57,10 @@ Node* Parser::parsePrimaryExpression()
                 node = new IdentNode(_tokens->get().text);
             else
             {
-                SymbolVariable* v =
-                    dynamic_cast<SymbolVariable*>(getSymbol(_tokens->get().text));
-                if(v == NULL)
+                Symbol* v = getSymbol(_tokens->get().text);
+                if(v->classType != CT_VAR)
                     throw makeException("Unexpected symbol " + _tokens->get().text);
-                node = new IdentNode(_tokens->get().text, v);
+                node = new IdentNode(_tokens->get().text, static_cast<SymbolVariable*>(v));
             }
             break;
         case TOK_L_BRACKET:

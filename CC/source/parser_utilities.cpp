@@ -40,8 +40,7 @@ Symbol* Parser::findSymbol(const string& name, NameType nt)
 
 void Parser::safeAddSymbol(Symbol* symbol)
 {
-    SymbolTypeStruct* s = dynamic_cast<SymbolTypeStruct*>(symbol);
-    if(s == NULL || s->tag == "")
+    if(symbol->classType != CT_STRUCT || static_cast<SymbolTypeStruct*>(symbol)->tag == "")
         if(!findSymbol(symbol->name))
             addSymbol(symbol);
 }

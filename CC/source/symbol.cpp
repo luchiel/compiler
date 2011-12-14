@@ -141,33 +141,45 @@ bool SymbolTypeAlias::operator==(Symbol& symbol)
 
 bool SymbolVariable::operator==(Symbol& symbol)
 {
-    SymbolVariable* s = dynamic_cast<SymbolVariable*>(&symbol);
-    if(s == NULL || s->name != name || *s->type->resolveAlias() != *type->resolveAlias())
+    if(symbol.classType != CT_VAR)
+        return false;
+    SymbolVariable* s = static_cast<SymbolVariable*>(&symbol);
+    if(s->name != name || *s->type->resolveAlias() != *type->resolveAlias())
         return false;
     return true;
 }
 
 bool SymbolTypePointer::operator==(Symbol& symbol)
 {
-    SymbolTypePointer* s = dynamic_cast<SymbolTypePointer*>(symbol.resolveAlias());
-    if(s == NULL || *s->type->resolveAlias() != *type->resolveAlias())
+    if
+    (
+        symbol.resolveAlias()->classType != CT_POINTER &&
+        symbol.resolveAlias()->classType != CT_ARRAY
+    )
+        return false;
+    SymbolTypePointer* s = static_cast<SymbolTypePointer*>(symbol.resolveAlias());
+    if(*s->type->resolveAlias() != *type->resolveAlias())
         return false;
     return true;
 }
 
 bool SymbolTypeStruct::operator==(Symbol& symbol)
 {
-    SymbolTypeStruct* s = dynamic_cast<SymbolTypeStruct*>(symbol.resolveAlias());
-    if(s == NULL || *s->fields != *fields)
+    if(symbol.resolveAlias()->classType != CT_STRUCT)
+        return false;
+    if(*static_cast<SymbolTypeStruct*>(symbol.resolveAlias())->fields != *fields)
         return false;
     return true;
 }
 
 bool SymbolTypeFunction::operator==(Symbol& symbol)
 {
-    SymbolTypeFunction* s = dynamic_cast<SymbolTypeFunction*>(&symbol);
-    if(
-        s == NULL || s->name != name ||
+    if(symbol.classType != CT_FUNCTION)
+        return false;
+    SymbolTypeFunction* s = static_cast<SymbolTypeFunction*>(&symbol);
+    if
+    (
+        s->name != name ||
         *s->type->resolveAlias() != *type->resolveAlias() ||
         *s->args != *args
     )

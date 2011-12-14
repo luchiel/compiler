@@ -78,7 +78,7 @@ public:
     SymbolVariable(SymbolType* type_, string name_):
         Symbol(name_), _initializer(NULL), type(type_) { classType = CT_VAR; }
     SymbolVariable(SymbolType* type_, string name_, Node* initializer_):
-        Symbol(name_), _initializer(initializer_), type(type_) {}
+        Symbol(name_), _initializer(initializer_), type(type_) { classType = CT_VAR; }
     virtual void out(int indent, bool noFirst = true);
 
     virtual bool operator==(Symbol& symbol);
