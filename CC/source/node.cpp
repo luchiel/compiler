@@ -9,9 +9,9 @@ using namespace std;
 namespace LuCCompiler
 {
 
-void Node::out(unsigned int depth, vector<bool>* branches, int indent)
+void Node::out(unsigned int depth, vector<bool>* branches, int level)
 {
-    while(indent-- > 0)
+    while(level-- > 0)
         cout << '\t';
 }
 
@@ -23,15 +23,15 @@ void Node::setBranch(unsigned int depth, vector<bool>* branches)
         (*branches)[depth] = false;
 }
 
-void Node::printRibsBeforeNode(unsigned int depth, vector<bool>* branches, int indent)
+void Node::printIndentBeforeNode(unsigned int depth, vector<bool>* branches, int level)
 {
-    printRibs(depth + 2, branches, indent);
+    printIndent(depth + 2, branches, level);
     cout << endl;
 }
 
-void Node::printRibs(unsigned int depth, vector<bool>* branches, int indent)
+void Node::printIndent(unsigned int depth, vector<bool>* branches, int level)
 {
-    Node::out(depth, branches, indent);
+    Node::out(depth, branches, level);
     unsigned int i = 0;
     while(depth != 0 && i < depth - 1)
     {
@@ -40,18 +40,22 @@ void Node::printRibs(unsigned int depth, vector<bool>* branches, int indent)
     }
 }
 
-void Node::makeNodeTop(unsigned int depth, vector<bool>* branches, const string& s, int indent)
+void Node::makeNodeTop(
+    unsigned int depth, vector<bool>* branches, const string& s, int level
+)
 {
     setBranch(depth, branches);
-    printRibs(depth, branches, indent);
+    printIndent(depth, branches, level);
     cout << (depth == 0 ? "" : "+-") << "{" << s << "}" << endl;
 }
 
-void Node::printNodeWithRibs(unsigned int depth, vector<bool>* branches, bool isLast, Node* node, int indent)
+void Node::printNodeWithIndent(
+    unsigned int depth, vector<bool>* branches, bool isLast, Node* node, int level
+)
 {
-    printRibsBeforeNode(depth, branches, indent);
+    printIndentBeforeNode(depth, branches, level);
     (*branches)[depth] = isLast;
-    node->out(depth + 1, branches, indent);
+    node->out(depth + 1, branches, level);
 }
 
 }

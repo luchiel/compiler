@@ -12,14 +12,14 @@ namespace LuCCompiler
 class Node
 {
 protected:
-    void printRibs(unsigned int depth, vector<bool>* branches, int indent);
-    void printRibsBeforeNode(unsigned int depth, vector<bool>* branches, int indent);
+    void printIndent(unsigned int depth, vector<bool>* branches, int level);
+    void printIndentBeforeNode(unsigned int depth, vector<bool>* branches, int level);
     void setBranch(unsigned int depth, vector<bool>* branches);
-    void makeNodeTop(unsigned int depth, vector<bool>* branches, const string& s, int indent);
-    void printNodeWithRibs(unsigned int depth, vector<bool>* branches, bool isLast, Node* node, int indent);
+    void makeNodeTop(unsigned int depth, vector<bool>* branches, const string& s, int level);
+    void printNodeWithIndent(unsigned int depth, vector<bool>* branches, bool isLast, Node* node, int level);
 
 public:
-    virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
+    virtual void out(unsigned int depth, vector<bool>* branches, int level = 0);
     virtual ~Node() {}
 };
 

@@ -65,7 +65,7 @@ private:
     SymbolType* parseDeclarator(SymbolType* type, DecKind isAbstract = D_NOT_ABSTRACT);
     bool parseDeclaration(bool definitionAllowed);
     Node* parseInitializerPart();
-    void addTypeAndInitializedVariable(SymbolType* type, Node* initializer, bool isTypedef);
+    void addParsedSymbols(SymbolType* type, Node* initializer, bool isTypedef);
     void parseParameterDeclaration();
     void parseTranslationUnit();
 

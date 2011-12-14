@@ -294,9 +294,8 @@ Node* Parser::parseInitializerPart()
     return initializer;
 }
 
-void Parser::addTypeAndInitializedVariable(SymbolType* type, Node* initializer, bool isTypedef)
+void Parser::addParsedSymbols(SymbolType* type, Node* initializer, bool isTypedef)
 {
-    //function declaration? not variable...
     if(isTypedef)
     {
         if(type->name == "")
@@ -369,13 +368,13 @@ bool Parser::parseDeclaration(bool definitionAllowed)
         return true;
     }
 
-    addTypeAndInitializedVariable(type, initializer, isTypedef);
+    addParsedSymbols(type, initializer, isTypedef);
     while(tokenType() == TOK_COMMA)
     {
         _tokens->next();
         type = parseDeclarator(initial);
         initializer = parseInitializerPart();
-        addTypeAndInitializedVariable(type, initializer, isTypedef);
+        addParsedSymbols(type, initializer, isTypedef);
     }
     consumeTokenOfType(TOK_SEP, "';' expected");
     return true;

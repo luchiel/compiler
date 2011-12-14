@@ -26,7 +26,7 @@ class Designation: public DesignationT
 {
 public:
     Designation(): DesignationT() {}
-    virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
+    virtual void out(unsigned int depth, vector<bool>* branches, int level = 0);
 };
 
 typedef NodeWithList< pair<Designation*, Node*> > InitializerListT;
@@ -35,7 +35,7 @@ class InitializerList: public InitializerListT
 {
 public:
     InitializerList(): InitializerListT() {}
-    virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
+    virtual void out(unsigned int depth, vector<bool>* branches, int level = 0);
 };
 
 }

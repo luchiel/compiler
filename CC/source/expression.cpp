@@ -9,97 +9,97 @@ using namespace std;
 namespace LuCCompiler
 {
 
-void IdentNode::out(unsigned int depth, vector<bool>* branches, int indent)
+void IdentNode::out(unsigned int depth, vector<bool>* branches, int level)
 {
-    printRibs(depth, branches, indent);
+    printIndent(depth, branches, level);
     cout << (depth == 0 ? "" : "+-") << "{" << _name << "}" << endl;
 }
 
-void StringNode::out(unsigned int depth, vector<bool>* branches, int indent)
+void StringNode::out(unsigned int depth, vector<bool>* branches, int level)
 {
-    printRibs(depth, branches, indent);
+    printIndent(depth, branches, level);
     cout << (depth == 0 ? "" : "+-") << "{string " << _value << "}" << endl;
 }
 
-void CharNode::out(unsigned int depth, vector<bool>* branches, int indent)
+void CharNode::out(unsigned int depth, vector<bool>* branches, int level)
 {
-    printRibs(depth, branches, indent);
+    printIndent(depth, branches, level);
     cout << (depth == 0 ? "" : "+-") << "{char " << _value << "}" << endl;
 }
 
-void IntNode::out(unsigned int depth, vector<bool>* branches, int indent)
+void IntNode::out(unsigned int depth, vector<bool>* branches, int level)
 {
-    printRibs(depth, branches, indent);
+    printIndent(depth, branches, level);
     cout << (depth == 0 ? "" : "+-") << "{int " << _value << "}" << endl;
 }
 
-void FloatNode::out(unsigned int depth, vector<bool>* branches, int indent)
+void FloatNode::out(unsigned int depth, vector<bool>* branches, int level)
 {
-    printRibs(depth, branches, indent);
+    printIndent(depth, branches, level);
     cout << (depth == 0 ? "" : "+-") << "{float " << _value << "}" << endl;
 }
 
-void PostfixNode::out(unsigned int depth, vector<bool>* branches, int indent)
+void PostfixNode::out(unsigned int depth, vector<bool>* branches, int level)
 {
     string x(_type == TOK_INC || _type == TOK_DEC ? "x" : "");
-    makeNodeTop(depth, branches, x + operationName(_type), indent);
+    makeNodeTop(depth, branches, x + operationName(_type), level);
     setBranch(depth, branches);
 
-    printRibsBeforeNode(depth, branches, indent);
+    printIndentBeforeNode(depth, branches, level);
 
     if(_tail == NULL)
         (*branches)[depth] = true;
 
-    _only->out(depth + 1, branches, indent);
+    _only->out(depth + 1, branches, level);
 
     if(_tail == NULL)
         return;
 
-    printNodeWithRibs(depth, branches, true, _tail, indent);
+    printNodeWithIndent(depth, branches, true, _tail, level);
 }
 
-void UnaryNode::out(unsigned int depth, vector<bool>* branches, int indent)
+void UnaryNode::out(unsigned int depth, vector<bool>* branches, int level)
 {
     string x(_type == TOK_INC || _type == TOK_DEC ? "x" : "");
-    makeNodeTop(depth, branches, operationName(_type) + x, indent);
-    printNodeWithRibs(depth, branches, true, _only, indent);
+    makeNodeTop(depth, branches, operationName(_type) + x, level);
+    printNodeWithIndent(depth, branches, true, _only, level);
 }
 
-void BinaryNode::out(unsigned int depth, vector<bool>* branches, int indent)
+void BinaryNode::out(unsigned int depth, vector<bool>* branches, int level)
 {
-    makeNodeTop(depth, branches, operationName(_type), indent);
-    printNodeWithRibs(depth, branches, false, _left, indent);
-    printNodeWithRibs(depth, branches, true, _right, indent);
+    makeNodeTop(depth, branches, operationName(_type), level);
+    printNodeWithIndent(depth, branches, false, _left, level);
+    printNodeWithIndent(depth, branches, true, _right, level);
 }
 
-void TernaryNode::out(unsigned int depth, vector<bool>* branches, int indent)
+void TernaryNode::out(unsigned int depth, vector<bool>* branches, int level)
 {
-    makeNodeTop(depth, branches, operationName(_type), indent);
+    makeNodeTop(depth, branches, operationName(_type), level);
 
-    printNodeWithRibs(depth, branches, false, _if, indent);
-    printNodeWithRibs(depth, branches, false, _then, indent);
-    printNodeWithRibs(depth, branches, true, _else, indent);
+    printNodeWithIndent(depth, branches, false, _if, level);
+    printNodeWithIndent(depth, branches, false, _then, level);
+    printNodeWithIndent(depth, branches, true, _else, level);
 }
 
-void CastNode::out(unsigned int depth, vector<bool>* branches, int indent)
+void CastNode::out(unsigned int depth, vector<bool>* branches, int level)
 {
-    makeNodeTop(depth, branches, "cast", indent);
+    makeNodeTop(depth, branches, "cast", level);
 
-    printRibsBeforeNode(depth, branches, indent);
-    printRibs(depth + 1, branches, indent);
+    printIndentBeforeNode(depth, branches, level);
+    printIndent(depth + 1, branches, level);
     cout << "+-<" << type->name << ">\n";
-    printNodeWithRibs(depth, branches, true, element, indent);
+    printNodeWithIndent(depth, branches, true, element, level);
 }
 
-void SizeofNode::out(unsigned int depth, vector<bool>* branches, int indent)
+void SizeofNode::out(unsigned int depth, vector<bool>* branches, int level)
 {
-    makeNodeTop(depth, branches, operationName(_type), indent);
+    makeNodeTop(depth, branches, operationName(_type), level);
     if(_only != NULL)
-        printNodeWithRibs(depth, branches, true, _only, indent);
+        printNodeWithIndent(depth, branches, true, _only, level);
     else
     {
-        printRibsBeforeNode(depth, branches, indent);
-        printRibs(depth + 1, branches, indent);
+        printIndentBeforeNode(depth, branches, level);
+        printIndent(depth + 1, branches, level);
         cout << "+-<" << _symbolType->name << ">\n";
     }
 }

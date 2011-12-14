@@ -19,7 +19,8 @@ public:
     SymbolTable* args;
     CompoundStatement* body;
     SymbolTypeFunction(SymbolType* type_, string name_):
-        TypedSymbolType(type_, name_), args(new SymbolTable()), body(NULL) {}
+        TypedSymbolType(type_, name_), args(new SymbolTable()), body(NULL)
+        { classType = CT_FUNCTION; }
     virtual void out(int indent, bool noFirst = true);
 
     virtual bool operator==(Symbol& symbol);
@@ -31,7 +32,8 @@ public:
     string tag;
     SymbolTable* fields;
     SymbolTypeStruct(const string& name_, const string& tag_):
-        SymbolType(name_), tag(tag_), fields(new SymbolTable()) {}
+        SymbolType(name_), tag(tag_), fields(new SymbolTable())
+        { classType = CT_STRUCT; }
     virtual void out(int indent, bool noFirst = true);
 
     virtual bool operator==(Symbol& symbol);
