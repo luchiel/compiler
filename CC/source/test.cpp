@@ -17,45 +17,56 @@ namespace LuCCompiler
 {
 
 const string TEST_DIR = "\\tests\\";
+const string TEST_ALL[] = {"tokenizer", "expressions", "statements", "declarations"};
+const int TEST_ALL_SIZE = 4;
 
 void runTests(string testBlock)
 {
-    Tester t;
-
-    //path to tests
-    string path(TEST_DIR + testBlock + '\\');
-    LPWSTR wpath = (LPWSTR)malloc((path.size() + 1) * sizeof(WCHAR));
-    MultiByteToWideChar(CP_ACP, 0, path.c_str(), path.size() + 1, wpath, path.size() + 1);
-
-    //current path
-    wchar_t wdir[FILENAME_MAX];
-    _wgetcwd(wdir, MAX_PATH);
-    wstring wfullpath(wdir);
-    wfullpath.append(wpath);
-
-    wstring tmp(wfullpath);
-    tmp.append(L"*.in");
-
-    WIN32_FIND_DATAW FindFileData;
-    HANDLE hFind;
-
-    hFind = FindFirstFileW(tmp.c_str(), &FindFileData);
-    do
+    int i = 0;
+    while(i < TEST_ALL_SIZE)
     {
-        if(hFind != INVALID_HANDLE_VALUE)
-        {
-            wstring filename(FindFileData.cFileName);
-            t.attachTypelessFilename(wfullpath + filename);
-            t.runFile(testBlock);
-            t.estimateResult();
-        }
-        else
-            throw FindFileError();
-    }
-    while(FindNextFileW(hFind, &FindFileData) || GetLastError() != ERROR_NO_MORE_FILES);
-    FindClose(hFind);
+        Tester t;
 
-    t.outputGlobalResult();
+        string currentTest(testBlock == "all" ? TEST_ALL[i] : testBlock);
+        //path to tests
+        string path(TEST_DIR + currentTest + '\\');
+        LPWSTR wpath = (LPWSTR)malloc((path.size() + 1) * sizeof(WCHAR));
+        MultiByteToWideChar(CP_ACP, 0, path.c_str(), path.size() + 1, wpath, path.size() + 1);
+
+        //current path
+        wchar_t wdir[FILENAME_MAX];
+        _wgetcwd(wdir, MAX_PATH);
+        wstring wfullpath(wdir);
+        wfullpath.append(wpath);
+
+        wstring tmp(wfullpath);
+        tmp.append(L"*.in");
+
+        WIN32_FIND_DATAW FindFileData;
+        HANDLE hFind;
+
+        hFind = FindFirstFileW(tmp.c_str(), &FindFileData);
+        do
+        {
+            if(hFind != INVALID_HANDLE_VALUE)
+            {
+                wstring filename(FindFileData.cFileName);
+                t.attachTypelessFilename(wfullpath + filename);
+                t.runFile(currentTest);
+                t.estimateResult();
+            }
+            else
+                throw FindFileError();
+        }
+        while(FindNextFileW(hFind, &FindFileData) || GetLastError() != ERROR_NO_MORE_FILES);
+        FindClose(hFind);
+
+        t.outputGlobalResult();
+        if(i == 0 && testBlock != "all")
+            break;
+        i++;
+        cout << endl;
+    }
 }
 
 void Tester::attachTypelessFilename(wstring filename)
