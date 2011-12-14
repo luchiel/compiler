@@ -12,6 +12,7 @@ namespace LuCCompiler
 enum ClassType
 {
     CT_UNKNOWN,
+    CT_BASE,
     CT_VAR,
     CT_ARRAY,
     CT_POINTER,
@@ -38,7 +39,7 @@ public:
 class SymbolType: public Symbol
 {
 public:
-    SymbolType(string name_): Symbol(name_) {}
+    SymbolType(string name_): Symbol(name_) { classType = CT_BASE; }
     virtual void out(int indent, bool noFirst = true);
     virtual SymbolType* getUndefined() { return NULL; }
     virtual bool isUndefined() { return false; }

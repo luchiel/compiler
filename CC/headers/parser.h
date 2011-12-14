@@ -34,14 +34,14 @@ private:
     void addTag(SymbolTypeStruct* symbol);
     void safeAddSymbol(Symbol* symbol);
 
-    Node* parsePrimaryExpression();
-    Node* parsePostfixExpression();
-    Node* parseUnaryExpression();
-    Node* parseBinaryExpression(int priority);
-    Node* parseCastExpression();
-    Node* parseConditionalExpression();
-    Node* parseAssignmentExpression();
-    Node* parseExpression();
+    ENode* parsePrimaryExpression();
+    ENode* parsePostfixExpression();
+    ENode* parseUnaryExpression();
+    ENode* parseBinaryExpression(int priority);
+    ENode* parseCastExpression();
+    ENode* parseConditionalExpression();
+    ENode* parseAssignmentExpression();
+    ENode* parseExpression();
 
     Node* parseBlockItem();
     CompoundStatement* parseCompoundStatement();

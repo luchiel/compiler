@@ -19,7 +19,7 @@ Designator* Parser::parseDesignator()
     if(tokenType() == TOK_L_SQUARE)
     {
         _tokens->next();
-        Node* sub = parseConditionalExpression();
+        ENode* sub = parseConditionalExpression();
         nullException(sub, "expression expected");
         consumeTokenOfType(TOK_R_SQUARE, "']' expected");
         return new Designator(TOK_L_SQUARE, sub);
@@ -29,7 +29,7 @@ Designator* Parser::parseDesignator()
         _tokens->next();
         if(tokenType() != TOK_IDENT)
             throw makeException("identifier expected");
-        Node* sub = new IdentNode(_tokens->get().text);
+        ENode* sub = new IdentNode(_tokens->get().text);
         _tokens->next();
         return new Designator(TOK_DOT, sub);
     }

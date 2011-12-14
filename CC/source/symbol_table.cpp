@@ -154,9 +154,11 @@ SymbolTableStack* initPrimarySymbolTableStack()
 {
     SymbolTable* primarySymbolTable = new SymbolTable();
 
-    primarySymbolTable->addSymbol(new SymbolType("int"), 0, 0, 0);
+    SymbolType* integer = new SymbolType("int");
+    primarySymbolTable->addSymbol(integer, 0, 0, 0);
     primarySymbolTable->addSymbol(new SymbolType("float"), 0, 0, 0);
     primarySymbolTable->addSymbol(new SymbolType("void"), 0, 0, 0);
+    primarySymbolTable->addSymbol(new SymbolTypePointer(integer, "int*"), 0, 0, 0);
 
     return new SymbolTableStack(primarySymbolTable, primarySymbolTable);
 }

@@ -12,63 +12,70 @@ using namespace std;
 namespace LuCCompiler
 {
 
-class IdentNode: public Node
+class ENode: public Node //aka ExpressionNode
+{
+public:
+    SymbolType* expType;
+    ENode(): expType(NULL) {}
+};
+
+class IdentNode: public ENode
 {
 public:
     string _name;
     SymbolVariable* _var;
-    IdentNode(const string& name_, SymbolVariable* var_ = NULL): _name(name_), _var(var_) {}
+    IdentNode(const string& name_, SymbolVariable* var_ = NULL): ENode(), _name(name_), _var(var_) {}
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
 };
 
-class StringNode: public Node
+class StringNode: public ENode
 {
 public:
     string _value;
-    StringNode(const string& value): _value(value) {}
+    StringNode(const string& value): ENode(), _value(value) {}
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
 };
 
-class CharNode: public Node
+class CharNode: public ENode
 {
 public:
     string _value;
-    CharNode(const string& value): _value(value) {}
+    CharNode(const string& value): ENode(), _value(value) {}
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
 };
 
-class IntNode: public Node
+class IntNode: public ENode
 {
 public:
     int _value;
-    IntNode(const int value): _value(value) {}
+    IntNode(const int value): ENode(), _value(value) {}
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
 };
 
-class FloatNode: public Node
+class FloatNode: public ENode
 {
 public:
     float _value;
-    FloatNode(const float value): _value(value) {}
+    FloatNode(const float value): ENode(), _value(value) {}
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
 };
 
-class PostfixNode: public Node
+class PostfixNode: public ENode
 {
 public:
     TokenType _type;
-    Node* _only;
-    Node* _tail;
-    PostfixNode(): _type(TOK_UNDEF), _only(NULL), _tail(NULL) {}
+    ENode* _only;
+    ENode* _tail;
+    PostfixNode(): ENode(), _type(TOK_UNDEF), _only(NULL), _tail(NULL) {}
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
 };
 
-class UnaryNode: public Node
+class UnaryNode: public ENode
 {
 public:
     TokenType _type;
-    Node* _only;
-    UnaryNode(): _type(TOK_UNDEF), _only(NULL) {}
+    ENode* _only;
+    UnaryNode(): ENode(), _type(TOK_UNDEF), _only(NULL) {}
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
 };
 
@@ -80,24 +87,24 @@ public:
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
 };
 
-class BinaryNode: public Node
+class BinaryNode: public ENode
 {
 public:
     TokenType _type;
-    Node* _left;
-    Node* _right;
-    BinaryNode(): _type(TOK_UNDEF), _left(NULL), _right(NULL) {}
+    ENode* _left;
+    ENode* _right;
+    BinaryNode(): ENode(), _type(TOK_UNDEF), _left(NULL), _right(NULL) {}
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
 };
 
-class TernaryNode: public Node
+class TernaryNode: public ENode
 {
 public:
     TokenType _type;
-    Node* _if;
-    Node* _then;
-    Node* _else;
-    TernaryNode(): _type(TOK_UNDEF), _if(NULL), _then(NULL), _else(NULL) {}
+    ENode* _if;
+    ENode* _then;
+    ENode* _else;
+    TernaryNode(): ENode(), _type(TOK_UNDEF), _if(NULL), _then(NULL), _else(NULL) {}
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
 };
 
@@ -113,12 +120,12 @@ public:
     ExpressionNode(): BinaryNode() {}
 };
 
-class CastNode: public Node
+class CastNode: public ENode
 {
 public:
     SymbolType* type;
-    Node* element;
-    CastNode(SymbolType* type_): Node(), type(type_) {}
+    ENode* element;
+    CastNode(SymbolType* type_): ENode(), type(type_) {}
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
 };
 

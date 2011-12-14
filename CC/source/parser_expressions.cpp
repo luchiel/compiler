@@ -9,11 +9,11 @@ using namespace std;
 namespace LuCCompiler
 {
 
-Node* Parser::parseBinaryExpression(int priority)
+ENode* Parser::parseBinaryExpression(int priority)
 {
     TokenType opType = TOK_UNDEF;
     BinaryNode* node = NULL;
-    Node* tmp = priority < 13 ?
+    ENode* tmp = priority < 13 ?
         parseBinaryExpression(priority + 1) : parseCastExpression();
     do
     {
@@ -37,21 +37,29 @@ Node* Parser::parseBinaryExpression(int priority)
     return node;
 }
 
-Node* Parser::parsePrimaryExpression()
+ENode* Parser::parsePrimaryExpression()
 {
-    Node* node = NULL;
+    ENode* node = NULL;
     switch(tokenType())
     {
         case TOK_OCT_CONST:
         case TOK_DEC_CONST:
         case TOK_HEX_CONST:
-            node = new IntNode(_tokens->get().value.intValue); break;
+            node = new IntNode(_tokens->get().value.intValue);
+            //node->expType = static_cast<SymbolType*>(getSymbol("int"));
+            break;
         case TOK_CHAR_CONST:
-            node = new CharNode(*_tokens->get().value.strValue); break;
+            node = new CharNode(*_tokens->get().value.strValue);
+            //node->expType = static_cast<SymbolType*>(getSymbol("int"));
+            break;
         case TOK_STR_CONST:
-            node = new StringNode(*_tokens->get().value.strValue); break;
+            node = new StringNode(*_tokens->get().value.strValue);
+            //node->expType = static_cast<SymbolType*>(getSymbol("int*"));
+            break;
         case TOK_FLOAT_CONST:
-            node = new FloatNode(_tokens->get().value.floatValue); break;
+            node = new FloatNode(_tokens->get().value.floatValue);
+            //node->expType = static_cast<SymbolType*>(getSymbol("float"));
+            break;
         case TOK_IDENT:
             if(_mode == PM_NO_SYMBOLS)
                 node = new IdentNode(_tokens->get().text);
@@ -61,6 +69,7 @@ Node* Parser::parsePrimaryExpression()
                 if(v->classType != CT_VAR)
                     throw makeException("Unexpected symbol " + _tokens->get().text);
                 node = new IdentNode(_tokens->get().text, static_cast<SymbolVariable*>(v));
+                //node->expType = static_cast<SymbolVariable*>(v)->type;
             }
             break;
         case TOK_L_BRACKET:
@@ -76,10 +85,10 @@ Node* Parser::parsePrimaryExpression()
     return node;
 }
 
-Node* Parser::parsePostfixExpression()
+ENode* Parser::parsePostfixExpression()
 {
     PostfixNode* node = new PostfixNode();
-    Node* core = parsePrimaryExpression();
+    ENode* core = parsePrimaryExpression();
     node->_only = core;
     while(true)
     {
@@ -103,10 +112,16 @@ Node* Parser::parsePostfixExpression()
                 break;
             case TOK_ARROW:
             case TOK_DOT:
+                //if(_mode == PM_SYMBOLS && core->expType->classType != CT_STRUCT)
+                //    throw makeException("Left must be struct");
                 _tokens->next();
                 if(tokenType() != TOK_IDENT)
                     throw makeException("Identifier expected");
+                //if(_mode == PM_SYMBOLS)
+                //    _symbols->push(static_cast<SymbolTypeStruct*>(core->expType)->fields);
                 node->_tail = parsePrimaryExpression();
+                //if(_mode == PM_SYMBOLS)
+                //    _symbols->pop();
                 break;
             case TOK_INC:
             case TOK_DEC:
@@ -121,7 +136,7 @@ Node* Parser::parsePostfixExpression()
     }
 }
 
-Node* Parser::parseUnaryExpression()
+ENode* Parser::parseUnaryExpression()
 {
     UnaryNode* node = NULL;
     SizeofNode* size = NULL;
@@ -165,7 +180,7 @@ Node* Parser::parseUnaryExpression()
     return node;
 }
 
-Node* Parser::parseCastExpression()
+ENode* Parser::parseCastExpression()
 {
     if(tokenType() == TOK_L_BRACKET)
     {
@@ -177,7 +192,7 @@ Node* Parser::parseCastExpression()
             return parseUnaryExpression();
         }
         consumeTokenOfType(TOK_R_BRACKET, "')' expected");
-        Node* node = NULL;
+        ENode* node = NULL;
         if(tokenType() == TOK_L_BRACE)
         {
             _tokens->next();
@@ -194,10 +209,10 @@ Node* Parser::parseCastExpression()
     return parseUnaryExpression();
 }
 
-Node* Parser::parseConditionalExpression()
+ENode* Parser::parseConditionalExpression()
 {
     TernaryNode* node = NULL;
-    Node* tmp = parseBinaryExpression(4);
+    ENode* tmp = parseBinaryExpression(4);
     if(tokenType() != TOK_QUEST)
         return tmp;
     node = new TernaryNode();
@@ -210,10 +225,10 @@ Node* Parser::parseConditionalExpression()
     return node;
 }
 
-Node* Parser::parseAssignmentExpression()
+ENode* Parser::parseAssignmentExpression()
 {
     AssignmentNode* node = NULL;
-    Node* tmp = parseConditionalExpression();
+    ENode* tmp = parseConditionalExpression();
     switch(tokenType())
     {
         case TOK_ASSIGN:
@@ -238,7 +253,7 @@ Node* Parser::parseAssignmentExpression()
     }
 }
 
-Node* Parser::parseExpression()
+ENode* Parser::parseExpression()
 {
     ExpressionNode* node = new ExpressionNode();
     node->_left = parseAssignmentExpression();

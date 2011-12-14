@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <utility>
-#include "node.h"
+#include "expression.h"
 #include "token.h"
 #include "nodeWithList.h"
 
@@ -12,12 +12,12 @@ using namespace std;
 namespace LuCCompiler
 {
 
-class Designator: public Node
+class Designator: public ENode
 {
 public:
     TokenType type; //[ or .
-    Node* sub;
-    Designator(TokenType type_, Node* sub_): type(type_), sub(sub_) {}
+    ENode* sub;
+    Designator(TokenType type_, ENode* sub_): type(type_), sub(sub_) {}
 };
 
 typedef NodeWithList<Designator> DesignationT;

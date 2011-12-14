@@ -2,14 +2,14 @@
 #define NODE_WITH_LIST_H
 
 #include <vector>
-#include "node.h"
+#include "expression.h"
 
 using namespace std;
 
 namespace LuCCompiler
 {
 
-template<typename T> class NodeWithList: public Node
+template<typename T> class NodeWithList: public ENode
 {
 protected:
     vector<T*> _list;
