@@ -10,5 +10,6 @@ function main
 	{{}}
 		variable a of type <int> initialized by
 			{sizeof}
+				type <int>
 			| 
 			+-<float>

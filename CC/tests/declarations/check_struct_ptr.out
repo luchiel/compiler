@@ -1,0 +1,34 @@
+type <int>
+type <float>
+type <void>
+type <int*>
+	pointer to <int>
+function main
+	returns type <int>
+	arguments
+		<no args>
+	{{}}
+		type <0>
+			pointer to struct 
+					tag 
+					variable b of type <int>
+		variable a of type <0>
+	| 
+	+-{;}
+	  | 
+	  +-{=}
+	    | 
+	    +-{->}
+					type <int>
+	    | | 
+	    | +-{a}
+						type <0>
+							pointer to struct 
+									tag 
+									variable b of type <int>
+	    | | 
+	    | +-{b}
+						type <int>
+	    | 
+	    +-{int 5}
+					type <int>

@@ -1,0 +1,6 @@
+int b(int c) {}
+
+int main()
+{
+b(5.0);
+}

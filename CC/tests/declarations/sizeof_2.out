@@ -15,6 +15,7 @@ function main
 	{{}}
 		variable a of type <int> initialized by
 			{sizeof}
+				type <int>
 			| 
 			+-<0>
 	| 
@@ -23,7 +24,10 @@ function main
 	  +-{=}
 	    | 
 	    +-{a}
+					type <int>
 	    | 
 	    +-{sizeof}
+					type <int>
 	      | 
 	      +-{a}
+						type <int>
