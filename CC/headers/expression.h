@@ -14,6 +14,11 @@ namespace LuCCompiler
 
 class ENode: public Node //aka ExpressionNode
 {
+protected:
+    void printExpType(int level);
+    virtual void makeNodeTop(
+        unsigned int depth, vector<bool>* branches, const string& s, int level
+    );
 public:
     SymbolType* expType;
     ENode(): expType(NULL) {}
@@ -63,27 +68,27 @@ public:
 class PostfixNode: public ENode
 {
 public:
-    TokenType _type;
-    ENode* _only;
-    ENode* _tail;
-    PostfixNode(): ENode(), _type(TOK_UNDEF), _only(NULL), _tail(NULL) {}
+    TokenType type;
+    ENode* only;
+    vector<ENode*> tail;
+    PostfixNode(): ENode(), type(TOK_UNDEF), only(NULL) {}
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
 };
 
 class UnaryNode: public ENode
 {
 public:
-    TokenType _type;
-    ENode* _only;
-    UnaryNode(): ENode(), _type(TOK_UNDEF), _only(NULL) {}
+    TokenType type;
+    ENode* only;
+    UnaryNode(): ENode(), type(TOK_UNDEF), only(NULL) {}
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
 };
 
 class SizeofNode: public UnaryNode
 {
 public:
-    SymbolType* _symbolType;
-    SizeofNode(): UnaryNode(), _symbolType(NULL) { _type = TOK_SIZEOF; }
+    SymbolType* symbolType;
+    SizeofNode(): UnaryNode(), symbolType(NULL) { type = TOK_SIZEOF; }
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
 };
 
