@@ -27,12 +27,13 @@ public:
     Symbol* findSymbol(const string& name);
     Symbol* findSymbol(const string& name, NameType nt);
 
-    int size() { return _ordered.size(); }
+    unsigned int size() { return _ordered.size(); }
     void out(int indent);
 
     SymbolTable(): parent(NULL) {}
     ~SymbolTable();
 
+    Symbol* operator[](const int i);
     friend bool operator==(const SymbolTable& t1, const SymbolTable& t2);
     friend bool operator!=(const SymbolTable& t1, const SymbolTable& t2) { return !(t1 == t2); }
 };

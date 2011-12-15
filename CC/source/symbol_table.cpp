@@ -9,6 +9,11 @@
 namespace LuCCompiler
 {
 
+Symbol* SymbolTable::operator[](const int i)
+{
+    return _ordered[i];
+}
+
 bool operator==(const SymbolTable& t1, const SymbolTable& t2)
 {
     if(t1._ordered.size() != t2._ordered.size())

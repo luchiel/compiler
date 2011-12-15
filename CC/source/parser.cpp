@@ -111,7 +111,7 @@ SymbolType* Parser::parseTypeSpecifier()
             tmp = findSymbol(_tokens->get().text, NT_NAME);
             if(tmp != NULL)
             {
-                if(tmp->classType == CT_VAR)
+                if(tmp->classType == CT_VAR || tmp->classType == CT_FUNCTION)
                     return NULL;
                 _tokens->next();
             }

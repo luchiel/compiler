@@ -83,6 +83,8 @@ public:
     void out();
 };
 
+string itostr(const int i);
+
 }
 
 #endif
