@@ -1,6 +1,7 @@
 #include "parser.h"
 #include "token.h"
 #include "symbol.h"
+#include "complex_symbol.h"
 #include "expression.h"
 #include "operations.h"
 
@@ -46,19 +47,23 @@ ENode* Parser::parsePrimaryExpression()
         case TOK_DEC_CONST:
         case TOK_HEX_CONST:
             node = new IntNode(_tokens->get().value.intValue);
-            //node->expType = static_cast<SymbolType*>(getSymbol("int"));
+            if(_mode == PM_SYMBOLS)
+                node->expType = static_cast<SymbolType*>(getSymbol("int"));
             break;
         case TOK_CHAR_CONST:
             node = new CharNode(*_tokens->get().value.strValue);
-            //node->expType = static_cast<SymbolType*>(getSymbol("int"));
+            if(_mode == PM_SYMBOLS)
+                node->expType = static_cast<SymbolType*>(getSymbol("int"));
             break;
         case TOK_STR_CONST:
             node = new StringNode(*_tokens->get().value.strValue);
-            //node->expType = static_cast<SymbolType*>(getSymbol("int*"));
+            if(_mode == PM_SYMBOLS)
+                node->expType = static_cast<SymbolType*>(getSymbol("int*"));
             break;
         case TOK_FLOAT_CONST:
             node = new FloatNode(_tokens->get().value.floatValue);
-            //node->expType = static_cast<SymbolType*>(getSymbol("float"));
+            if(_mode == PM_SYMBOLS)
+                node->expType = static_cast<SymbolType*>(getSymbol("float"));
             break;
         case TOK_IDENT:
             if(_mode == PM_NO_SYMBOLS)
@@ -66,10 +71,13 @@ ENode* Parser::parsePrimaryExpression()
             else
             {
                 Symbol* v = getSymbol(_tokens->get().text);
-                if(v->classType != CT_VAR)
+                if(v->classType != CT_VAR && v->classType != CT_FUNCTION)
                     throw makeException("Unexpected symbol " + _tokens->get().text);
                 node = new IdentNode(_tokens->get().text, static_cast<SymbolVariable*>(v));
-                //node->expType = static_cast<SymbolVariable*>(v)->type;
+                if(v->classType == CT_VAR)
+                    node->expType = static_cast<SymbolVariable*>(v)->type;
+                else
+                    node->expType = static_cast<SymbolTypeFunction*>(v);
             }
             break;
         case TOK_L_BRACKET:
@@ -89,50 +97,115 @@ ENode* Parser::parsePostfixExpression()
 {
     PostfixNode* node = new PostfixNode();
     ENode* core = parsePrimaryExpression();
-    node->_only = core;
+    node->only = core;
     while(true)
     {
-        node->_type = tokenType();
+        node->type = tokenType();
         switch(tokenType())
         {
             case TOK_L_SQUARE:
+                if
+                (
+                    _mode == PM_SYMBOLS &&
+                    core->expType->classType != CT_POINTER &&
+                    core->expType->classType != CT_ARRAY
+                )
+                    throw makeException("Left must be pointer or array");
                 _tokens->next();
-                node->_tail = parseExpression();
+                node->tail.push_back(parseExpression());
+                if
+                (
+                    _mode == PM_SYMBOLS &&
+                    node->tail[node->tail.size() - 1]->expType != getSymbol("int")
+                )
+                    throw makeException("expression must be of type int");
                 consumeTokenOfType(TOK_R_SQUARE, "']' expected");
+
+                if(_mode == PM_SYMBOLS)
+                    node->expType = static_cast<SymbolTypePointer*>(core->expType)->type;
                 break;
             case TOK_L_BRACKET:
+                if(_mode == PM_SYMBOLS && core->expType->classType != CT_FUNCTION)
+                    throw makeException("Left must be function");
                 _tokens->next();
-                if(tokenType() != TOK_R_BRACKET)
+                while(tokenType() != TOK_R_BRACKET)
                 {
-                    node->_tail = parseExpression();
-                    if(tokenType() != TOK_R_BRACKET)
-                        throw makeException("')' expected");
+                    node->tail.push_back(parseAssignmentExpression());
+                    if(tokenType() == TOK_R_BRACKET)
+                        break;
+                    consumeTokenOfType(TOK_COMMA, "',' expected");
                 }
-                _tokens->next();
+                if(_mode == PM_SYMBOLS)
+                {
+                    node->expType = static_cast<SymbolTypeFunction*>(core->expType)->type;
+
+                    SymbolTypeFunction* f = static_cast<SymbolTypeFunction*>(core->expType);
+                    unsigned int j = 0;
+                    for(unsigned int i = 0; i < f->args->size(); ++i)
+                    {
+                        if((*f->args)[i]->classType != CT_VAR)
+                            continue;
+                        SymbolVariable* cv = static_cast<SymbolVariable*>((*f->args)[i]);
+                        if(j >= node->tail.size())
+                            throw makeException("Not enough arguments");
+                        else if(*cv->type != *node->tail[j]->expType)
+                            throw makeException(
+                                "Incompatible types in function call: argument " + itostr(j + 1)
+                            );
+                        j++;
+                    }
+                    if(j < node->tail.size())
+                        throw makeException("Too many arguments");
+                }
+                consumeTokenOfType(TOK_R_BRACKET, "')' expected");
                 break;
             case TOK_ARROW:
-            case TOK_DOT:
-                //if(_mode == PM_SYMBOLS && core->expType->classType != CT_STRUCT)
-                //    throw makeException("Left must be struct");
+                if(_mode == PM_SYMBOLS && (
+                    core->expType->classType != CT_POINTER ||
+                    static_cast<SymbolTypePointer*>(core->expType)->type->classType != CT_STRUCT
+                ))
+                    throw makeException("Left must be struct");
                 _tokens->next();
                 if(tokenType() != TOK_IDENT)
                     throw makeException("Identifier expected");
-                //if(_mode == PM_SYMBOLS)
-                //    _symbols->push(static_cast<SymbolTypeStruct*>(core->expType)->fields);
-                node->_tail = parsePrimaryExpression();
-                //if(_mode == PM_SYMBOLS)
-                //    _symbols->pop();
+                if(_mode == PM_SYMBOLS)
+                    _symbols->push(
+                        static_cast<SymbolTypeStruct*>(
+                            static_cast<SymbolTypePointer*>(core->expType)->type
+                        )->fields
+                    );
+                node->tail.push_back(parsePrimaryExpression());
+                if(_mode == PM_SYMBOLS)
+                {
+                    _symbols->pop();
+                    node->expType = node->tail[0]->expType;
+                }
+                break;
+            case TOK_DOT:
+                if(_mode == PM_SYMBOLS && core->expType->classType != CT_STRUCT)
+                    throw makeException("Left must be struct");
+                _tokens->next();
+                if(tokenType() != TOK_IDENT)
+                    throw makeException("Identifier expected");
+                if(_mode == PM_SYMBOLS)
+                    _symbols->push(static_cast<SymbolTypeStruct*>(core->expType)->fields);
+                node->tail.push_back(parsePrimaryExpression());
+                if(_mode == PM_SYMBOLS)
+                {
+                    _symbols->pop();
+                    node->expType = node->tail[0]->expType;
+                }
                 break;
             case TOK_INC:
             case TOK_DEC:
                 _tokens->next();
                 break;
             default:
-                return node->_only;
+                return node->only;
         }
         core = node;
         node = new PostfixNode();
-        node->_only = core;
+        node->only = core;
     }
 }
 
@@ -145,23 +218,27 @@ ENode* Parser::parseUnaryExpression()
         case TOK_INC:
         case TOK_DEC:
             node = new UnaryNode();
-            node->_type = tokenType();
+            node->type = tokenType();
             _tokens->next();
-            node->_only = parseUnaryExpression();
+            node->only = parseUnaryExpression();
+            if(_mode == PM_SYMBOLS)
+                node->expType = node->only->expType;
             break;
         case TOK_SIZEOF:
             _tokens->next();
             size = new SizeofNode();
             if(tokenType() != TOK_L_BRACKET)
-                size->_only = parseUnaryExpression();
+                size->only = parseUnaryExpression();
             else
             {
                 _tokens->next();
-                size->_symbolType = parseTypeName();
-                if(size->_symbolType == NULL)
-                    size->_only = parseUnaryExpression();
+                size->symbolType = parseTypeName();
+                if(size->symbolType == NULL)
+                    size->only = parseUnaryExpression();
                 consumeTokenOfType(TOK_R_BRACKET, "')' expected");
             }
+            if(_mode == PM_SYMBOLS)
+                size->expType = static_cast<SymbolType*>(getSymbol("int"));
             return size;
         case TOK_PLUS:
         case TOK_MINUS:
@@ -170,9 +247,26 @@ ENode* Parser::parseUnaryExpression()
         case TOK_ASTERISK:
         case TOK_NOT:
             node = new UnaryNode();
-            node->_type = tokenType();
+            node->type = tokenType();
             _tokens->next();
-            node->_only = parseCastExpression();
+            node->only = parseCastExpression();
+            if(_mode == PM_SYMBOLS)
+                switch(node->type)
+                {
+                    case TOK_PLUS:
+                    case TOK_MINUS:
+                        node->expType = node->only->expType;
+                        break;
+                    case TOK_TILDA:
+                        break;
+                    case TOK_AMP:
+                        node->expType = new SymbolTypePointer(node->only->expType, "");
+                        break;
+                    case TOK_ASTERISK:
+                        break;
+                    case TOK_NOT:
+                        break;
+                }
             break;
         default:
             return parsePostfixExpression();
