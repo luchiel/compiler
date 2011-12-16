@@ -130,7 +130,7 @@ class CastNode: public ENode
 public:
     SymbolType* type;
     ENode* element;
-    CastNode(SymbolType* type_): ENode(), type(type_) {}
+    CastNode(SymbolType* type_, ENode* element_): ENode(), type(type_), element(element_) {}
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
 };
 

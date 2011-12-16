@@ -33,16 +33,26 @@ public:
     virtual Symbol* resolveAlias();
 
     bool operator!=(Symbol& symbol) { return !(*this == symbol); }
-    virtual bool operator==(Symbol& symbol) { return name == symbol.name; }
+    bool isFunction() { return resolveAlias()->classType == CT_FUNCTION; }
+    bool isStruct() { return resolveAlias()->classType == CT_STRUCT; }
+    bool isPointer()
+    {
+        return
+            resolveAlias()->classType == CT_POINTER ||
+            resolveAlias()->classType == CT_ARRAY;
+    }
+    virtual bool operator==(Symbol& symbol) { return true; }
 };
 
 class SymbolType: public Symbol
 {
 public:
-    SymbolType(string name_): Symbol(name_) { classType = CT_BASE; }
+    SymbolType* castTo;
+    SymbolType(string name_): Symbol(name_), castTo(NULL) { classType = CT_BASE; }
     virtual void out(int indent, bool noFirst = true);
     virtual SymbolType* getUndefined() { return NULL; }
     virtual bool isUndefined() { return false; }
+    virtual bool operator==(Symbol& symbol);
 };
 
 class SymbolTypeAlias: public SymbolType

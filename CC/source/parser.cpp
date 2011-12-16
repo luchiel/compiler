@@ -357,14 +357,19 @@ bool Parser::parseDeclaration(bool definitionAllowed)
         SymbolTypeFunction* function = static_cast<SymbolTypeFunction*>(type);
         function->name = _varName;
         _varName = "";
+
+        SymbolTypeFunction* f =
+            dynamic_cast<SymbolTypeFunction*>(findSymbol(function->name));
+        if(!(f != NULL && f->body == NULL && *f == *function))
+            addSymbol(function);
+
         _symbols->push(function->args);
         function->body = parseCompoundStatement();
         _symbols->pop();
-        SymbolTypeFunction* f = dynamic_cast<SymbolTypeFunction*>(findSymbol(function->name));
+
         if(f != NULL && f->body == NULL && *f == *function)
             f->body = function->body;
-        else
-            addSymbol(function);
+
         return true;
     }
 

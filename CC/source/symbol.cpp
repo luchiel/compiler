@@ -130,8 +130,22 @@ void SymbolTypeFunction::out(int indent, bool noFirst)
         cout << "<no args>\n";
     }
     vector<bool> finishedBranches;
-    if(body != NULL)
+    if(body != NULL && !_bodyPrinted)
+    {
+        _bodyPrinted = true;
         body->out(0, &finishedBranches, indent);
+    }
+}
+
+bool SymbolType::operator==(Symbol& symbol)
+{
+    if(name == "float" && symbol.name == "int")
+    {
+        //the one that is ok for cast must be second
+        static_cast<SymbolType*>(&symbol)->castTo = this;
+        return true;
+    }
+    return name == symbol.name;
 }
 
 bool SymbolTypeAlias::operator==(Symbol& symbol)
@@ -151,11 +165,7 @@ bool SymbolVariable::operator==(Symbol& symbol)
 
 bool SymbolTypePointer::operator==(Symbol& symbol)
 {
-    if
-    (
-        symbol.resolveAlias()->classType != CT_POINTER &&
-        symbol.resolveAlias()->classType != CT_ARRAY
-    )
+    if(!symbol.isPointer())
         return false;
     SymbolTypePointer* s = static_cast<SymbolTypePointer*>(symbol.resolveAlias());
     if(*s->type->resolveAlias() != *type->resolveAlias())
@@ -165,7 +175,7 @@ bool SymbolTypePointer::operator==(Symbol& symbol)
 
 bool SymbolTypeStruct::operator==(Symbol& symbol)
 {
-    if(symbol.resolveAlias()->classType != CT_STRUCT)
+    if(!symbol.isStruct())
         return false;
     if(*static_cast<SymbolTypeStruct*>(symbol.resolveAlias())->fields != *fields)
         return false;
@@ -174,7 +184,7 @@ bool SymbolTypeStruct::operator==(Symbol& symbol)
 
 bool SymbolTypeFunction::operator==(Symbol& symbol)
 {
-    if(symbol.classType != CT_FUNCTION)
+    if(!symbol.isFunction())
         return false;
     SymbolTypeFunction* s = static_cast<SymbolTypeFunction*>(&symbol);
     if

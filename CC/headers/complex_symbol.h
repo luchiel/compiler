@@ -15,11 +15,13 @@ namespace LuCCompiler
 
 class SymbolTypeFunction: public TypedSymbolType
 {
+private:
+    bool _bodyPrinted;
 public:
     SymbolTable* args;
     CompoundStatement* body;
     SymbolTypeFunction(SymbolType* type_, string name_):
-        TypedSymbolType(type_, name_), args(new SymbolTable()), body(NULL)
+        TypedSymbolType(type_, name_), _bodyPrinted(false), args(new SymbolTable()), body(NULL)
         { classType = CT_FUNCTION; }
     virtual void out(int indent, bool noFirst = true);
 
