@@ -1,0 +1,1 @@
+void main() { int a[10]; !a; float b = 6.7; !b; }

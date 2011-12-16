@@ -1,0 +1,48 @@
+type <int>
+type <float>
+type <void>
+type <int*>
+	pointer to <int>
+function a
+	returns type <int>
+	arguments
+		<no args>
+	{{}}
+	| 
+	+-{;}
+	  | 
+	  +-{()}
+				type <int>
+	    | 
+	    +-{a}
+					function a
+						returns type <int>
+						arguments
+							<no args>
+function b
+	returns type <int>
+	arguments
+		<no args>
+	{{}}
+	| 
+	+-{;}
+	| | 
+	| +-{()}
+				type <int>
+	|   | 
+	|   +-{a}
+					function a
+						returns type <int>
+						arguments
+							<no args>
+	| 
+	+-{;}
+	  | 
+	  +-{()}
+				type <int>
+	    | 
+	    +-{b}
+					function b
+						returns type <int>
+						arguments
+							<no args>

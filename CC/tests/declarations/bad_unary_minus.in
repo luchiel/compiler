@@ -1,0 +1,2 @@
+int a() {return 0;}
+void main() { -a;}

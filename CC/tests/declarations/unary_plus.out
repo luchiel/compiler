@@ -1,0 +1,18 @@
+type <int>
+type <float>
+type <void>
+type <int*>
+	pointer to <int>
+function main
+	returns type <void>
+	arguments
+		<no args>
+	{{}}
+	| 
+	+-{;}
+	  | 
+	  +-{+}
+				type <int>
+	    | 
+	    +-{int 5}
+					type <int>

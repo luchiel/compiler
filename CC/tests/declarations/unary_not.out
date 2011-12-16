@@ -1,0 +1,39 @@
+type <int>
+type <float>
+type <void>
+type <int*>
+	pointer to <int>
+function main
+	returns type <void>
+	arguments
+		<no args>
+	{{}}
+		type <0>
+			array [
+				{int 10}
+					type <int>
+			] of <int>
+		variable a of type <0>
+		variable b of type <float> initialized by
+			{float 6.7}
+				type <float>
+	| 
+	+-{;}
+	| | 
+	| +-{!}
+				type <int>
+	|   | 
+	|   +-{a}
+					type <0>
+						array [
+							{int 10}
+								type <int>
+						] of <int>
+	| 
+	+-{;}
+	  | 
+	  +-{!}
+				type <int>
+	    | 
+	    +-{b}
+					type <float>

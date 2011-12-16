@@ -1,0 +1,2 @@
+typedef float i;
+void main() { i a; ~a; }

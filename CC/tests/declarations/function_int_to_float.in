@@ -1,0 +1,6 @@
+void f(float f1);
+
+void main()
+{
+f(5);
+}

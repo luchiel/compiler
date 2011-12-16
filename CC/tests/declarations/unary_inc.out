@@ -1,0 +1,21 @@
+type <int>
+type <float>
+type <void>
+type <int*>
+	pointer to <int>
+function main
+	returns type <void>
+	arguments
+		<no args>
+	{{}}
+		variable a of type <int> initialized by
+			{int 5}
+				type <int>
+	| 
+	+-{;}
+	  | 
+	  +-{++x}
+				type <int>
+	    | 
+	    +-{a}
+					type <int>

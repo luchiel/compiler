@@ -1,0 +1,7 @@
+typedef int a[10];
+
+void main()
+{
+a b[4];
+b[0];
+}

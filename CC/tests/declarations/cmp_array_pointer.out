@@ -1,0 +1,34 @@
+type <int>
+type <float>
+type <void>
+type <int*>
+	pointer to <int>
+function main
+	returns type <void>
+	arguments
+		<no args>
+	{{}}
+		type <0>
+			array [
+				{int 4}
+					type <int>
+			] of <int>
+		variable a of type <0>
+		type <1>
+			pointer to <int>
+		variable b of type <1>
+	| 
+	+-{;}
+	  | 
+	  +-{==}
+	    | 
+	    +-{a}
+					type <0>
+						array [
+							{int 4}
+								type <int>
+						] of <int>
+	    | 
+	    +-{b}
+					type <1>
+						pointer to <int>

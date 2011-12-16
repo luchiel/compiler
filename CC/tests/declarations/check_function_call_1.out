@@ -24,7 +24,6 @@ function main
 						returns type <int>
 						arguments
 							variable c of type <int>
-						{{}}
 	    | 
 	    +-{int 5}
 					type <int>
