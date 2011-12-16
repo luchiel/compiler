@@ -158,9 +158,7 @@ bool SymbolVariable::operator==(Symbol& symbol)
     if(symbol.classType != CT_VAR)
         return false;
     SymbolVariable* s = static_cast<SymbolVariable*>(&symbol);
-    if(s->name != name || *s->type->resolveAlias() != *type->resolveAlias())
-        return false;
-    return true;
+    return s->name == name && *s->type == *type;
 }
 
 bool SymbolTypePointer::operator==(Symbol& symbol)
@@ -168,18 +166,14 @@ bool SymbolTypePointer::operator==(Symbol& symbol)
     if(!symbol.isPointer())
         return false;
     SymbolTypePointer* s = static_cast<SymbolTypePointer*>(symbol.resolveAlias());
-    if(*s->type->resolveAlias() != *type->resolveAlias())
-        return false;
-    return true;
+    return *s->type == *type;
 }
 
 bool SymbolTypeStruct::operator==(Symbol& symbol)
 {
     if(!symbol.isStruct())
         return false;
-    if(*static_cast<SymbolTypeStruct*>(symbol.resolveAlias())->fields != *fields)
-        return false;
-    return true;
+    return *static_cast<SymbolTypeStruct*>(symbol.resolveAlias())->fields == *fields;
 }
 
 bool SymbolTypeFunction::operator==(Symbol& symbol)
@@ -187,14 +181,7 @@ bool SymbolTypeFunction::operator==(Symbol& symbol)
     if(!symbol.isFunction())
         return false;
     SymbolTypeFunction* s = static_cast<SymbolTypeFunction*>(&symbol);
-    if
-    (
-        s->name != name ||
-        *s->type->resolveAlias() != *type->resolveAlias() ||
-        *s->args != *args
-    )
-        return false;
-    return true;
+    return !(s->name != name || *s->type != *type || *s->args != *args);
 }
 
 }

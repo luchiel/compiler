@@ -276,14 +276,14 @@ ENode* Parser::parseUnaryExpression()
                     case TOK_MINUS:
                         if
                         (
-                            node->only->expType->resolveAlias() != getSymbol("int") &&
-                            node->only->expType->resolveAlias() != getSymbol("float")
+                            node->only->expType != getSymbol("int") &&
+                            node->only->expType != getSymbol("float")
                         )
                             throw makeException("Wrong type argument to unary +/-");
                         node->expType = node->only->expType;
                         break;
                     case TOK_TILDA:
-                        if(node->only->expType->resolveAlias() != getSymbol("int"))
+                        if(node->only->expType != getSymbol("int"))
                             throw makeException("Wrong type argument to bit-complement");
                         node->expType = node->only->expType;
                         break;
