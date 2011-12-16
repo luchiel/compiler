@@ -2,7 +2,12 @@ CC/debug
 CC/CC.*
 CC/ipch
 CC/objects
+CC/tests/declarations/future
+CC/tests/declarations/old tests
+CC/test.c
+CC/*.exe
 .ssh/*
+.gitk
 .gitconfig
 CStandart.pdf
 *.log
