@@ -1,0 +1,6 @@
+void main()
+{
+struct {int b;} a;
+struct {float b;} b;
+a = b;
+}

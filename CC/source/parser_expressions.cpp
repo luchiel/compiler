@@ -500,8 +500,18 @@ ENode* Parser::parseAssignmentExpression()
                         if(node->left->expType->isPointer())
                         {
                             if(*node->left->expType != *node->right->expType)
-                                if(*node->right->expType != *_NULL->type)
+                                if
+                                (
+                                    *node->right->expType != *_NULL->type &&
+                                    *node->left->expType != *_NULL->type
+                                )
                                     throw makeException("Incompatible types");
+                            break;
+                        }
+                        else if(!isArithmetic(*node->left->expType))
+                        {
+                            if(*node->left->expType != *node->right->expType)
+                                throw makeException("Incompatible types");
                             break;
                         }
                         checkArgumentsArithmetic(node);

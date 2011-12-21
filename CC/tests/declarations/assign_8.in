@@ -1,0 +1,6 @@
+void main()
+{
+void* a;
+float* b;
+a = b;
+}

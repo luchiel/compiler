@@ -1,0 +1,39 @@
+type <int>
+type <float>
+type <void>
+type <int*>
+	pointer to <int>
+type <void*>
+	pointer to <void>
+variable NULL of type <void*> initialized by
+	{int 0}
+		type <int>
+function main
+	returns type <void>
+	arguments
+		<no args>
+	{{}}
+		variable a of type <int>
+		variable b of type <float>
+	| 
+	+-{;}
+	  | 
+	  +-{=}
+				type <float>
+	    | 
+	    +-{b}
+					type <float>
+	    | 
+	    +-{*}
+					type <float>
+	      | 
+	      +-{cast}
+						type <float>
+	      | | 
+	      | +-<float>
+	      | | 
+	      | +-{a}
+							type <int>
+	      | 
+	      +-{float 5.4}
+						type <float>
