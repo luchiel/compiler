@@ -1,0 +1,5 @@
+void main()
+{
+float a, b;
+a > b || a <= b == 1;
+}

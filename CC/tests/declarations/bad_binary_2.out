@@ -1,0 +1,1 @@
+Error: ParseError:5:10 Right operand of + operation with pointer must be of type int
