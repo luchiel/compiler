@@ -24,6 +24,9 @@ private:
     SymbolTableStack* _symbols;
     string _varName;
     ParseMode _mode;
+    SymbolType* _int;
+    SymbolType* _float;
+    Symbol* _NULL;
 
     TokenType tokenType() { return _tokens->get().type; }
 
@@ -33,6 +36,11 @@ private:
     void addSymbol(Symbol* symbol);
     void addTag(SymbolTypeStruct* symbol);
     void safeAddSymbol(Symbol* symbol);
+    bool isArithmetic(SymbolType& type);
+    bool isInt(SymbolType& type);
+    bool isFloat(SymbolType& type);
+    void checkArgumentsArithmetic(BinaryNode* node);
+    void performImplicitCast(BinaryNode* node);
 
     ENode* parsePrimaryExpression();
     ENode* parsePostfixExpression();

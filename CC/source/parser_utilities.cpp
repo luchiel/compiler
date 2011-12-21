@@ -53,6 +53,21 @@ void Parser::safeAddSymbol(Symbol* symbol)
             addSymbol(symbol);
 }
 
+bool Parser::isArithmetic(SymbolType& type)
+{
+    return isInt(type) || isFloat(type);
+}
+
+bool Parser::isInt(SymbolType& type)
+{
+    return *_int == type;
+}
+
+bool Parser::isFloat(SymbolType& type)
+{
+    return *_float == type;
+}
+
 void Parser::out()
 {
     if(_root != NULL)
@@ -69,6 +84,9 @@ Parser::Parser(Tokenizer* tokens): _varName("")
     _tokens = tokens;
     _symbols = initPrimarySymbolTableStack();
     _root = NULL;
+    _int = static_cast<SymbolType*>(getSymbol("int"));
+    _float = static_cast<SymbolType*>(getSymbol("float"));
+    _NULL = static_cast<SymbolVariable*>(getSymbol("NULL"));
 }
 
 void Parser::parse()

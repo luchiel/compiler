@@ -27,9 +27,9 @@ public:
 class IdentNode: public ENode
 {
 public:
-    string _name;
-    SymbolVariable* _var;
-    IdentNode(const string& name_, SymbolVariable* var_ = NULL): ENode(), _name(name_), _var(var_) {}
+    string name;
+    SymbolVariable* var;
+    IdentNode(const string& name_, SymbolVariable* var_ = NULL): ENode(), name(name_), var(var_) {}
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
 };
 
@@ -98,7 +98,7 @@ public:
     TokenType type;
     ENode* left;
     ENode* right;
-    BinaryNode(): ENode(), type(TOK_UNDEF), left(NULL), right(NULL) {}
+    BinaryNode(TokenType type_, ENode* left_): ENode(), type(type_), left(left_), right(NULL) {}
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
 };
 
@@ -116,13 +116,13 @@ public:
 class AssignmentNode: public BinaryNode
 {
 public:
-    AssignmentNode(): BinaryNode() {}
+    AssignmentNode(TokenType type_, ENode* left_): BinaryNode(type_, left_) {}
 };
 
 class ExpressionNode: public BinaryNode
 {
 public:
-    ExpressionNode(): BinaryNode() {}
+    ExpressionNode(TokenType type_, ENode* left_): BinaryNode(type_, left_) {}
 };
 
 class CastNode: public ENode

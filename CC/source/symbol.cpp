@@ -139,7 +139,7 @@ void SymbolTypeFunction::out(int indent, bool noFirst)
 
 bool SymbolType::operator==(Symbol& symbol)
 {
-    if(name == "float" && symbol.name == "int")
+    if(name == "float" && symbol.resolveAlias()->name == "int")
     {
         //the one that is ok for cast must be second
         static_cast<SymbolType*>(&symbol)->castTo = this;
