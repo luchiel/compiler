@@ -4,6 +4,7 @@
 #include <vector>
 #include "token.h"
 #include "node.h"
+#include "expression.h"
 #include "symbol_table.h"
 
 using namespace std;
@@ -32,8 +33,8 @@ public:
 class ReturnStatement: public Node
 {
 public:
-    Node* _expr;
-    ReturnStatement(Node* expr): _expr(expr) {}
+    ENode* expr;
+    ReturnStatement(ENode* expr_): expr(expr_) {}
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
 };
 

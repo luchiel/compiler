@@ -363,6 +363,7 @@ bool Parser::parseDeclaration(bool definitionAllowed)
         if(!(f != NULL && f->body == NULL && *f == *function))
             addSymbol(function);
 
+        _expectedReturnType = function->type;
         _symbols->push(function->args);
         function->body = parseCompoundStatement();
         _symbols->pop();

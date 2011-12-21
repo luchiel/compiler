@@ -87,6 +87,8 @@ Parser::Parser(Tokenizer* tokens): _varName("")
     _int = static_cast<SymbolType*>(getSymbol("int"));
     _float = static_cast<SymbolType*>(getSymbol("float"));
     _NULL = static_cast<SymbolVariable*>(getSymbol("NULL"));
+    _expectedReturnType = NULL;
+    _jumpAllowed = 0;
 }
 
 void Parser::parse()

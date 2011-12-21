@@ -29,7 +29,7 @@ void JumpStatement::out(unsigned int depth, vector<bool>* branches, int level)
 void ReturnStatement::out(unsigned int depth, vector<bool>* branches, int level)
 {
     makeNodeTop(depth, branches, "return", level);
-    printNodeWithIndent(depth, branches, true, _expr, level);
+    printNodeWithIndent(depth, branches, true, expr, level);
 }
 
 void EmptyExpressionStatement::out(unsigned int depth, vector<bool>* branches, int level)

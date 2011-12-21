@@ -27,6 +27,8 @@ private:
     SymbolType* _int;
     SymbolType* _float;
     SymbolVariable* _NULL;
+    SymbolType* _expectedReturnType;
+    int _jumpAllowed;
 
     TokenType tokenType() { return _tokens->get().type; }
 

@@ -28,15 +28,21 @@ Node* Parser::parseJumpStatement()
         _tokens->next();
         if(tokenType() == TOK_SEP)
         {
+            if(_mode == PM_SYMBOLS && *_expectedReturnType != *getSymbol("void"))
+                throw makeException("Function is expected to return value");
             _tokens->next();
             return new JumpStatement(TOK_RETURN);
         }
         ReturnStatement* node = new ReturnStatement(parseExpression());
+        if(_mode == PM_SYMBOLS && *node->expr->expType != *_expectedReturnType)
+            throw makeException("Function type and value type in return statement do not match");
         consumeTokenOfType(TOK_SEP, "';' expected");
         return node;
     }
     else if(tokenType() == TOK_CONTINUE || tokenType() == TOK_BREAK)
     {
+        if(_mode == PM_SYMBOLS && _jumpAllowed == 0)
+            throw makeException("Jump statement not within loop");
         JumpStatement* node = new JumpStatement(tokenType());
         _tokens->next();
         consumeTokenOfType(TOK_SEP, "';' expected");
@@ -59,11 +65,17 @@ CompoundStatement* Parser::parseCompoundStatement()
         CompoundStatement* node = new CompoundStatement();
         _symbols->push(node->_locals);
         _tokens->next();
+        bool statementsStarted = false;
         while(tokenType() != TOK_R_BRACE)
         {
             Node* bi = parseBlockItem();
             if(bi != NULL)
+            {
+                statementsStarted = true;
                 node->_items->push_back(bi);
+            }
+            //else if(statementsStarted)
+            //    throw makeException("Declaration after statements");
         }
         _symbols->pop();
         consumeTokenOfType(TOK_R_BRACE, "'}' expected");
@@ -103,7 +115,11 @@ Node* Parser::parseIterationStatement()
         consumeTokenOfType(TOK_L_BRACKET, "'(' expected");
         node->_expr = parseExpression();
         consumeTokenOfType(TOK_R_BRACKET, "')' expected");
+
+        _jumpAllowed++;
         node->_loop = parseStatement();
+        _jumpAllowed--;
+
         return node;
     }
     else if(tokenType() == TOK_DO)
@@ -111,7 +127,11 @@ Node* Parser::parseIterationStatement()
         node = new IterationStatement();
         node->_type = tokenType();
         _tokens->next();
+
+        _jumpAllowed++;
         node->_loop = parseStatement();
+        _jumpAllowed--;
+
         consumeTokenOfType(TOK_WHILE, "'while' expected");
         consumeTokenOfType(TOK_L_BRACKET, "'(' expected");
         node->_expr = parseExpression();
@@ -131,7 +151,11 @@ Node* Parser::parseIterationStatement()
         if(tokenType() != TOK_R_BRACKET)
             forNode->_expr3 = parseExpression();
         consumeTokenOfType(TOK_R_BRACKET, "')' expected");
+
+        _jumpAllowed++;
         forNode->_loop = parseStatement();
+        _jumpAllowed--;
+
         _symbols->pop();
         return forNode;
     }
