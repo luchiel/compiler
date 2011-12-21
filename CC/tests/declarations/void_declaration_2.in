@@ -1,0 +1,5 @@
+typedef void f;
+void main()
+{
+f a;
+}

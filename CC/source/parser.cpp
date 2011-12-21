@@ -314,6 +314,8 @@ void Parser::addParsedSymbols(SymbolType* type, Node* initializer, bool isTypede
     {
         if(type->classType != CT_FUNCTION)
         {
+            if(*type == *getSymbol("void"))
+                throw makeException("Variable declared as void");
             safeAddSymbol(type);
             addSymbol(new SymbolVariable(type, _varName, initializer));
         }
