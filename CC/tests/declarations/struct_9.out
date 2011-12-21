@@ -3,6 +3,11 @@ type <float>
 type <void>
 type <int*>
 	pointer to <int>
+type <void*>
+	pointer to <void>
+variable NULL of type <void*> initialized by
+	{int 0}
+		type <int>
 type <0>
 	struct 0
 		tag a
@@ -18,6 +23,7 @@ type <0>
 type <3>
 	array [
 		{int 10}
+			type <int>
 	] of <0>
 variable b of type <3>
 function main

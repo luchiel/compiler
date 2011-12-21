@@ -14,26 +14,36 @@ function main
 		<no args>
 	{{}}
 		type <0>
+			pointer to <int>
+		variable i of type <0>
+		type <1>
 			array [
-				{int 5}
+				{int 4}
 					type <int>
-			] of <int>
-		variable a of type <0>
+			] of <float>
+		variable j of type <1>
+		type <2>
+			pointer to <int>
 	| 
 	+-{;}
 	  | 
-	  +-{&}
+	  +-{=}
+				type <0>
 					pointer to <int>
 	    | 
-	    +-{[]}
-					type <int>
+	    +-{i}
+					type <0>
+						pointer to <int>
+	    | 
+	    +-{cast}
+					type <2>
+						pointer to <int>
 	      | 
-	      +-{a}
-						type <0>
+	      +-<2>
+	      | 
+	      +-{j}
+						type <1>
 							array [
-								{int 5}
+								{int 4}
 									type <int>
-							] of <int>
-	      | 
-	      +-{int 3}
-						type <int>
+							] of <float>

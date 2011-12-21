@@ -15,25 +15,34 @@ function main
 	{{}}
 		type <0>
 			array [
-				{int 5}
+				{int 4}
 					type <int>
-			] of <int>
+			] of <float>
 		variable a of type <0>
+		variable b of type <int>
 	| 
 	+-{;}
 	  | 
-	  +-{&}
-					pointer to <int>
+	  +-{==}
+				type <int>
 	    | 
 	    +-{[]}
-					type <int>
-	      | 
-	      +-{a}
+					type <float>
+	    | | 
+	    | +-{a}
 						type <0>
 							array [
-								{int 5}
+								{int 4}
 									type <int>
-							] of <int>
+							] of <float>
+	    | | 
+	    | +-{int 0}
+						type <int>
+	    | 
+	    +-{cast}
+					type <float>
 	      | 
-	      +-{int 3}
+	      +-<float>
+	      | 
+	      +-{b}
 						type <int>

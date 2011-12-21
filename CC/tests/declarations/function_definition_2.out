@@ -3,6 +3,11 @@ type <float>
 type <void>
 type <int*>
 	pointer to <int>
+type <void*>
+	pointer to <void>
+variable NULL of type <void*> initialized by
+	{int 0}
+		type <int>
 function cool_function
 	returns type <int>
 	arguments
@@ -13,7 +18,10 @@ function cool_function
 	+-{return}
 	  | 
 	  +-{+}
+				type <int>
 	    | 
 	    +-{a}
+					type <int>
 	    | 
 	    +-{b}
+					type <int>

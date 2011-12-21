@@ -3,6 +3,11 @@ type <float>
 type <void>
 type <int*>
 	pointer to <int>
+type <void*>
+	pointer to <void>
+variable NULL of type <void*> initialized by
+	{int 0}
+		type <int>
 function main
 	returns type <int>
 	arguments
@@ -10,23 +15,31 @@ function main
 	{{}}
 		variable n of type <int> initialized by
 			{int 6}
+				type <int>
 		variable m of type <int> initialized by
 			{int 5}
+				type <int>
 	| 
 	+-{for}
 		variable i of type <int> initialized by
 			{int 0}
+				type <int>
 	  | 
 	  +-{;}
 	  | | 
 	  | +-{<}
+					type <int>
 	  |   | 
 	  |   +-{i}
+						type <int>
 	  |   | 
 	  |   +-{n}
+						type <int>
 	  | 
 	  +-{++x}
+				type <int>
 	  | | 
 	  | +-{i}
+					type <int>
 	  | 
 	  +-{;}

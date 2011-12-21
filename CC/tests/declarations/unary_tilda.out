@@ -8,32 +8,21 @@ type <void*>
 variable NULL of type <void*> initialized by
 	{int 0}
 		type <int>
-type <0>
-	struct 0
-		tag f
-		variable a of type <int>
-		variable b of type <int>
 function main
-	returns type <int>
+	returns type <void>
 	arguments
 		<no args>
 	{{}}
-		variable a of type <int> initialized by
-			{sizeof}
-				type <int>
-			| 
-			+-<0>
 	| 
 	+-{;}
 	  | 
-	  +-{=}
+	  +-{~}
 				type <int>
 	    | 
-	    +-{a}
-					type <int>
-	    | 
-	    +-{sizeof}
+	    +-{cast}
 					type <int>
 	      | 
-	      +-{a}
-						type <int>
+	      +-<int>
+	      | 
+	      +-{float 5.6}
+						type <float>

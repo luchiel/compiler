@@ -3,6 +3,11 @@ type <float>
 type <void>
 type <int*>
 	pointer to <int>
+type <void*>
+	pointer to <void>
+variable NULL of type <void*> initialized by
+	{int 0}
+		type <int>
 function main
 	returns type <int>
 	arguments
@@ -10,38 +15,58 @@ function main
 	{{}}
 		variable a of type <int> initialized by
 			{cast}
+				type <int>
 			| 
 			+-<int>
 			| 
 			+-{int 0}
+					type <int>
 		type <0>
 			array [
 				{int 5}
+					type <int>
 			] of <int>
 		variable b of type <0> initialized by
 			{
 				{int 4}
+					type <int>
 				,
 				{int 3}
+					type <int>
 				,
 				{int 5}
+					type <int>
 				,
 				{int 6}
+					type <int>
 				,
 				{int 7}
+					type <int>
 				,
 			}
 		type <1>
 			array [
 				{int 5}
+					type <int>
 			] of <float>
 		type <2>
 			array [
 				{int 5}
+					type <int>
 			] of <float>
 		variable c of type <2> initialized by
 			{cast}
+				type <1>
+					array [
+						{int 5}
+							type <int>
+					] of <float>
 			| 
 			+-<1>
 			| 
 			+-{b}
+					type <0>
+						array [
+							{int 5}
+								type <int>
+						] of <int>

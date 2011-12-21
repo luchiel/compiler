@@ -7,6 +7,7 @@ type <void*>
 	pointer to <void>
 variable NULL of type <void*> initialized by
 	{int 0}
+		type <int>
 function main
 	returns type <int>
 	arguments
@@ -21,6 +22,7 @@ function main
 	+-{;}
 	  | 
 	  +-{=}
+				type <int>
 	    | 
 	    +-{->}
 					type <int>

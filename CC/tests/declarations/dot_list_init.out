@@ -3,6 +3,11 @@ type <float>
 type <void>
 type <int*>
 	pointer to <int>
+type <void*>
+	pointer to <void>
+variable NULL of type <void*> initialized by
+	{int 0}
+		type <int>
 type <0>
 	struct 0
 		tag 
@@ -13,9 +18,11 @@ variable h of type <0> initialized by
 		.c
 		=
 		{int 5}
+			type <int>
 		,
 		.d
 		=
 		{int 6}
+			type <int>
 		,
 	}

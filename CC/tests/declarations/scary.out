@@ -3,10 +3,16 @@ type <float>
 type <void>
 type <int*>
 	pointer to <int>
+type <void*>
+	pointer to <void>
+variable NULL of type <void*> initialized by
+	{int 0}
+		type <int>
 type <0>
 	array [
 	] of array [
 		{int 8}
+			type <int>
 	] of pointer to pointer to function 
 				returns pointer to array [
 						] of pointer to <void>

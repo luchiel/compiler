@@ -3,27 +3,41 @@ type <float>
 type <void>
 type <int*>
 	pointer to <int>
+type <void*>
+	pointer to <void>
+variable NULL of type <void*> initialized by
+	{int 0}
+		type <int>
 type <0>
 	array [
 		{int 20}
+			type <int>
 	] of <int>
 variable c of type <0>
 type <1>
 	array [
 		{?:}
+			type <int>
 		| 
 		+-{==}
+				type <int>
 		| | 
 		| +-{*}
+					type <int>
 		| | | 
 		| | +-{int 5}
+						type <int>
 		| | | 
 		| | +-{int 6}
+						type <int>
 		| | 
 		| +-{int 30}
+					type <int>
 		| 
 		+-{int 4}
+				type <int>
 		| 
 		+-{int 3}
+				type <int>
 	] of pointer to <int>
 variable b of type <1>

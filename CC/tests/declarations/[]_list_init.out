@@ -3,35 +3,50 @@ type <float>
 type <void>
 type <int*>
 	pointer to <int>
+type <void*>
+	pointer to <void>
+variable NULL of type <void*> initialized by
+	{int 0}
+		type <int>
 type <0>
 	array [
 		{int 5}
+			type <int>
 	] of array [
 		{int 4}
+			type <int>
 	] of <int>
 variable e of type <0> initialized by
 	{
 		[
 			{int 3}
+				type <int>
 		]
 		[
 			{int 1}
+				type <int>
 		]
 		=
 		{int 6}
+			type <int>
 		,
 		[
 			{int 2}
+				type <int>
 		]
 		=
 		{
 			{int 1}
+				type <int>
 			,
 			{int 1}
+				type <int>
 			,
 			{int 1}
+				type <int>
 			,
 			{int 1}
+				type <int>
 			,
 		}
 		,

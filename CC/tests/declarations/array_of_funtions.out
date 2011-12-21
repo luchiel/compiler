@@ -3,9 +3,15 @@ type <float>
 type <void>
 type <int*>
 	pointer to <int>
+type <void*>
+	pointer to <void>
+variable NULL of type <void*> initialized by
+	{int 0}
+		type <int>
 function a
 	returns pointer to array [
 				{int 10}
+					type <int>
 			] of <float>
 	arguments
 		variable b of type <int>
@@ -13,6 +19,7 @@ function a
 function b
 	returns array [
 			{int 10}
+				type <int>
 		] of pointer to <float>
 	arguments
 		variable b of type <int>
@@ -20,6 +27,7 @@ function b
 function c
 	returns array [
 			{int 10}
+				type <int>
 		] of pointer to <float>
 	arguments
 		variable b of type <int>
@@ -28,6 +36,7 @@ type <0>
 	pointer to function 
 			returns array [
 					{int 10}
+						type <int>
 				] of <float>
 			arguments
 				variable b of type <int>
