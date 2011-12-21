@@ -16,7 +16,7 @@ void Designation::out(unsigned int depth, vector<bool>* branches, int level)
     {
         Node::out(depth, branches, level);
         if(_list[i]->type == TOK_DOT)
-            cout << "." << static_cast<IdentNode*>(_list[i]->sub)->_name << "\n";
+            cout << "." << static_cast<IdentNode*>(_list[i]->sub)->name << "\n";
         else
         {
             cout << "[\n";

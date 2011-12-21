@@ -143,7 +143,7 @@ bool SymbolType::operator==(Symbol& symbol)
     {
         //the one that is ok for cast must be second
         static_cast<SymbolType*>(&symbol)->castTo = this;
-        return true;
+        return false;
     }
     return name == symbol.name;
 }

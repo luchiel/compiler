@@ -12,28 +12,35 @@ namespace LuCCompiler
 
 void Parser::checkArgumentsArithmetic(BinaryNode* node)
 {
-    if(!isArithmetic(*node->left->expType))
-        throw makeException(
-            "Left operand of " + operationName(node->type) +
-            " must be of arithmetic type"
-        );
     if(!isArithmetic(*node->right->expType))
         throw makeException(
             "Right operand of " + operationName(node->type) +
-            " must be of arithmetic type"
+            " is expected to be of arithmetic type"
+        );
+    if(!isArithmetic(*node->left->expType))
+        throw makeException(
+            "Left operand of " + operationName(node->type) +
+            " is expected to be of arithmetic type"
         );
 }
 
-void Parser::performImplicitCast(BinaryNode* node)
+void Parser::performImplicitCast(BinaryNode* node, bool rightOnly)
 {
-    node->expType = _float;
-    if(isFloat(*node->right->expType))
+    if(isFloat(*node->left->expType))
     {
-        if(!isFloat(*node->left->expType))
-            node->left = new CastNode(_float, node->left);
+        if(!isFloat(*node->right->expType))
+        {
+            node->right = new CastNode(_float, node->right);
+            node->right->expType = _float;
+        }
     }
-    else if(isFloat(*node->left->expType))
-        node->right = new CastNode(_float, node->right);
+    else if(isFloat(*node->right->expType))
+    {
+        if(rightOnly)
+            throw makeException("Cannot convert left operand to type float");
+        node->left = new CastNode(_float, node->left);
+        node->left->expType = _float;
+    }
     else
         node->expType = _int;
 }
@@ -75,6 +82,7 @@ ENode* Parser::parseBinaryExpression(int priority)
                 case TOK_ASTERISK:
                 case TOK_DIV:
                     checkArgumentsArithmetic(node);
+                    node->expType = _float;
                     performImplicitCast(node);
                     break;
                 case TOK_EQUAL:
@@ -101,9 +109,8 @@ ENode* Parser::parseBinaryExpression(int priority)
                     node->expType = _int;
                     if(node->left->expType->isPointer())
                     {
-                        if(!node->right->expType->isPointer())
-                            throw makeException("Right operand must be of pointer type");
-                        //check if ptr of compatible types
+                        if(*node->left->expType != *node->right->expType)
+                            throw makeException("Incompatible pointer types");
                         break;
                     }
                     checkArgumentsArithmetic(node);
@@ -237,16 +244,19 @@ ENode* Parser::parsePostfixExpression()
                         if(j >= node->tail.size())
                             throw makeException("Not enough arguments");
                         else if(*cv->type != *node->tail[j]->expType)
-                            throw makeException(
-                                "Incompatible types in function call: argument " + itostr(j + 1)
-                            );
-                        else if(node->tail[j]->expType->castTo != NULL)
                         {
-                            node->tail[j] =
+                            if(node->tail[j]->expType->castTo != NULL)
+                            {
+                                node->tail[j] =
                                 new CastNode(node->tail[j]->expType->castTo, node->tail[j]);
-                            static_cast<CastNode*>(node->tail[j])->type->castTo = NULL;
-                            node->tail[j]->expType =
-                                static_cast<CastNode*>(node->tail[j])->type;
+                                static_cast<CastNode*>(node->tail[j])->type->castTo = NULL;
+                                node->tail[j]->expType =
+                                    static_cast<CastNode*>(node->tail[j])->type;
+                            }
+                            else
+                                throw makeException(
+                                    "Incompatible types in function call: argument " + itostr(j + 1)
+                                );
                         }
                         j++;
                     }
@@ -441,7 +451,20 @@ ENode* Parser::parseConditionalExpression()
     if(_mode == PM_SYMBOLS)
     {
         if(*node->thenOp->expType != *node->elseOp->expType)
-            throw makeException("Incompatible types in ?:");
+        {
+            if(isFloat(*node->thenOp->expType) && isInt(*node->elseOp->expType))
+            {
+                node->elseOp = new CastNode(_float, node->elseOp);
+                node->elseOp->expType = _float;
+            }
+            else if(isFloat(*node->elseOp->expType) && isInt(*node->thenOp->expType))
+            {
+                node->thenOp = new CastNode(_float, node->thenOp);
+                node->thenOp->expType = _float;
+            }
+            else
+                throw makeException("Incompatible types in ?:");
+        }
         node->expType = node->thenOp->expType;
     }
 
@@ -468,6 +491,41 @@ ENode* Parser::parseAssignmentExpression()
             node = new AssignmentNode(tokenType(), tmp);
             _tokens->next();
             node->right = parseAssignmentExpression();
+
+            if(_mode == PM_SYMBOLS)
+            {
+                switch(node->type)
+                {
+                    case TOK_ASSIGN:
+                        if(node->left->expType->isPointer())
+                        {
+                            if(*node->left->expType != *node->right->expType)
+                                if(*node->right->expType != *_NULL->type)
+                                    throw makeException("Incompatible types");
+                            break;
+                        }
+                        checkArgumentsArithmetic(node);
+                        performImplicitCast(node, true);
+                        break;
+                    case TOK_ADD_ASSIGN:
+                    case TOK_SUB_ASSIGN:
+                        if(node->left->expType->isPointer())
+                        {
+                            if(!isInt(*node->right->expType))
+                                throw makeException("Right operand is expected to be of type int");
+                            break;
+                        }
+                    case TOK_MUL_ASSIGN:
+                    case TOK_DIV_ASSIGN:
+                        checkArgumentsArithmetic(node);
+                        performImplicitCast(node, true);
+                        break;
+                    default:
+                        if(!isInt(*node->left->expType) || !isInt(*node->right->expType))
+                            throw makeException("Both operands must be of type int");
+                }
+                node->expType = node->left->expType;
+            }
             return node;
         default:
             return tmp;
@@ -482,6 +540,8 @@ ENode* Parser::parseExpression()
     ExpressionNode* node = new ExpressionNode(TOK_COMMA, tmp);
     _tokens->next();
     node->right = parseExpression();
+    if(_mode == PM_SYMBOLS)
+        node->expType = node->right->expType;
     return node;
 }
 

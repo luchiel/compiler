@@ -170,7 +170,9 @@ SymbolTableStack* initPrimarySymbolTableStack()
 
     primarySymbolTable->addSymbol(new SymbolTypePointer(int_, "int*"), 0, 0, 0);
     primarySymbolTable->addSymbol(void_ptr, 0, 0, 0);
-    primarySymbolTable->addSymbol(new SymbolVariable(void_ptr, "NULL", new IntNode(0)), 0, 0, 0);
+    IntNode* zero = new IntNode(0);
+    zero->expType = static_cast<SymbolType*>(primarySymbolTable->getSymbol("int", 0, 0));
+    primarySymbolTable->addSymbol(new SymbolVariable(void_ptr, "NULL", zero), 0, 0, 0);
 
     return new SymbolTableStack(primarySymbolTable, primarySymbolTable);
 }

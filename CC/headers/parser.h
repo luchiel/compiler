@@ -26,7 +26,7 @@ private:
     ParseMode _mode;
     SymbolType* _int;
     SymbolType* _float;
-    Symbol* _NULL;
+    SymbolVariable* _NULL;
 
     TokenType tokenType() { return _tokens->get().type; }
 
@@ -40,7 +40,7 @@ private:
     bool isInt(SymbolType& type);
     bool isFloat(SymbolType& type);
     void checkArgumentsArithmetic(BinaryNode* node);
-    void performImplicitCast(BinaryNode* node);
+    void performImplicitCast(BinaryNode* node, bool rightOnly = false);
 
     ENode* parsePrimaryExpression();
     ENode* parsePostfixExpression();

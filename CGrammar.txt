@@ -4,7 +4,6 @@
 %token IF ELSE WHILE DO FOR CONTINUE BREAK RETURN TYPEDEF
 
 primary_expression = IDENTIFIER | CONSTANT | STRING_LITERAL | '(' expression ')' ;
-
 postfix_expression =
     primary_expression |
     postfix_expression '[' expression ']' |

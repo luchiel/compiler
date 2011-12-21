@@ -27,7 +27,7 @@ void ENode::makeNodeTop(
 void IdentNode::out(unsigned int depth, vector<bool>* branches, int level)
 {
     printIndent(depth, branches, level);
-    cout << (depth == 0 ? "" : "+-") << "{" << _name << "}" << endl;
+    cout << (depth == 0 ? "" : "+-") << "{" << name << "}" << endl;
     printExpType(level + 1 + depth);
 }
 
