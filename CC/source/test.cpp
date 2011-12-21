@@ -10,6 +10,7 @@
 #include "test.h"
 #include "tokenizer.h"
 #include "parser.h"
+#include "exception.h"
 
 using namespace std;
 
@@ -115,9 +116,9 @@ void Tester::runFile(string& testBlock)
             p.out();
         }
     }
-    catch(exception& e)
+    catch(LuCCException& e)
     {
-        cout << "Error: " << e.what() << endl;
+        cout << "Error: " << e.text() << endl;
     }
 
     //restore stdout

@@ -5,39 +5,39 @@
 namespace LuCCompiler
 {
 
-const char* LuCCException::what() const throw()
+string LuCCException::text() const throw()
 {
     stringstream ss;
     ss << _line << ":" << _col << " " << _error;
-    return ss.str().c_str();
+    return ss.str();
 }
 
-const char* TokenizerException::what() const throw()
+string TokenizerException::text() const throw()
 {
     string e("TokenError:");
-    e += LuCCException::what();
-    return e.c_str();
+	e += LuCCException::text();
+    return e;
 }
 
-const char* ParserException::what() const throw()
+string ParserException::text() const throw()
 {
     string e("ParseError:");
-    e += LuCCException::what();
-    return e.c_str();
+    e += LuCCException::text();
+    return e;
 }
 
-const char* UndefinedSymbolException::what() const throw()
+string UndefinedSymbolException::text() const throw()
 {
     string e("UndefinedSymbol:");
-    e += LuCCException::what();
-    return e.c_str();
+    e += LuCCException::text();
+    return e;
 }
 
-const char* RedefinedSymbolException::what() const throw()
+string RedefinedSymbolException::text() const throw()
 {
     string e("RedefinedSymbol:");
-    e += LuCCException::what();
-    return e.c_str();
+    e += LuCCException::text();
+    return e;
 }
 
 }
