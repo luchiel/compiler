@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <map>
 #include "exception.h"
+#include "expression.h"
 #include "symbol_table.h"
 #include "symbol.h"
 #include "complex_symbol.h"
@@ -159,11 +160,17 @@ SymbolTableStack* initPrimarySymbolTableStack()
 {
     SymbolTable* primarySymbolTable = new SymbolTable();
 
-    SymbolType* integer = new SymbolType("int");
-    primarySymbolTable->addSymbol(integer, 0, 0, 0);
+    SymbolType* int_ = new SymbolType("int");
+    SymbolType* void_ = new SymbolType("void");
+    SymbolType* void_ptr = new SymbolTypePointer(void_, "void*");
+
+    primarySymbolTable->addSymbol(int_, 0, 0, 0);
     primarySymbolTable->addSymbol(new SymbolType("float"), 0, 0, 0);
-    primarySymbolTable->addSymbol(new SymbolType("void"), 0, 0, 0);
-    primarySymbolTable->addSymbol(new SymbolTypePointer(integer, "int*"), 0, 0, 0);
+    primarySymbolTable->addSymbol(void_, 0, 0, 0);
+
+    primarySymbolTable->addSymbol(new SymbolTypePointer(int_, "int*"), 0, 0, 0);
+    primarySymbolTable->addSymbol(void_ptr, 0, 0, 0);
+    primarySymbolTable->addSymbol(new SymbolVariable(void_ptr, "NULL", new IntNode(0)), 0, 0, 0);
 
     return new SymbolTableStack(primarySymbolTable, primarySymbolTable);
 }
