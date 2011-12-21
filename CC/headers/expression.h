@@ -95,21 +95,21 @@ public:
 class BinaryNode: public ENode
 {
 public:
-    TokenType _type;
-    ENode* _left;
-    ENode* _right;
-    BinaryNode(): ENode(), _type(TOK_UNDEF), _left(NULL), _right(NULL) {}
+    TokenType type;
+    ENode* left;
+    ENode* right;
+    BinaryNode(): ENode(), type(TOK_UNDEF), left(NULL), right(NULL) {}
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
 };
 
 class TernaryNode: public ENode
 {
 public:
-    TokenType _type;
-    ENode* _if;
-    ENode* _then;
-    ENode* _else;
-    TernaryNode(): ENode(), _type(TOK_UNDEF), _if(NULL), _then(NULL), _else(NULL) {}
+    TokenType type;
+    ENode* condition;
+    ENode* thenOp;
+    ENode* elseOp;
+    TernaryNode(): ENode(), type(TOK_UNDEF), condition(NULL), thenOp(NULL), elseOp(NULL) {}
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
 };
 

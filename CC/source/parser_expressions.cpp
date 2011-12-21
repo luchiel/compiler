@@ -16,20 +16,20 @@ ENode* Parser::parseBinaryExpression(int priority)
     BinaryNode* node = NULL;
     ENode* tmp = priority < 13 ?
         parseBinaryExpression(priority + 1) : parseCastExpression();
+    if(opType == TOK_UNDEF)
+        opType = tokenType();
     do
     {
-        if(opType == TOK_UNDEF)
-            opType = tokenType();
         map<TokenType, int>::iterator tok =
             OperationGroups::binaries()->find(tokenType());
         if(tok == OperationGroups::binaries()->end() || tok->second != priority)
             return tmp;
 
         node = new BinaryNode();
-        node->_type = tokenType();
-        node->_left = tmp;
+        node->type = tokenType();
+        node->left = tmp;
         _tokens->next();
-        node->_right = priority < 13 ?
+        node->right = priority < 13 ?
             parseBinaryExpression(priority + 1) : parseCastExpression();
         tmp = node;
     }
@@ -333,6 +333,8 @@ ENode* Parser::parseCastExpression()
             node = parseCastExpression();
 
         CastNode* cast = new CastNode(type, node);
+        if(_mode == PM_SYMBOLS)
+            cast->expType = cast->type;
         return cast;
     }
     return parseUnaryExpression();
@@ -345,12 +347,20 @@ ENode* Parser::parseConditionalExpression()
     if(tokenType() != TOK_QUEST)
         return tmp;
     node = new TernaryNode();
-    node->_type = TOK_QUEST;
-    node->_if = tmp;
+    node->type = TOK_QUEST;
+    node->condition = tmp;
     _tokens->next();
-    node->_then = parseExpression();
+    node->thenOp = parseExpression();
     consumeTokenOfType(TOK_COLON, "':' expected");
-    node->_else = parseConditionalExpression();
+    node->elseOp = parseConditionalExpression();
+
+    if(_mode == PM_SYMBOLS)
+    {
+        if(*node->thenOp->expType != *node->elseOp->expType)
+            throw makeException("Incompatible types in ?:");
+        node->expType = node->thenOp->expType;
+    }
+
     return node;
 }
 
@@ -372,10 +382,10 @@ ENode* Parser::parseAssignmentExpression()
         case TOK_XOR_ASSIGN:
         case TOK_OR_ASSIGN:
             node = new AssignmentNode();
-            node->_left = tmp;
-            node->_type = tokenType();
+            node->left = tmp;
+            node->type = tokenType();
             _tokens->next();
-            node->_right = parseAssignmentExpression();
+            node->right = parseAssignmentExpression();
             return node;
         default:
             return tmp;
@@ -385,12 +395,12 @@ ENode* Parser::parseAssignmentExpression()
 ENode* Parser::parseExpression()
 {
     ExpressionNode* node = new ExpressionNode();
-    node->_left = parseAssignmentExpression();
+    node->left = parseAssignmentExpression();
     if(tokenType() != TOK_COMMA)
-        return node->_left;
-    node->_type = TOK_COMMA;
+        return node->left;
+    node->type = TOK_COMMA;
     _tokens->next();
-    node->_right = parseExpression();
+    node->right = parseExpression();
     return node;
 }
 

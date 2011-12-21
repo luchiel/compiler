@@ -92,18 +92,18 @@ void UnaryNode::out(unsigned int depth, vector<bool>* branches, int level)
 
 void BinaryNode::out(unsigned int depth, vector<bool>* branches, int level)
 {
-    makeNodeTop(depth, branches, operationName(_type), level);
-    printNodeWithIndent(depth, branches, false, _left, level);
-    printNodeWithIndent(depth, branches, true, _right, level);
+    makeNodeTop(depth, branches, operationName(type), level);
+    printNodeWithIndent(depth, branches, false, left, level);
+    printNodeWithIndent(depth, branches, true, right, level);
 }
 
 void TernaryNode::out(unsigned int depth, vector<bool>* branches, int level)
 {
-    makeNodeTop(depth, branches, operationName(_type), level);
+    makeNodeTop(depth, branches, operationName(type), level);
 
-    printNodeWithIndent(depth, branches, false, _if, level);
-    printNodeWithIndent(depth, branches, false, _then, level);
-    printNodeWithIndent(depth, branches, true, _else, level);
+    printNodeWithIndent(depth, branches, false, condition, level);
+    printNodeWithIndent(depth, branches, false, thenOp, level);
+    printNodeWithIndent(depth, branches, true, elseOp, level);
 }
 
 void CastNode::out(unsigned int depth, vector<bool>* branches, int level)
