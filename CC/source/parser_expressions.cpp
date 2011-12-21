@@ -212,9 +212,12 @@ ENode* Parser::parsePostfixExpression()
                 consumeTokenOfType(TOK_R_SQUARE, "']' expected");
 
                 if(_mode == PM_SYMBOLS)
+                {
                     node->expType = static_cast<SymbolTypePointer*>(
                         core->expType->resolveAlias()
                     )->type;
+                    node->isLValue = true;
+                }
                 break;
             case TOK_L_BRACKET:
                 if(_mode == PM_SYMBOLS && !core->expType->isFunction())
@@ -284,6 +287,7 @@ ENode* Parser::parsePostfixExpression()
                 {
                     _symbols->pop();
                     node->expType = node->tail[0]->expType;
+                    node->isLValue = true;
                 }
                 break;
             case TOK_DOT:
@@ -301,12 +305,15 @@ ENode* Parser::parsePostfixExpression()
                 {
                     _symbols->pop();
                     node->expType = node->tail[0]->expType;
+                    node->isLValue = true;
                 }
                 break;
             case TOK_INC:
             case TOK_DEC:
                 if(_mode == PM_SYMBOLS)
                 {
+                    if(!core->isLValue)
+                        throw makeException("Lvalue required as operand");
                     if(core->expType->isFunction() || core->expType->isStruct())
                         throw makeException("Wrong type argument to postfix ++/--");
                     node->expType = core->expType;
@@ -336,6 +343,8 @@ ENode* Parser::parseUnaryExpression()
             node->only = parseUnaryExpression();
             if(_mode == PM_SYMBOLS)
             {
+                if(!node->only->isLValue)
+                    throw makeException("Lvalue required as operand");
                 if(node->only->expType->isFunction() || node->only->expType->isStruct())
                     throw makeException("Wrong type argument to unary ++/--");
                 node->expType = node->only->expType;
@@ -382,6 +391,8 @@ ENode* Parser::parseUnaryExpression()
                         node->expType = node->only->expType;
                         break;
                     case TOK_AMP:
+                        if(!node->only->isLValue)
+                            throw makeException("Lvalue required as operand");
                         node->expType = new SymbolTypePointer(node->only->expType, "");
                         break;
                     case TOK_ASTERISK:
@@ -390,6 +401,7 @@ ENode* Parser::parseUnaryExpression()
                         node->expType = static_cast<SymbolTypePointer*>(
                             node->only->expType->resolveAlias()
                         )->type;
+                        node->isLValue = true;
                         break;
                     case TOK_NOT:
                         if(node->only->expType->isStruct())
@@ -488,6 +500,10 @@ ENode* Parser::parseAssignmentExpression()
         case TOK_AND_ASSIGN:
         case TOK_XOR_ASSIGN:
         case TOK_OR_ASSIGN:
+
+            if(_mode == PM_SYMBOLS && !tmp->isLValue)
+                throw makeException("Lvalue required as left operand in assignment");
+
             node = new AssignmentNode(tokenType(), tmp);
             _tokens->next();
             node->right = parseAssignmentExpression();

@@ -21,7 +21,8 @@ protected:
     );
 public:
     SymbolType* expType;
-    ENode(): expType(NULL) {}
+    bool isLValue;
+    ENode(): expType(NULL), isLValue(false) {}
 };
 
 class IdentNode: public ENode
@@ -29,7 +30,8 @@ class IdentNode: public ENode
 public:
     string name;
     SymbolVariable* var;
-    IdentNode(const string& name_, SymbolVariable* var_ = NULL): ENode(), name(name_), var(var_) {}
+    IdentNode(const string& name_, SymbolVariable* var_ = NULL):
+        ENode(), name(name_), var(var_) { isLValue = true; }
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
 };
 
