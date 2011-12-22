@@ -10,7 +10,7 @@
 namespace LuCCompiler
 {
 
-Symbol* SymbolTable::operator[](const int i)
+Symbol* SymbolTable::operator[](const int i) const
 {
     return _ordered[i];
 }

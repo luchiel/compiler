@@ -2,6 +2,8 @@
 #include <iostream>
 #include <sstream>
 #include "symbol.h"
+#include "exception.h"
+#include "expression.h"
 #include "complex_symbol.h"
 
 using namespace std;
@@ -59,11 +61,11 @@ void SymbolVariable::out(int indent, bool noFirst)
     if(!noFirst)
         Symbol::out(indent);
     cout << "variable " << name << " of type <" << type->name << ">";
-    if(_initializer != NULL)
+    if(initializer != NULL)
     {
         cout << " initialized by\n";
         vector<bool> finishedBranches;
-        _initializer->out(0, &finishedBranches, indent + 1);
+        initializer->out(0, &finishedBranches, indent + 1);
     }
     else
         cout << "\n";
@@ -182,6 +184,27 @@ bool SymbolTypeFunction::operator==(Symbol& symbol)
         return false;
     SymbolTypeFunction* s = static_cast<SymbolTypeFunction*>(&symbol);
     return !(s->name != name || *s->type != *type || *s->args != *args);
+}
+
+int SymbolTypeAlias::size()
+{
+    return resolveAlias()->size();
+}
+
+int SymbolTypeArray::size()
+{
+    if(dynamic_cast<IntNode*>(length) == NULL)
+        throw NotSupported("Array size can be only primary int expression");
+    return static_cast<IntNode*>(length)->value * type->size();
+}
+
+int SymbolTypeStruct::size()
+{
+    int result = 0;
+    for(unsigned int i = 0; i < fields->size(); i++)
+        if((*fields)[i]->classType == CT_VAR)
+            result += static_cast<SymbolVariable*>((*fields)[i])->type->size();
+    return result;
 }
 
 }

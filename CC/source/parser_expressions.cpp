@@ -477,6 +477,7 @@ ENode* Parser::parseConditionalExpression()
             else
                 throw makeException("Incompatible types in ?:");
         }
+        //NULL ptr
         node->expType = node->thenOp->expType;
     }
 

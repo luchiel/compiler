@@ -48,7 +48,7 @@ void CharNode::out(unsigned int depth, vector<bool>* branches, int level)
 void IntNode::out(unsigned int depth, vector<bool>* branches, int level)
 {
     printIndent(depth, branches, level);
-    cout << (depth == 0 ? "" : "+-") << "{int " << _value << "}" << endl;
+    cout << (depth == 0 ? "" : "+-") << "{int " << value << "}" << endl;
     printExpType(level + 1 + depth);
 }
 

@@ -35,13 +35,10 @@ public:
     bool operator!=(Symbol& symbol) { return !(*this == symbol); }
     bool isFunction() { return resolveAlias()->classType == CT_FUNCTION; }
     bool isStruct() { return resolveAlias()->classType == CT_STRUCT; }
-    bool isPointer()
-    {
-        return
-            resolveAlias()->classType == CT_POINTER ||
-            resolveAlias()->classType == CT_ARRAY;
-    }
+    bool isPointer() { return resolveAlias()->classType == CT_POINTER || isArray(); }
+    bool isArray() { return resolveAlias()->classType == CT_ARRAY; }
     virtual bool operator==(Symbol& symbol) { return true; }
+    virtual int size() { return 1; }
 };
 
 class SymbolType: public Symbol
@@ -65,6 +62,7 @@ public:
     virtual Symbol* resolveAlias();
 
     virtual bool operator==(Symbol& symbol);
+    virtual int size();
 };
 
 class TypedSymbolType: public SymbolType
@@ -82,14 +80,13 @@ public:
 
 class SymbolVariable: public Symbol
 {
-protected:
-    Node* _initializer;
 public:
+    Node* initializer;
     SymbolType* type;
     SymbolVariable(SymbolType* type_, string name_):
-        Symbol(name_), _initializer(NULL), type(type_) { classType = CT_VAR; }
+        Symbol(name_), initializer(NULL), type(type_) { classType = CT_VAR; }
     SymbolVariable(SymbolType* type_, string name_, Node* initializer_):
-        Symbol(name_), _initializer(initializer_), type(type_) { classType = CT_VAR; }
+        Symbol(name_), initializer(initializer_), type(type_) { classType = CT_VAR; }
     virtual void out(int indent, bool noFirst = true);
 
     virtual bool operator==(Symbol& symbol);
@@ -112,6 +109,7 @@ public:
     SymbolTypeArray(SymbolType* type_, string name_):
         SymbolTypePointer(type_, name_), length(NULL) { classType = CT_ARRAY; }
     virtual void out(int indent, bool noFirst = true);
+    virtual int size();
 };
 
 class SymbolUnknownType: public SymbolType

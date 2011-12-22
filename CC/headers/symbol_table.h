@@ -27,13 +27,13 @@ public:
     Symbol* findSymbol(const string& name);
     Symbol* findSymbol(const string& name, NameType nt);
 
-    unsigned int size() { return _ordered.size(); }
+    unsigned int size() const { return _ordered.size(); }
     void out(int indent);
 
     SymbolTable(): parent(NULL) {}
     ~SymbolTable();
 
-    Symbol* operator[](const int i);
+    Symbol* operator[](const int i) const;
     friend bool operator==(const SymbolTable& t1, const SymbolTable& t2);
     friend bool operator!=(const SymbolTable& t1, const SymbolTable& t2) { return !(t1 == t2); }
 };
@@ -41,11 +41,12 @@ public:
 class SymbolTableStack
 {
 private:
-    SymbolTable* _root;
     SymbolTable* _current;
     int _innerIdx;
 
 public:
+    SymbolTable* _root;
+
     void addSymbol(Symbol* symbol, int line, int col);
     void addTag(Symbol* symbol, int line, int col);
     Symbol* getSymbol(const string& name, int line, int col);
@@ -57,7 +58,7 @@ public:
     void out();
 
     SymbolTableStack(SymbolTable* root, SymbolTable* current):
-        _root(root), _current(current), _innerIdx(0) {}
+        _current(current), _innerIdx(0), _root(root) {}
     ~SymbolTableStack() { delete _root; }
 };
 

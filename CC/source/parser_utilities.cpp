@@ -91,10 +91,11 @@ Parser::Parser(Tokenizer* tokens): _varName("")
     _jumpAllowed = 0;
 }
 
-void Parser::parse()
+SymbolTable* Parser::parse()
 {
     _mode = PM_SYMBOLS;
     parseTranslationUnit();
+    return _symbols->_root;
 }
 
 void Parser::parseStat()

@@ -11,6 +11,7 @@
 #include "tokenizer.h"
 #include "parser.h"
 #include "exception.h"
+#include "generator.h"
 
 using namespace std;
 
@@ -18,8 +19,11 @@ namespace LuCCompiler
 {
 
 const string TEST_DIR = "\\tests\\";
-const string TEST_ALL[] = {"tokenizer", "expressions", "statements", "declarations"};
-const int TEST_ALL_SIZE = 4;
+const string TEST_ALL[] = {
+    "tokenizer", "expressions", "statements",
+    "declarations", "generator"
+};
+const int TEST_ALL_SIZE = 5;
 
 void runTests(string testBlock)
 {
@@ -83,7 +87,9 @@ void Tester::attachTypelessFilename(wstring filename)
 void Tester::runFile(string& testBlock)
 {
     streambuf *backup;
-    _outStream.open(string(_currentTest + ".log").c_str());
+    _outStream.open(string(
+        _currentTest + /*testBlock == "generator" ? ".asm" :*/ ".log"
+    ).c_str());
     if(!_outStream.good())
         throw BadFile();
 
@@ -103,6 +109,14 @@ void Tester::runFile(string& testBlock)
                 t.next().outputAsString(cout);
             }
             while(t.get().type != TOK_EOF);
+        }
+        else if(testBlock == "generator")
+        {
+            Parser p(&t);
+            Generator g(p.parse());
+            g.generate();
+            g.out();
+            //and to asm
         }
         else
         {

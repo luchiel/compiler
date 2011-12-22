@@ -54,8 +54,8 @@ public:
 class IntNode: public ENode
 {
 public:
-    int _value;
-    IntNode(const int value): ENode(), _value(value) {}
+    int value;
+    IntNode(const int value_): ENode(), value(value_) {}
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
 };
 

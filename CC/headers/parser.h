@@ -84,7 +84,7 @@ private:
     void consumeTokenOfType(TokenType type, const string& except);
 
 public:
-    void parse();
+    SymbolTable* parse();
     void parseStat();
     void parseExpr();
 

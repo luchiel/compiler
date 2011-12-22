@@ -1,0 +1,4 @@
+int a;
+int* f() { return &a; }
+
+void main() { *f() = 5; }

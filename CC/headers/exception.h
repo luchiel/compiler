@@ -60,6 +60,26 @@ public:
     virtual string text() const throw();
 };
 
+class NotSupported: public LuCCException
+{
+private:
+    string _text;
+public:
+    NotSupported(const string& s): LuCCException(0, 0, ""), _text(s) {}
+    ~NotSupported() throw() {}
+    string text() const throw() { return "NotSupported: " + _text; }
+};
+
+class NoFunctionDefinition: public LuCCException
+{
+private:
+    string _function;
+public:
+    NoFunctionDefinition(const string& s): LuCCException(0, 0, ""), _function(s) {}
+    ~NoFunctionDefinition() throw() {}
+    string text() const throw() { return "Undefined reference to " + _function ; }
+};
+
 }
 
 #endif
