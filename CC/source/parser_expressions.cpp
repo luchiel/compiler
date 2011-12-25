@@ -3,7 +3,7 @@
 #include "symbol.h"
 #include "complex_symbol.h"
 #include "expression.h"
-#include "operations.h"
+#include "dictionaries.h"
 
 using namespace std;
 
@@ -55,8 +55,8 @@ ENode* Parser::parseBinaryExpression(int priority)
     do
     {
         map<TokenType, int>::iterator tok =
-            OperationGroups::binaries()->find(tokenType());
-        if(tok == OperationGroups::binaries()->end() || tok->second != priority)
+            Dictionaries::binaries()->find(tokenType());
+        if(tok == Dictionaries::binaries()->end() || tok->second != priority)
             return tmp;
 
         node = new BinaryNode(tokenType(), tmp);
@@ -116,7 +116,7 @@ ENode* Parser::parseBinaryExpression(int priority)
                     checkArgumentsArithmetic(node);
                     performImplicitCast(node);
                     break;
-                case TOK_LOGICAl_AND:
+                case TOK_LOGICAL_AND:
                 case TOK_LOGICAL_OR:
                     node->expType = _int;
                     if(!node->left->expType->isPointer() && !isArithmetic(*node->left->expType))
@@ -172,7 +172,7 @@ ENode* Parser::parsePrimaryExpression()
                 Symbol* v = getSymbol(_tokens->get().text);
                 if(v->classType != CT_VAR && v->classType != CT_FUNCTION)
                     throw makeException("Unexpected symbol " + _tokens->get().text);
-                node = new IdentNode(_tokens->get().text, static_cast<SymbolVariable*>(v));
+                node = new IdentNode(_tokens->get().text, v);
                 if(v->classType == CT_VAR)
                     node->expType = static_cast<SymbolVariable*>(v)->type;
                 else

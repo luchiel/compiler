@@ -446,7 +446,7 @@ void Tokenizer::read()
                     break;
                 case '&':
                     _current.type =
-                        nextSymbol == '&' ? TOK_LOGICAl_AND :
+                        nextSymbol == '&' ? TOK_LOGICAL_AND :
                         nextSymbol == '=' ? TOK_AND_ASSIGN :
                         TOK_AMP;
                     break;

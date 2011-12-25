@@ -20,10 +20,11 @@ void Generator::genCode(SymbolTypeFunction* f)
     }
     else if(f->name == "main")
     {
-        //
+        genLabel(new Argument(f->name));
+        //c
+        //genEndMain
         return;
     }
-    //gen();
     //gen code
 }
 
@@ -54,7 +55,7 @@ void Generator::out()
         dataPart[i]->out();
     cout << "\n.code\n";
     for(unsigned int i = 0; i < codePart.size(); ++i)
-        codePart[i]->out();
+        codePart[i].out();
 }
 
 void Generator::generate()
@@ -63,6 +64,34 @@ void Generator::generate()
     if(main == NULL)
         throw NoFunctionDefinition("main");
     genCode(main);
+}
+
+void Generator::gen(Command com, Argument a1, Argument a2, Argument a3)
+{
+    com.args.push_back(new Argument(a1));
+    com.args.push_back(new Argument(a2));
+    com.args.push_back(new Argument(a3));
+    codePart.push_back(com);
+};
+
+void Generator::gen(Command com, Argument a1, Argument a2)
+{
+    com.args.push_back(new Argument(a1));
+    com.args.push_back(new Argument(a2));
+    codePart.push_back(com);
+}
+
+void Generator::gen(Command com, Argument a1)
+{
+    com.args.push_back(new Argument(a1));
+    codePart.push_back(com);
+}
+
+void Generator::genLabel(Argument* a)
+{
+    Command* com = new Command(cCol);
+    com->args.push_back(a);
+    codePart.push_back(*com);
 }
 
 }

@@ -5,6 +5,13 @@
 namespace LuCCompiler
 {
 
+string itostr(const int i)
+{
+    stringstream ss;
+    ss << i;
+    return ss.str();
+}
+
 string LuCCException::text() const throw()
 {
     stringstream ss;

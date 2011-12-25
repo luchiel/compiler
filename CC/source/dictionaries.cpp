@@ -1,25 +1,25 @@
 #include <map>
 #include "token.h"
-#include "operations.h"
+#include "dictionaries.h"
 
 namespace LuCCompiler
 {
 
-OperationGroups* OperationGroups::_instance = NULL;
+Dictionaries* Dictionaries::_instance = NULL;
 
-OperationGroups* OperationGroups::getInstance()
+Dictionaries* Dictionaries::getInstance()
 {
     if(_instance == NULL)
-        _instance = new OperationGroups();
+        _instance = new Dictionaries();
     return _instance;
 }
 
-map<TokenType, int>* OperationGroups::binaries()
+map<TokenType, int>* Dictionaries::binaries()
 {
     return getInstance()->_binaryOps;
 }
 
-OperationGroups::OperationGroups()
+Dictionaries::Dictionaries()
 {
     _binaryOps = new map<TokenType, int>;
     (*_binaryOps)[TOK_ASTERISK] = 13;
@@ -38,11 +38,11 @@ OperationGroups::OperationGroups()
     (*_binaryOps)[TOK_AMP] = 8;
     (*_binaryOps)[TOK_XOR] = 7;
     (*_binaryOps)[TOK_OR] = 6;
-    (*_binaryOps)[TOK_LOGICAl_AND] = 5;
+    (*_binaryOps)[TOK_LOGICAL_AND] = 5;
     (*_binaryOps)[TOK_LOGICAL_OR] = 4;
 }
 
-OperationGroups::~OperationGroups()
+Dictionaries::~Dictionaries()
 {
     delete _binaryOps;
 }
@@ -77,7 +77,7 @@ string operationName(TokenType type)
         case TOK_NE: return "!=";
         case TOK_XOR: return "^";
         case TOK_OR: return "|";
-        case TOK_LOGICAl_AND: return "&&";
+        case TOK_LOGICAL_AND: return "&&";
         case TOK_LOGICAL_OR: return "||";
 
         case TOK_QUEST: return "?:";

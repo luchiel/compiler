@@ -2,7 +2,7 @@
 #include <iostream>
 #include <vector>
 #include "expression.h"
-#include "operations.h"
+#include "dictionaries.h"
 
 using namespace std;
 
@@ -130,20 +130,79 @@ void SizeofNode::out(unsigned int depth, vector<bool>* branches, int level)
 }
 
 void IdentNode::gen(AbstractGenerator& g) {}
-void IntNode::gen(AbstractGenerator& g) {}
-void CharNode::gen(AbstractGenerator& g) {}
+
+void IntNode::gen(AbstractGenerator& g)
+{
+    g.gen(cMov, rEAX, value);
+    g.gen(cPush, rEAX);
+}
+
+void CharNode::gen(AbstractGenerator& g)
+{
+    g.gen(cMov, rEAX, value);
+    g.gen(cPush, rEAX);
+}
+
 void StringNode::gen(AbstractGenerator& g) {}
 void FloatNode::gen(AbstractGenerator& g) {}
-void PostfixNode::gen(AbstractGenerator& g) {}
-void UnaryNode::gen(AbstractGenerator& g) {}
+
+void PostfixNode::gen(AbstractGenerator& g)
+{
+    //only->gen(g);
+    //vector<ENode*> tail;
+    switch(type)
+    {
+        case TOK_L_BRACKET: //fcall
+        case TOK_L_SQUARE: //subscript
+        case TOK_DOT: //
+        case TOK_ARROW:
+        case TOK_INC:
+        case TOK_DEC:
+            break;
+    }
+}
+
+void UnaryNode::gen(AbstractGenerator& g)
+{
+    if(type == TOK_ASTERISK)
+    {
+        return;
+    }
+    only->gen(g);
+    g.gen(cPop, rEAX);
+    switch(type)
+    {
+        case TOK_AMP: //?
+            only->genLValue(g);
+            g.gen(cPop, rEAX);
+            break;
+        case TOK_INC:
+        case TOK_DEC:
+            only->genLValue(g);
+            g.gen(cPop, rEBX);
+            g.gen(type == TOK_INC ? cInc : cDec, rEBX + 0);
+            g.gen(cMov, rEAX, rEBX + 0);
+            break;
+        case TOK_NOT:
+            g.gen(cXor, rECX, rECX);
+            g.gen(cTest, rEAX, rEAX);
+            g.gen(cSetZ, rCL);
+            g.gen(cMov, rEAX, rECX);
+            break;
+        case TOK_TILDA: g.gen(cNot, rEAX); break;
+        case TOK_MINUS: g.gen(cNeg, rEAX); break;
+        case TOK_PLUS:  break;
+    }
+    g.gen(cPush, rEAX);
+}
 
 void BinaryNode::gen(AbstractGenerator& g)
 {
-    if(type == TOK_LOGICAl_AND || type == TOK_LOGICAL_OR)
+    if(type == TOK_LOGICAL_AND || type == TOK_LOGICAL_OR)
     {
         left->gen(g);
         g.gen(cPop, rEAX);
-        g.gen(cText, rEAX, rEAX);
+        g.gen(cTest, rEAX, rEAX);
         Argument a = g.label();
         g.gen(type == TOK_LOGICAL_AND ? cJZ : cJNZ, a);
 
@@ -151,7 +210,7 @@ void BinaryNode::gen(AbstractGenerator& g)
         g.gen(cPop, rEAX);
         g.gen(cTest, rEAX, rEAX);
 
-        g.genLabel(a);
+        g.genLabel(&a);
         g.gen(cPush, rEAX);
     }
     left->gen(g);
@@ -164,28 +223,28 @@ void BinaryNode::gen(AbstractGenerator& g)
     }
     else switch(type)
     {
-        TOK_MOD:
+        case TOK_MOD:
             g.gen(cIdiv, rEBX);
             g.gen(cMov, rEAX, rEDX);
             break;
-        TOK_ASTERISK: g.gen(cImul, rEAX, rEBX); break;
-        TOK_DIV:      g.gen(cIdiv, rEBX); break;
-        TOK_PLUS:     g.gen(cAdd, rEAX, rEBX); break;
-        TOK_MINUS:    g.gen(cSub, rEAX, rEBX); break;
-        TOK_SHL:
-        TOK_SHR:
+        case TOK_ASTERISK: g.gen(cImul, rEAX, rEBX); break;
+        case TOK_DIV:      g.gen(cIdiv, rEBX); break;
+        case TOK_PLUS:     g.gen(cAdd, rEAX, rEBX); break;
+        case TOK_MINUS:    g.gen(cSub, rEAX, rEBX); break;
+        case TOK_SHL:
+        case TOK_SHR:
             g.gen(cMov, rECX, rEBX);
             g.gen(type == TOK_SHL ? cShl : cShr, rCL);
             break;
-        TOK_L:  g.genIntCmp(cSetL); break;
-        TOK_G:  g.genIntCmp(cSetG); break;
-        TOK_LE: g.genIntCmp(cSetLE); break;
-        TOK_GE: g.genIntCmp(cSetGE); break;
-        TOK_E:  g.genIntCmp(cSetE); break;
-        TOK_NE: g.genIntCmp(cSetNE); break;
-        TOK_AMP: g.gen(cAnd, rEAX, rEBX); break;
-        TOK_XOR: g.gen(cXor, rEAX, rEBX); break;
-        TOK_OR:  g.gen(cOr, rEAX, rEBX); break;
+        case TOK_L:  g.genIntCmp(cSetL); break;
+        case TOK_G:  g.genIntCmp(cSetG); break;
+        case TOK_LE: g.genIntCmp(cSetLE); break;
+        case TOK_GE: g.genIntCmp(cSetGE); break;
+        case TOK_E:  g.genIntCmp(cSetE); break;
+        case TOK_NE: g.genIntCmp(cSetNE); break;
+        case TOK_AMP: g.gen(cAnd, rEAX, rEBX); break;
+        case TOK_XOR: g.gen(cXor, rEAX, rEBX); break;
+        case TOK_OR:  g.gen(cOr, rEAX, rEBX); break;
     }
     g.gen(cPush, rEAX);
 }
@@ -196,9 +255,17 @@ void SizeofNode::gen(AbstractGenerator& g)
     g.gen(cPush, rEAX);
 }
 
-void CastNode::gen(AbstractGenerator& g) {}
+void CastNode::gen(AbstractGenerator& g)
+{
+    element->gen(g);
+}
+
 void AssignmentNode::gen(AbstractGenerator& g) {}
 void ExpressionNode::gen(AbstractGenerator& g) {}
 void TernaryNode::gen(AbstractGenerator& g) {}
+
+void IdentNode::genLValue(AbstractGenerator& g) {}
+void PostfixNode::genLValue(AbstractGenerator& g) {}
+void UnaryNode::genLValue(AbstractGenerator& g) {}
 
 }

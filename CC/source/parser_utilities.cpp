@@ -1,6 +1,5 @@
 #include <vector>
 #include <string>
-#include <sstream>
 #include "parser.h"
 #include "exception.h"
 #include "tokenizer.h"
@@ -13,13 +12,6 @@ using namespace std;
 
 namespace LuCCompiler
 {
-
-string itostr(const int i)
-{
-    stringstream ss;
-    ss << i;
-    return ss.str();
-}
 
 Symbol* Parser::getSymbol(const string& name)
 {

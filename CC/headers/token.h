@@ -33,7 +33,7 @@ enum TokenType
     TOK_QUEST,
     TOK_E,
     TOK_NE,
-    TOK_LOGICAl_AND,
+    TOK_LOGICAL_AND,
     TOK_OR,
     TOK_LOGICAL_OR,
     TOK_NOT,

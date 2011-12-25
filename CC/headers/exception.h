@@ -9,6 +9,8 @@ using namespace std;
 namespace LuCCompiler
 {
 
+string itostr(const int i);
+
 class LuCCException: public exception
 {
 private:

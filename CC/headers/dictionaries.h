@@ -8,18 +8,17 @@
 namespace LuCCompiler
 {
 
-class OperationGroups
+class Dictionaries
 {
 private:
-    OperationGroups();
-    static OperationGroups* _instance;
+    Dictionaries();
+    static Dictionaries* _instance;
     map<TokenType, int>* _binaryOps;
-    //map<TokenType, int>* _unaryOps;
 
 public:
-    ~OperationGroups();
+    ~Dictionaries();
 
-    static OperationGroups* getInstance();
+    static Dictionaries* getInstance();
     static map<TokenType, int>* binaries();
 };
 

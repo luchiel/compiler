@@ -24,18 +24,20 @@ public:
     SymbolType* expType;
     bool isLValue;
     ENode(): expType(NULL), isLValue(false) {}
+    virtual void genLValue(AbstractGenerator& g) {}
 };
 
 class IdentNode: public ENode
 {
 public:
     string name;
-    SymbolVariable* var;
-    IdentNode(const string& name_, SymbolVariable* var_ = NULL):
+    Symbol* var;
+    IdentNode(const string& name_, Symbol* var_ = NULL):
         ENode(), name(name_), var(var_) { isLValue = true; }
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
 
     virtual void gen(AbstractGenerator& g);
+    virtual void genLValue(AbstractGenerator& g);
 };
 
 class StringNode: public ENode
@@ -88,6 +90,7 @@ public:
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
 
     virtual void gen(AbstractGenerator& g);
+    virtual void genLValue(AbstractGenerator& g);
 };
 
 class UnaryNode: public ENode
@@ -99,6 +102,7 @@ public:
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
 
     virtual void gen(AbstractGenerator& g);
+    virtual void genLValue(AbstractGenerator& g);
 };
 
 class SizeofNode: public UnaryNode
