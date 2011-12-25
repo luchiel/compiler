@@ -6,48 +6,32 @@
 #include "symbol.h"
 #include "complex_symbol.h"
 #include "symbol_table.h"
+#include "abstract_generator.h"
 
 using namespace std;
 
 namespace LuCCompiler
 {
 
-class Data
-{
-public:
-    string name;
-    int size;
-    Data(const string& name_, const int size_): name(name_), size(size_) {}
-    void out();
-};
-
-//class Argument {};
-
-//class Registry: Argument {};
-//class Constant: Argument {};
-
-class Command
-{
-public:
-    string command;
-    //vector<Argument&> args;
-    Command(const string& c_): command(c_) {}
-    void out();
-};
-
-class Generator
+class Generator: public AbstractGenerator
 {
 private:
     SymbolTable* symbols;
     SymbolTypeFunction* main;
     vector<Data*> dataPart;
     vector<Command*> codePart;
-    void generateData(const SymbolTable& t, const string& prefix = "");
-    void generateCode(SymbolTypeFunction* f);
+    void genData(const SymbolTable& t, const string& prefix = "");
+    void genCode(SymbolTypeFunction* f);
+
 public:
-    Generator(SymbolTable* symbols_): symbols(symbols_), main(NULL) {}
+    Generator(SymbolTable* symbols_):
+        AbstractGenerator(), labelNum(0), symbols(symbols_), main(NULL) {}
     void generate();
     void out();
+
+    virtual void gen(const Command& com, Argument a1, Argument a2, Argument a3) {}
+    virtual void gen(const Command& com, Argument a1, Argument a2) {}
+    virtual void gen(const Command& com, Argument a1) {}
 };
 
 }

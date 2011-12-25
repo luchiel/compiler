@@ -85,8 +85,8 @@ ENode* Parser::parseBinaryExpression(int priority)
                     node->expType = _float;
                     performImplicitCast(node);
                     break;
-                case TOK_EQUAL:
-                case TOK_NOT_EQUAL:
+                case TOK_E:
+                case TOK_NE:
                     node->expType = _int;
                     tmpl = dynamic_cast<IdentNode*>(node->left);
                     tmpr = dynamic_cast<IdentNode*>(node->right);

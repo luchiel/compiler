@@ -34,14 +34,14 @@ void IdentNode::out(unsigned int depth, vector<bool>* branches, int level)
 void StringNode::out(unsigned int depth, vector<bool>* branches, int level)
 {
     printIndent(depth, branches, level);
-    cout << (depth == 0 ? "" : "+-") << "{string " << _value << "}" << endl;
+    cout << (depth == 0 ? "" : "+-") << "{string " << value << "}" << endl;
     printExpType(level + 1 + depth);
 }
 
 void CharNode::out(unsigned int depth, vector<bool>* branches, int level)
 {
     printIndent(depth, branches, level);
-    cout << (depth == 0 ? "" : "+-") << "{char " << _value << "}" << endl;
+    cout << (depth == 0 ? "" : "+-") << "{char " << char(value) << "}" << endl;
     printExpType(level + 1 + depth);
 }
 
@@ -55,7 +55,7 @@ void IntNode::out(unsigned int depth, vector<bool>* branches, int level)
 void FloatNode::out(unsigned int depth, vector<bool>* branches, int level)
 {
     printIndent(depth, branches, level);
-    cout << (depth == 0 ? "" : "+-") << "{float " << _value << "}" << endl;
+    cout << (depth == 0 ? "" : "+-") << "{float " << value << "}" << endl;
     printExpType(level + 1 + depth);
 }
 
@@ -128,5 +128,77 @@ void SizeofNode::out(unsigned int depth, vector<bool>* branches, int level)
         cout << "+-<" << symbolType->name << ">\n";
     }
 }
+
+void IdentNode::gen(AbstractGenerator& g) {}
+void IntNode::gen(AbstractGenerator& g) {}
+void CharNode::gen(AbstractGenerator& g) {}
+void StringNode::gen(AbstractGenerator& g) {}
+void FloatNode::gen(AbstractGenerator& g) {}
+void PostfixNode::gen(AbstractGenerator& g) {}
+void UnaryNode::gen(AbstractGenerator& g) {}
+
+void BinaryNode::gen(AbstractGenerator& g)
+{
+    if(type == TOK_LOGICAl_AND || type == TOK_LOGICAL_OR)
+    {
+        left->gen(g);
+        g.gen(cPop, rEAX);
+        g.gen(cText, rEAX, rEAX);
+        Argument a = g.label();
+        g.gen(type == TOK_LOGICAL_AND ? cJZ : cJNZ, a);
+
+        right->gen(g);
+        g.gen(cPop, rEAX);
+        g.gen(cTest, rEAX, rEAX);
+
+        g.genLabel(a);
+        g.gen(cPush, rEAX);
+    }
+    left->gen(g);
+    right->gen(g);
+    g.gen(cPop, rEBX);
+    g.gen(cPop, rEAX);
+    if(expType->name == "float")
+    {
+        ;
+    }
+    else switch(type)
+    {
+        TOK_MOD:
+            g.gen(cIdiv, rEBX);
+            g.gen(cMov, rEAX, rEDX);
+            break;
+        TOK_ASTERISK: g.gen(cImul, rEAX, rEBX); break;
+        TOK_DIV:      g.gen(cIdiv, rEBX); break;
+        TOK_PLUS:     g.gen(cAdd, rEAX, rEBX); break;
+        TOK_MINUS:    g.gen(cSub, rEAX, rEBX); break;
+        TOK_SHL:
+        TOK_SHR:
+            g.gen(cMov, rECX, rEBX);
+            g.gen(type == TOK_SHL ? cShl : cShr, rCL);
+            break;
+        TOK_L:  g.genIntCmp(cSetL); break;
+        TOK_G:  g.genIntCmp(cSetG); break;
+        TOK_LE: g.genIntCmp(cSetLE); break;
+        TOK_GE: g.genIntCmp(cSetGE); break;
+        TOK_E:  g.genIntCmp(cSetE); break;
+        TOK_NE: g.genIntCmp(cSetNE); break;
+        TOK_AMP: g.gen(cAnd, rEAX, rEBX); break;
+        TOK_XOR: g.gen(cXor, rEAX, rEBX); break;
+        TOK_OR:  g.gen(cOr, rEAX, rEBX); break;
+    }
+    g.gen(cPush, rEAX);
+}
+
+void SizeofNode::gen(AbstractGenerator& g)
+{
+    g.gen(cMov, rEAX, symbolType->size() * 4);
+    g.gen(cPush, rEAX);
+}
+
+void CastNode::gen(AbstractGenerator& g) {}
+void AssignmentNode::gen(AbstractGenerator& g) {}
+void ExpressionNode::gen(AbstractGenerator& g) {}
+void TernaryNode::gen(AbstractGenerator& g) {}
 
 }

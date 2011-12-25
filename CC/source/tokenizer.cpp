@@ -391,12 +391,12 @@ void Tokenizer::read()
                         TOK_PLUS;
                     break;
                 case '=':
-                    _current.type = nextSymbol == '=' ? TOK_EQUAL : TOK_ASSIGN;
+                    _current.type = nextSymbol == '=' ? TOK_E : TOK_ASSIGN;
                     break;
                 case '!':
                     _current.type =
                         trySymbol(j + 1) == '=' ?
-                        TOK_NOT_EQUAL : TOK_NOT;
+                        TOK_NE : TOK_NOT;
                     break;
                 case '|':
                     _current.type =

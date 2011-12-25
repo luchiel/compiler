@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include "abstract_generator.h"
 
 using namespace std;
 
@@ -21,6 +22,8 @@ protected:
 public:
     virtual void out(unsigned int depth, vector<bool>* branches, int level = 0);
     virtual ~Node() {}
+
+    virtual void gen(AbstractGenerator& g) {}
 };
 
 }

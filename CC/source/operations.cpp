@@ -33,31 +33,18 @@ OperationGroups::OperationGroups()
     (*_binaryOps)[TOK_G] = 10;
     (*_binaryOps)[TOK_LE] = 10;
     (*_binaryOps)[TOK_GE] = 10;
-    (*_binaryOps)[TOK_EQUAL] = 9;
-    (*_binaryOps)[TOK_NOT_EQUAL] = 9;
+    (*_binaryOps)[TOK_E] = 9;
+    (*_binaryOps)[TOK_NE] = 9;
     (*_binaryOps)[TOK_AMP] = 8;
     (*_binaryOps)[TOK_XOR] = 7;
     (*_binaryOps)[TOK_OR] = 6;
     (*_binaryOps)[TOK_LOGICAl_AND] = 5;
     (*_binaryOps)[TOK_LOGICAL_OR] = 4;
-
-/*
-    _unaryOps = new map<TokenType, int>;
-    //_unaryOps[(typename)] = 14;
-    (*_unaryOps)[TOK_ASTERISK] = 15;
-    (*_unaryOps)[TOK_AMP] = 15;
-    (*_unaryOps)[TOK_PLUS] = 15;
-    (*_unaryOps)[TOK_MINUS] = 15;
-    (*_unaryOps)[TOK_NOT] = 15;
-    (*_unaryOps)[TOK_TILDA] = 15;
-    (*_unaryOps)[TOK_SIZEOF] = 15;
-*/
 }
 
 OperationGroups::~OperationGroups()
 {
     delete _binaryOps;
-    //delete _unaryOps;
 }
 
 string operationName(TokenType type)
@@ -86,8 +73,8 @@ string operationName(TokenType type)
         case TOK_G: return ">";
         case TOK_LE: return "<=";
         case TOK_GE: return ">=";
-        case TOK_EQUAL: return "==";
-        case TOK_NOT_EQUAL: return "!=";
+        case TOK_E: return "==";
+        case TOK_NE: return "!=";
         case TOK_XOR: return "^";
         case TOK_OR: return "|";
         case TOK_LOGICAl_AND: return "&&";
