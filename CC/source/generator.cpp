@@ -11,6 +11,8 @@ namespace LuCCompiler
 
 void Generator::genCode(SymbolTypeFunction* f)
 {
+    if(f->name == "printf")
+        return;
     if(f->body == NULL)
         throw NoFunctionDefinition(f->name);
     if(main == NULL && f->name == "main")
@@ -20,15 +22,18 @@ void Generator::genCode(SymbolTypeFunction* f)
     }
     else if(f->name == "main")
     {
-        genLabel(new Argument(f->name));
-        //c
-        //genEndMain
+        genLabel(new Argument(f->name, atLabel));
+        f->body->gen(*this);
         return;
     }
-    //gen code
+    gen(cPush, rEBP);
+    gen(cMov, rEBP, rESP);
+    f->body->gen(*this);
+    gen(cMov, rESP, rEBP);
+    gen(cPop, rEBP);
 }
 
-void Generator::genData(const SymbolTable& t, const string& prefix)
+void Generator::genData(const SymbolTable& t)
 {
     for(unsigned int j = 0; j < t.size(); ++j)
     {
@@ -39,7 +44,7 @@ void Generator::genData(const SymbolTable& t, const string& prefix)
             continue;
         }
         SymbolVariable* var = static_cast<SymbolVariable*>(t[j]);
-        Data* d = new Data(prefix + var->name, var->type->size());
+        Data* d = new Data("v_" + var->name, var->type->size());
         dataPart.push_back(d);
 
         if(dynamic_cast<InitializerList*>(var->initializer) == NULL)
@@ -49,13 +54,27 @@ void Generator::genData(const SymbolTable& t, const string& prefix)
 
 void Generator::out()
 {
-    cout << ".586\n.model flat, stdcall\n\nExitProcess proto :DWORD\n\n";
-    cout << ".data\n";
+    cout <<
+        ".586\n.model flat, stdcall\n"
+
+        "include \\masm32\\include\\msvcrt.inc\n"
+        "include \\masm32\\include\\kernel32.inc\n"
+        "includelib \\masm32\\lib\\kernel32.lib\n"
+        "includelib \\masm32\\lib\\msvcrt.lib\n\n"
+
+        "ExitProcess proto :DWORD\n";
+
+    cout << "\n.data\n";
     for(unsigned int i = 0; i < dataPart.size(); ++i)
         dataPart[i]->out();
+    //cout << "\n.rdata\n";
+    for(unsigned int i = 0; i < rdataPart.size(); ++i)
+        rdataPart[i]->out();
     cout << "\n.code\n";
     for(unsigned int i = 0; i < codePart.size(); ++i)
         codePart[i].out();
+
+    cout << "call ExitProcess\n\nend main" << endl;
 }
 
 void Generator::generate()
@@ -89,9 +108,16 @@ void Generator::gen(Command com, Argument a1)
 
 void Generator::genLabel(Argument* a)
 {
-    Command* com = new Command(cCol);
+    Command* com = new Command(cLabel);
     com->args.push_back(a);
     codePart.push_back(*com);
+}
+
+string Generator::addConstant(const string& s)
+{
+    RData* r = new RData("c_" + itostr(labelNum++), s);
+    rdataPart.push_back(r);
+    return r->name;
 }
 
 }

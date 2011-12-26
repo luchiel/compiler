@@ -157,7 +157,13 @@ void CharNode::gen(AbstractGenerator& g)
     g.gen(cPush, rEAX);
 }
 
-void StringNode::gen(AbstractGenerator& g) {}
+void StringNode::gen(AbstractGenerator& g)
+{
+    string s = g.addConstant(value);
+    g.gen(cMov, rEAX, s);
+    g.gen(cPush, rEAX);
+}
+
 void FloatNode::gen(AbstractGenerator& g) {}
 
 void PostfixNode::gen(AbstractGenerator& g)
@@ -194,17 +200,25 @@ void PostfixNode::gen(AbstractGenerator& g)
 
 void CallNode::gen(AbstractGenerator& g)
 {
-    //fcall
-    //place for res
-    //args push
-    //call
+    //place for res if not printf
+    bool isPrintf = only->expType->name == "printf";
+    if(!isPrintf)
+        ;//place for res if not printf
+    for(int j = params.size() - 1; j >= 0; --j)
+        params[j]->gen(g);
+
+    g.gen(cCall, isPrintf ? "crt_printf" : "f_" + only->expType->name);
+    for(unsigned int j = 0; j < params.size(); ++j)
+        g.gen(cPop, rEBX);
+    if(isPrintf)
+        g.gen(cPush, rEAX);
 }
 
 void UnaryNode::gen(AbstractGenerator& g)
 {
     if(type == TOK_ASTERISK)
     {
-        return;
+        return; //offset = 0? [ebx], where ebx - pointer?
     }
     only->gen(g);
     g.gen(cPop, rEAX);

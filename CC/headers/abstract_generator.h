@@ -19,7 +19,7 @@ enum AsmCommand
     cCmp, cTest,
     cJE, cJNE, cJL, cJG, cJLE, cLGE, cJZ, cJNZ,
     cSetE, cSetNE, cSetL, cSetG, cSetLE, cSetGE, cSetZ, cSetNZ,
-    cCol,
+    cLabel, cCall,
 };
 
 enum ArgType { atReg, atMem, atConst, atLabel };
@@ -33,6 +33,15 @@ public:
     void out();
 };
 
+class RData
+{
+public:
+    string name;
+    string value;
+    RData(const string& name_, const string& value_): name(name_), value(value_) {}
+    void out();
+};
+
 class Argument
 {
 public:
@@ -40,16 +49,20 @@ public:
     int offset;
     union
     {
-        void* memArg;
         int constArg;
         AsmRegister regArg;
-        string* labelArg;
+        string* sArg;
     }
     value;
     Argument(ArgType type_): type(type_) {}
     Argument(int v_) { value.constArg = v_; }
     Argument(AsmRegister r_): type(atReg), offset(-1) { value.regArg = r_; }
-    Argument(string v_): type(atLabel), offset(-1) { value.labelArg = new string(v_); }
+	Argument(string v_, ArgType type_): type(type_), offset(-1) { value.sArg = new string(v_); }
+    Argument(string v_): offset(-1)
+    {
+        value.sArg = new string(v_);
+        type = v_[0] == 'l' ? atLabel : atMem; //c -> offset
+    }
     Argument(const Argument& a): type(a.type), offset(a.offset), value(a.value) {}
 
     virtual void out();
@@ -77,6 +90,7 @@ public:
     virtual void gen(Command com, Argument a1, Argument a2) {}
     virtual void gen(Command com, Argument a1) {}
     virtual void genLabel(Argument* a) {}
+    virtual string addConstant(const string& s) { return ""; }
 
     void genIntCmp(const Command& cmpcmd);
     Argument label();

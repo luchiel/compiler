@@ -88,7 +88,7 @@ void Tester::runFile(string& testBlock)
 {
     streambuf *backup;
     _outStream.open(string(
-        _currentTest + /*testBlock == "generator" ? ".asm" :*/ ".log"
+        _currentTest + (testBlock == "generator" ? ".asm" : ".log")
     ).c_str());
     if(!_outStream.good())
         throw BadFile();
@@ -116,7 +116,15 @@ void Tester::runFile(string& testBlock)
             Generator g(p.parse());
             g.generate();
             g.out();
-            //and to asm
+
+            string redirect("2>" + _currentTest + ".log");
+            string file("/coff " + _currentTest + ".asm " + redirect);
+            LPWSTR wfile = (LPWSTR)malloc((file.size() + 1) * sizeof(WCHAR));
+            MultiByteToWideChar(CP_ACP, 0, file.c_str(), file.size() + 1, wfile, file.size() + 1);
+            ShellExecuteW(NULL, L"open", L"ml.exe", wfile, NULL, SW_SHOW);
+            //_currentTest.exe wont be at the path you want it to
+            //wfile = (LPWSTR)malloc((file.size() + 1) * sizeof(WCHAR));
+            //ShellExecuteW(NULL, L"open", L".exe", wfile, NULL, SW_SHOW);
         }
         else
         {

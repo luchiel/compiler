@@ -44,6 +44,11 @@ void ExpressionStatement::out(unsigned int depth, vector<bool>* branches, int le
     printNodeWithIndent(depth, branches, true, _expr, level);
 }
 
+void ExpressionStatement::gen(AbstractGenerator& g)
+{
+    _expr->gen(g);
+}
+
 void IterationStatement::out(unsigned int depth, vector<bool>* branches, int level)
 {
     makeNodeTop(depth, branches, _type == TOK_WHILE ? "while" : "do", level);
@@ -85,6 +90,13 @@ void CompoundStatement::out(unsigned int depth, vector<bool>* branches, int leve
     for(unsigned int i = 0; i < _items->size() - 1; ++i)
         printNodeWithIndent(depth, branches, false, (*_items)[i], level);
     printNodeWithIndent(depth, branches, true, (*_items)[_items->size() - 1], level);
+}
+
+void CompoundStatement::gen(AbstractGenerator& g)
+{
+    //SymbolTable* _locals;
+    for(unsigned int i = 0; i < _items->size(); ++i)
+        (*_items)[i]->gen(g);
 }
 
 }

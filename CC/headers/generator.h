@@ -19,8 +19,9 @@ private:
     SymbolTable* symbols;
     SymbolTypeFunction* main;
     vector<Data*> dataPart;
+    vector<RData*> rdataPart;
     vector<Command> codePart;
-    void genData(const SymbolTable& t, const string& prefix = "");
+    void genData(const SymbolTable& t);
     void genCode(SymbolTypeFunction* f);
 
 public:
@@ -33,6 +34,7 @@ public:
     virtual void gen(Command com, Argument a1, Argument a2);
     virtual void gen(Command com, Argument a1);
     virtual void genLabel(Argument* a);
+    virtual string addConstant(const string& s);
 };
 
 }
