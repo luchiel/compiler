@@ -160,24 +160,26 @@ SymbolTypeStruct* Parser::parseStructSpecifier()
     return node;
 }
 
-bool Parser::parseStructDeclaration()
+void Parser::addStructMember(SymbolType* initial)
 {
-    SymbolType* type = parseTypeSpecifier();
-    if(type == NULL)
-        return false;
-
-    //check is_pointer_to_function
-    type = parseDeclarator(type);
+    SymbolType* type = parseDeclarator(initial);
     safeAddSymbol(type);
     addSymbol(new SymbolVariable(type, _varName));
     _varName = "";
+}
+
+bool Parser::parseStructDeclaration()
+{
+    SymbolType* initial = parseTypeSpecifier();
+    if(initial == NULL)
+        return false;
+
+    //check is_pointer_to_function
+    addStructMember(initial);
     while(tokenType() == TOK_COMMA)
     {
         _tokens->next();
-        type = parseDeclarator(type);
-        safeAddSymbol(type);
-        addSymbol(new SymbolVariable(type, _varName));
-        _varName = "";
+        addStructMember(initial);
     }
     consumeTokenOfType(TOK_SEP, "';' expected");
     return true;

@@ -46,6 +46,7 @@ private:
 
     ENode* parsePrimaryExpression();
     ENode* parsePostfixExpression();
+    PostfixNode* parseFunctionCall(ENode* core);
     ENode* parseUnaryExpression();
     ENode* parseBinaryExpression(int priority);
     ENode* parseCastExpression();
@@ -71,6 +72,7 @@ private:
     SymbolType* parseTypeName();
     SymbolTypeStruct* parseStructSpecifier();
     bool parseStructDeclaration();
+    void addStructMember(SymbolType* initial);
     SymbolType* parsePointer(SymbolType* type);
     SymbolType* parseDeclarator(SymbolType* type, DecKind isAbstract = D_NOT_ABSTRACT);
     bool parseDeclaration(bool definitionAllowed);

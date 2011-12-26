@@ -192,6 +192,63 @@ ENode* Parser::parsePrimaryExpression()
     return node;
 }
 
+PostfixNode* Parser::parseFunctionCall(ENode* core)
+{
+    CallNode* node = new CallNode();
+    node->only = core;
+
+    if(_mode == PM_SYMBOLS && !core->expType->isFunction())
+        throw makeException("Left must be function");
+    _tokens->next();
+    while(tokenType() != TOK_R_BRACKET)
+    {
+        node->params.push_back(parseAssignmentExpression());
+        if(tokenType() == TOK_R_BRACKET)
+            break;
+        consumeTokenOfType(TOK_COMMA, "',' expected");
+    }
+    if(_mode == PM_NO_SYMBOLS || core->expType->name == "printf")
+    {
+        consumeTokenOfType(TOK_R_BRACKET, "')' expected");
+        return node;
+    }
+    node->expType = static_cast<SymbolTypeFunction*>(
+        core->expType->resolveAlias()
+    )->type;
+
+    SymbolTypeFunction* f =
+        static_cast<SymbolTypeFunction*>(core->expType->resolveAlias());
+    unsigned int j = 0;
+    for(unsigned int i = 0; i < f->args->size(); ++i)
+    {
+        if((*f->args)[i]->classType != CT_VAR)
+            continue;
+        SymbolVariable* cv = static_cast<SymbolVariable*>((*f->args)[i]);
+        if(j >= node->params.size())
+            throw makeException("Not enough arguments");
+        else if(*cv->type != *node->params[j]->expType)
+        {
+            if(node->params[j]->expType->castTo != NULL)
+            {
+                node->params[j] =
+                new CastNode(node->params[j]->expType->castTo, node->params[j]);
+                static_cast<CastNode*>(node->params[j])->type->castTo = NULL;
+                node->params[j]->expType =
+                    static_cast<CastNode*>(node->params[j])->type;
+            }
+            else
+                throw makeException(
+                    "Incompatible types in function call: argument " + itostr(j + 1)
+                );
+        }
+        j++;
+    }
+    if(j < node->params.size())
+        throw makeException("Too many arguments");
+    consumeTokenOfType(TOK_R_BRACKET, "')' expected");
+    return node;
+}
+
 ENode* Parser::parsePostfixExpression()
 {
     PostfixNode* node = new PostfixNode();
@@ -206,8 +263,8 @@ ENode* Parser::parsePostfixExpression()
                 if(_mode == PM_SYMBOLS && !core->expType->isPointer())
                     throw makeException("Left must be pointer or array");
                 _tokens->next();
-                node->tail.push_back(parseExpression());
-                if(_mode == PM_SYMBOLS && !isInt(*node->tail[node->tail.size() - 1]->expType))
+                node->tail = parseExpression();
+                if(_mode == PM_SYMBOLS && !isInt(*node->tail->expType))
                     throw makeException("expression must be of type int");
                 consumeTokenOfType(TOK_R_SQUARE, "']' expected");
 
@@ -220,53 +277,8 @@ ENode* Parser::parsePostfixExpression()
                 }
                 break;
             case TOK_L_BRACKET:
-                if(_mode == PM_SYMBOLS && !core->expType->isFunction())
-                    throw makeException("Left must be function");
-                _tokens->next();
-                while(tokenType() != TOK_R_BRACKET)
-                {
-                    node->tail.push_back(parseAssignmentExpression());
-                    if(tokenType() == TOK_R_BRACKET)
-                        break;
-                    consumeTokenOfType(TOK_COMMA, "',' expected");
-                }
-                if(_mode == PM_SYMBOLS)
-                {
-                    node->expType = static_cast<SymbolTypeFunction*>(
-                        core->expType->resolveAlias()
-                    )->type;
-
-                    SymbolTypeFunction* f =
-                        static_cast<SymbolTypeFunction*>(core->expType->resolveAlias());
-                    unsigned int j = 0;
-                    for(unsigned int i = 0; i < f->args->size(); ++i)
-                    {
-                        if((*f->args)[i]->classType != CT_VAR)
-                            continue;
-                        SymbolVariable* cv = static_cast<SymbolVariable*>((*f->args)[i]);
-                        if(j >= node->tail.size())
-                            throw makeException("Not enough arguments");
-                        else if(*cv->type != *node->tail[j]->expType)
-                        {
-                            if(node->tail[j]->expType->castTo != NULL)
-                            {
-                                node->tail[j] =
-                                new CastNode(node->tail[j]->expType->castTo, node->tail[j]);
-                                static_cast<CastNode*>(node->tail[j])->type->castTo = NULL;
-                                node->tail[j]->expType =
-                                    static_cast<CastNode*>(node->tail[j])->type;
-                            }
-                            else
-                                throw makeException(
-                                    "Incompatible types in function call: argument " + itostr(j + 1)
-                                );
-                        }
-                        j++;
-                    }
-                    if(j < node->tail.size())
-                        throw makeException("Too many arguments");
-                }
-                consumeTokenOfType(TOK_R_BRACKET, "')' expected");
+                delete node;
+                node = parseFunctionCall(core);
                 break;
             case TOK_ARROW:
                 if(_mode == PM_SYMBOLS && (
@@ -282,11 +294,11 @@ ENode* Parser::parsePostfixExpression()
                         static_cast<SymbolTypePointer*>(
                             core->expType->resolveAlias()
                     )->type)->fields);
-                node->tail.push_back(parsePrimaryExpression());
+                node->tail = parsePrimaryExpression();
                 if(_mode == PM_SYMBOLS)
                 {
                     _symbols->pop();
-                    node->expType = node->tail[0]->expType;
+                    node->expType = node->tail->expType;
                     node->isLValue = true;
                 }
                 break;
@@ -300,11 +312,11 @@ ENode* Parser::parsePostfixExpression()
                     _symbols->push(static_cast<SymbolTypeStruct*>(
                         core->expType->resolveAlias()
                     )->fields);
-                node->tail.push_back(parsePrimaryExpression());
+                node->tail = parsePrimaryExpression();
                 if(_mode == PM_SYMBOLS)
                 {
                     _symbols->pop();
-                    node->expType = node->tail[0]->expType;
+                    node->expType = node->tail->expType;
                     node->isLValue = true;
                 }
                 break;

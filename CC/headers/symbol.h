@@ -26,17 +26,20 @@ class Symbol
 public:
     ClassType classType;
     string name;
-    Symbol(string name_): classType(CT_UNKNOWN), name(name_) {}
+    int offset;
+
+    Symbol(string name_): classType(CT_UNKNOWN), name(name_), offset(0) {}
     virtual ~Symbol() {}
-    virtual void out(int indent, bool noFirst = true);
-    bool setName(int name_);
-    virtual Symbol* resolveAlias();
 
     bool operator!=(Symbol& symbol) { return !(*this == symbol); }
     bool isFunction() { return resolveAlias()->classType == CT_FUNCTION; }
-    bool isStruct() { return resolveAlias()->classType == CT_STRUCT; }
     bool isPointer() { return resolveAlias()->classType == CT_POINTER || isArray(); }
+    bool isStruct() { return resolveAlias()->classType == CT_STRUCT; }
     bool isArray() { return resolveAlias()->classType == CT_ARRAY; }
+    bool setName(int name_);
+
+    virtual void out(int indent, bool noFirst = true);
+    virtual Symbol* resolveAlias();
     virtual bool operator==(Symbol& symbol) { return true; }
     virtual int size() { return 1; }
 };
@@ -83,6 +86,7 @@ class SymbolVariable: public Symbol
 public:
     Node* initializer;
     SymbolType* type;
+
     SymbolVariable(SymbolType* type_, string name_):
         Symbol(name_), initializer(NULL), type(type_) { classType = CT_VAR; }
     SymbolVariable(SymbolType* type_, string name_, Node* initializer_):

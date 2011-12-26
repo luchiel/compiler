@@ -64,23 +64,37 @@ void PostfixNode::out(unsigned int depth, vector<bool>* branches, int level)
     string x(type == TOK_INC || type == TOK_DEC ? "x" : "");
     makeNodeTop(depth, branches, x + operationName(type), level);
     setBranch(depth, branches);
-
     printIndentBeforeNode(depth, branches, level);
 
-    if(tail.size() == 0)
+    if(tail == NULL)
         (*branches)[depth] = true;
 
     only->out(depth + 1, branches, level);
 
-    if(tail.size() > 1)
+    if(tail != NULL)
+        printNodeWithIndent(depth, branches, true, tail, level);
+}
+
+void CallNode::out(unsigned int depth, vector<bool>* branches, int level)
+{
+    makeNodeTop(depth, branches, operationName(type), level);
+    setBranch(depth, branches);
+    printIndentBeforeNode(depth, branches, level);
+
+    if(params.size() == 0)
+        (*branches)[depth] = true;
+
+    only->out(depth + 1, branches, level);
+
+    if(params.size() > 1)
     {
         printIndentBeforeNode(depth, branches, level);
         (*branches)[depth] = true;
         depth++;
         makeNodeTop(depth, branches, ",", level);
     }
-    for(unsigned int i = 0; i < tail.size(); ++i)
-        printNodeWithIndent(depth, branches, i == tail.size() - 1, tail[i], level);
+    for(unsigned int i = 0; i < params.size(); ++i)
+        printNodeWithIndent(depth, branches, i == params.size() - 1, params[i], level);
 }
 
 void UnaryNode::out(unsigned int depth, vector<bool>* branches, int level)
@@ -148,18 +162,42 @@ void FloatNode::gen(AbstractGenerator& g) {}
 
 void PostfixNode::gen(AbstractGenerator& g)
 {
-    //only->gen(g);
-    //vector<ENode*> tail;
     switch(type)
     {
-        case TOK_L_BRACKET: //fcall
-        case TOK_L_SQUARE: //subscript
-        case TOK_DOT: //
+        case TOK_L_SQUARE:
+            only->genLValue(g);
+            tail->gen(g);
+            g.gen(cPop, rEBX);
+            g.gen(cPop, rEAX);
+            g.gen(cImul, rEBX, only->expType->size() * 4);
+            g.gen(cAdd, rEAX, rEBX);
+            break;
+        case TOK_DOT:
         case TOK_ARROW:
+            if(type == TOK_DOT)
+                only->genLValue(g);
+            else
+                only->gen(g);
+            g.gen(cPop, rEAX);
+            g.gen(cAdd, rEAX, tail->expType->offset * 4);
+            break;
         case TOK_INC:
         case TOK_DEC:
+            only->genLValue(g);
+            g.gen(cPop, rEBX);
+            g.gen(cMov, rEAX, rEBX + 0);
+            g.gen(type == TOK_INC ? cInc : cDec, rEBX + 0);
             break;
     }
+    g.gen(cPush, rEAX);
+}
+
+void CallNode::gen(AbstractGenerator& g)
+{
+    //fcall
+    //place for res
+    //args push
+    //call
 }
 
 void UnaryNode::gen(AbstractGenerator& g)
@@ -258,11 +296,14 @@ void SizeofNode::gen(AbstractGenerator& g)
 void CastNode::gen(AbstractGenerator& g)
 {
     element->gen(g);
+    //int to float! float to int!
 }
 
 void AssignmentNode::gen(AbstractGenerator& g) {}
 void ExpressionNode::gen(AbstractGenerator& g) {}
 void TernaryNode::gen(AbstractGenerator& g) {}
+
+void CallNode::genLValue(AbstractGenerator& g) {}
 
 void IdentNode::genLValue(AbstractGenerator& g) {}
 void PostfixNode::genLValue(AbstractGenerator& g) {}

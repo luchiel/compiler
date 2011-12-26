@@ -30,11 +30,13 @@ public:
 
 class SymbolTypeStruct: public SymbolType
 {
+private:
+    int _size;
 public:
     string tag;
     SymbolTable* fields;
     SymbolTypeStruct(const string& name_, const string& tag_):
-        SymbolType(name_), tag(tag_), fields(new SymbolTable())
+        SymbolType(name_), _size(0), tag(tag_), fields(new SymbolTable())
         { classType = CT_STRUCT; }
     virtual void out(int indent, bool noFirst = true);
 

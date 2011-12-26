@@ -174,6 +174,8 @@ SymbolTableStack* initPrimarySymbolTableStack()
     zero->expType = static_cast<SymbolType*>(primarySymbolTable->getSymbol("int", 0, 0));
     primarySymbolTable->addSymbol(new SymbolVariable(void_ptr, "NULL", zero), 0, 0, 0);
 
+    primarySymbolTable->addSymbol(new SymbolTypeFunction(int_, "printf"), 0, 0, 0);
+
     return new SymbolTableStack(primarySymbolTable, primarySymbolTable);
 }
 

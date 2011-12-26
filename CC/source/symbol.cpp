@@ -200,11 +200,17 @@ int SymbolTypeArray::size()
 
 int SymbolTypeStruct::size()
 {
+    if(_size != 0)
+        return _size;
     int result = 0;
     for(unsigned int i = 0; i < fields->size(); i++)
         if((*fields)[i]->classType == CT_VAR)
+        {
+            static_cast<SymbolVariable*>((*fields)[i])->offset = result;
             result += static_cast<SymbolVariable*>((*fields)[i])->type->size();
+        }
     return result;
 }
+
 
 }
