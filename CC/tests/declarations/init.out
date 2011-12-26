@@ -8,6 +8,10 @@ type <void*>
 variable NULL of type <void*> initialized by
 	{int 0}
 		type <int>
+function printf
+	returns type <int>
+	arguments
+		<no args>
 variable a of type <int> initialized by
 	{int 10}
 		type <int>

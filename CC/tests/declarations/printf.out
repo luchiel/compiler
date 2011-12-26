@@ -17,28 +17,26 @@ function main
 	arguments
 		<no args>
 	{{}}
-		type <0>
-			array [
-				{int 4}
-					type <int>
-			] of <int>
-		variable a of type <0>
-		type <1>
-			pointer to <int>
-		variable b of type <1>
 	| 
 	+-{;}
 	  | 
-	  +-{==}
-				type <int>
+	  +-{()}
 	    | 
-	    +-{a}
-					type <0>
-						array [
-							{int 4}
-								type <int>
-						] of <int>
+	    +-{printf}
+					function printf
+						returns type <int>
+						arguments
+							<no args>
 	    | 
-	    +-{b}
-					type <1>
-						pointer to <int>
+	    +-{,}
+	      | 
+	      +-{string %s%d}
+						type <int*>
+							pointer to <int>
+	      | 
+	      +-{string aaa}
+						type <int*>
+							pointer to <int>
+	      | 
+	      +-{int 5}
+						type <int>

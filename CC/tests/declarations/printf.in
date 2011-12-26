@@ -1,0 +1,4 @@
+void main()
+{
+printf("%s%d", "aaa", 5);
+}
