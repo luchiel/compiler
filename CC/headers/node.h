@@ -23,7 +23,7 @@ public:
     virtual void out(unsigned int depth, vector<bool>* branches, int level = 0);
     virtual ~Node() {}
 
-    virtual void gen(AbstractGenerator& g) {}
+    virtual void gen(AbstractGenerator& g, bool withResult = true) {}
 };
 
 }

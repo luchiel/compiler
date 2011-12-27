@@ -36,7 +36,7 @@ public:
         ENode(), name(name_), var(var_) { isLValue = true; }
     virtual void out(unsigned int depth, vector<bool>* branches, int level = 0);
 
-    virtual void gen(AbstractGenerator& g);
+    virtual void gen(AbstractGenerator& g, bool withResult = true);
     virtual void genLValue(AbstractGenerator& g);
 };
 
@@ -47,7 +47,7 @@ public:
     StringNode(const string& value_): ENode(), value(value_) {}
     virtual void out(unsigned int depth, vector<bool>* branches, int level = 0);
 
-    virtual void gen(AbstractGenerator& g);
+    virtual void gen(AbstractGenerator& g, bool withResult = true);
 };
 
 class CharNode: public ENode
@@ -57,7 +57,7 @@ public:
     CharNode(const string& value_): ENode(), value(value_[0]) {}
     virtual void out(unsigned int depth, vector<bool>* branches, int level = 0);
 
-    virtual void gen(AbstractGenerator& g);
+    virtual void gen(AbstractGenerator& g, bool withResult = true);
 };
 
 class IntNode: public ENode
@@ -67,7 +67,7 @@ public:
     IntNode(const int value_): ENode(), value(value_) {}
     virtual void out(unsigned int depth, vector<bool>* branches, int level = 0);
 
-    virtual void gen(AbstractGenerator& g);
+    virtual void gen(AbstractGenerator& g, bool withResult = true);
 };
 
 class FloatNode: public ENode
@@ -77,7 +77,7 @@ public:
     FloatNode(const float value_): ENode(), value(value_) {}
     virtual void out(unsigned int depth, vector<bool>* branches, int level = 0);
 
-    virtual void gen(AbstractGenerator& g);
+    virtual void gen(AbstractGenerator& g, bool withResult = true);
 };
 
 class PostfixNode: public ENode
@@ -89,8 +89,9 @@ public:
     PostfixNode(): ENode(), type(TOK_UNDEF), only(NULL), tail(NULL) {}
     virtual void out(unsigned int depth, vector<bool>* branches, int level = 0);
 
-    virtual void gen(AbstractGenerator& g);
+    virtual void gen(AbstractGenerator& g, bool withResult = true);
     virtual void genLValue(AbstractGenerator& g);
+    void performCommonGenPart(AbstractGenerator& g);
 };
 
 class CallNode: public PostfixNode
@@ -100,7 +101,7 @@ public:
     CallNode(): PostfixNode() { type = TOK_L_BRACKET; }
     virtual void out(unsigned int depth, vector<bool>* branches, int level = 0);
 
-    virtual void gen(AbstractGenerator& g);
+    virtual void gen(AbstractGenerator& g, bool withResult = true);
     virtual void genLValue(AbstractGenerator& g);
 };
 
@@ -112,7 +113,7 @@ public:
     UnaryNode(): ENode(), type(TOK_UNDEF), only(NULL) {}
     virtual void out(unsigned int depth, vector<bool>* branches, int level = 0);
 
-    virtual void gen(AbstractGenerator& g);
+    virtual void gen(AbstractGenerator& g, bool withResult = true);
     virtual void genLValue(AbstractGenerator& g);
 };
 
@@ -123,7 +124,7 @@ public:
     SizeofNode(): UnaryNode(), symbolType(NULL) { type = TOK_SIZEOF; }
     virtual void out(unsigned int depth, vector<bool>* branches, int level = 0);
 
-    virtual void gen(AbstractGenerator& g);
+    virtual void gen(AbstractGenerator& g, bool withResult = true);
 };
 
 class BinaryNode: public ENode
@@ -135,7 +136,7 @@ public:
     BinaryNode(TokenType type_, ENode* left_): ENode(), type(type_), left(left_), right(NULL) {}
     virtual void out(unsigned int depth, vector<bool>* branches, int level = 0);
 
-    virtual void gen(AbstractGenerator& g);
+    virtual void gen(AbstractGenerator& g, bool withResult = true);
 };
 
 class TernaryNode: public ENode
@@ -148,7 +149,7 @@ public:
     TernaryNode(): ENode(), type(TOK_UNDEF), condition(NULL), thenOp(NULL), elseOp(NULL) {}
     virtual void out(unsigned int depth, vector<bool>* branches, int level = 0);
 
-    virtual void gen(AbstractGenerator& g);
+    virtual void gen(AbstractGenerator& g, bool withResult = true);
 };
 
 class AssignmentNode: public BinaryNode
@@ -156,7 +157,7 @@ class AssignmentNode: public BinaryNode
 public:
     AssignmentNode(TokenType type_, ENode* left_): BinaryNode(type_, left_) {}
 
-    virtual void gen(AbstractGenerator& g);
+    virtual void gen(AbstractGenerator& g, bool withResult = true);
 };
 
 class ExpressionNode: public BinaryNode
@@ -164,7 +165,7 @@ class ExpressionNode: public BinaryNode
 public:
     ExpressionNode(TokenType type_, ENode* left_): BinaryNode(type_, left_) {}
 
-    virtual void gen(AbstractGenerator& g);
+    virtual void gen(AbstractGenerator& g, bool withResult = true);
 };
 
 class CastNode: public ENode
@@ -175,7 +176,7 @@ public:
     CastNode(SymbolType* type_, ENode* element_): ENode(), type(type_), element(element_) {}
     virtual void out(unsigned int depth, vector<bool>* branches, int level = 0);
 
-    virtual void gen(AbstractGenerator& g);
+    virtual void gen(AbstractGenerator& g, bool withResult = true);
 };
 
 }

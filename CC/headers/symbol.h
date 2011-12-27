@@ -21,6 +21,8 @@ enum ClassType
     CT_FUNCTION,
 };
 
+enum VariableType { VT_GLOBAL, VT_LOCAL, VT_PARAM };
+
 class Symbol
 {
 public:
@@ -86,11 +88,14 @@ class SymbolVariable: public Symbol
 public:
     Node* initializer;
     SymbolType* type;
+    VariableType varType;
 
-    SymbolVariable(SymbolType* type_, string name_):
-        Symbol(name_), initializer(NULL), type(type_) { classType = CT_VAR; }
-    SymbolVariable(SymbolType* type_, string name_, Node* initializer_):
-        Symbol(name_), initializer(initializer_), type(type_) { classType = CT_VAR; }
+    SymbolVariable(SymbolType* type_, string name_, VariableType varType_ = VT_GLOBAL):
+        Symbol(name_), initializer(NULL), type(type_), varType(varType_)
+        { classType = CT_VAR; }
+    SymbolVariable(SymbolType* type_, string name_, Node* initializer_, VariableType varType_ = VT_GLOBAL):
+        Symbol(name_), initializer(initializer_), type(type_), varType(varType_)
+        { classType = CT_VAR; }
     virtual void out(int indent, bool noFirst = true);
 
     virtual bool operator==(Symbol& symbol);

@@ -44,9 +44,9 @@ void ExpressionStatement::out(unsigned int depth, vector<bool>* branches, int le
     printNodeWithIndent(depth, branches, true, _expr, level);
 }
 
-void ExpressionStatement::gen(AbstractGenerator& g)
+void ExpressionStatement::gen(AbstractGenerator& g, bool withResult)
 {
-    _expr->gen(g);
+    _expr->gen(g, false);
 }
 
 void IterationStatement::out(unsigned int depth, vector<bool>* branches, int level)
@@ -92,9 +92,9 @@ void CompoundStatement::out(unsigned int depth, vector<bool>* branches, int leve
     printNodeWithIndent(depth, branches, true, (*_items)[_items->size() - 1], level);
 }
 
-void CompoundStatement::gen(AbstractGenerator& g)
+void CompoundStatement::gen(AbstractGenerator& g, bool withResult)
 {
-    //SymbolTable* _locals;
+    _locals->addToStack(g);
     for(unsigned int i = 0; i < _items->size(); ++i)
         (*_items)[i]->gen(g);
 }

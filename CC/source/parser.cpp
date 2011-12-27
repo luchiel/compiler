@@ -164,7 +164,7 @@ void Parser::addStructMember(SymbolType* initial)
 {
     SymbolType* type = parseDeclarator(initial);
     safeAddSymbol(type);
-    addSymbol(new SymbolVariable(type, _varName));
+    addSymbol(new SymbolVariable(type, _varName, VT_LOCAL));
     _varName = "";
 }
 
@@ -280,7 +280,7 @@ void Parser::parseParameterDeclaration()
     type = parseDeclarator(type, D_BOTH);
     safeAddSymbol(type);
     //what if function?
-    addSymbol(new SymbolVariable(type, _varName));
+    addSymbol(new SymbolVariable(type, _varName, VT_PARAM));
     _varName = "";
 }
 
@@ -370,6 +370,7 @@ bool Parser::parseDeclaration(bool definitionAllowed)
         _expectedReturnType = function->type;
         _symbols->push(function->args);
         function->body = parseCompoundStatement();
+        function->localizeSymbols();
         _symbols->pop();
 
         if(f != NULL && f->body == NULL && *f == *function)

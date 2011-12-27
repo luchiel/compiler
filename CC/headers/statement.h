@@ -20,7 +20,7 @@ public:
     Node* _else;
     SelectionStatement(): _expr(NULL), _then(NULL), _else(NULL) {}
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
-    virtual void gen(AbstractGenerator& g) {}
+    virtual void gen(AbstractGenerator& g, bool withResult = true) {}
 };
 
 class JumpStatement: public Node
@@ -29,7 +29,7 @@ public:
     TokenType _type;
     JumpStatement(TokenType type): _type(type) {}
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
-    virtual void gen(AbstractGenerator& g) {}
+    virtual void gen(AbstractGenerator& g, bool withResult = true) {}
 };
 
 class ReturnStatement: public Node
@@ -38,7 +38,7 @@ public:
     ENode* expr;
     ReturnStatement(ENode* expr_): expr(expr_) {}
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
-    virtual void gen(AbstractGenerator& g) {}
+    virtual void gen(AbstractGenerator& g, bool withResult = true) {}
 };
 
 class EmptyExpressionStatement: public Node
@@ -54,7 +54,7 @@ public:
     Node* _expr;
     ExpressionStatement(Node* expr): _expr(expr) {}
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
-    virtual void gen(AbstractGenerator& g);
+    virtual void gen(AbstractGenerator& g, bool withResult = true);
 };
 
 class IterationStatement: public Node
@@ -65,7 +65,7 @@ public:
     Node* _expr;
     IterationStatement(): _type(TOK_UNDEF), _loop(NULL), _expr(NULL) {}
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
-    virtual void gen(AbstractGenerator& g) {}
+    virtual void gen(AbstractGenerator& g, bool withResult = true) {}
 };
 
 class ForStatement: public IterationStatement
@@ -78,7 +78,7 @@ public:
         IterationStatement(), _iterators(new SymbolTable()),
         _expr2(NULL), _expr3(NULL) { _type = TOK_FOR; }
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
-    virtual void gen(AbstractGenerator& g) {}
+    virtual void gen(AbstractGenerator& g, bool withResult = true) {}
 };
 
 class CompoundStatement: public Node
@@ -89,7 +89,7 @@ public:
     CompoundStatement(): _locals(new SymbolTable()), _items(new vector<Node*>) {}
     ~CompoundStatement() { delete _items; }
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
-    virtual void gen(AbstractGenerator& g);
+    virtual void gen(AbstractGenerator& g, bool withResult = true);
 };
 
 }

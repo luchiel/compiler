@@ -212,5 +212,11 @@ int SymbolTypeStruct::size()
     return result;
 }
 
+void SymbolTypeFunction::localizeSymbols()
+{
+    for(unsigned int i = 0; i < body->_locals->size(); ++i)
+        if((*body->_locals)[i]->classType == CT_VAR)
+            static_cast<SymbolVariable*>((*body->_locals)[i])->varType = VT_LOCAL;
+}
 
 }
