@@ -55,7 +55,7 @@ public:
     }
     value;
     Argument(ArgType type_): type(type_) {}
-    Argument(int v_) { value.constArg = v_; }
+    Argument(int v_): type(atConst), offset(-1) { value.constArg = v_; }
     Argument(AsmRegister r_): type(atReg), offset(-1) { value.regArg = r_; }
 	Argument(string v_, ArgType type_): type(type_), offset(-1) { value.sArg = new string(v_); }
     Argument(string v_): offset(-1)

@@ -17,8 +17,12 @@ class Tester
 private:
     string _currentTest;
     ofstream _outStream;
+    ofstream _errStream;
     int testsCount;
     int testsPassed;
+    streambuf *backup, *ebackup;
+    void redirectStreams(string& testBlock);
+    void restoreStreams();
 
 public:
     Tester(): testsCount(0), testsPassed(0) {}

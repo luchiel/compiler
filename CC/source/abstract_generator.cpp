@@ -109,7 +109,7 @@ void Argument::out()
             cout << *value.sArg;
             return;
         case atConst:
-            //
+            cout << value.constArg;
             break;
         case atMem:
             if((*value.sArg)[0] == 'c' && *value.sArg != "crt_printf")

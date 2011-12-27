@@ -5,11 +5,13 @@ CC/objects
 CC/tests/declarations/future
 CC/tests/declarations/old tests
 CC/test.c
-CC/*.exe
+*.exe
 .ssh/*
 .gitk
 .gitconfig
 CStandart.pdf
 *.log
+*.obj
+*.asm
 CC2008/*
 output.txt

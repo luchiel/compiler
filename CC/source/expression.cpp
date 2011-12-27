@@ -143,7 +143,11 @@ void SizeofNode::out(unsigned int depth, vector<bool>* branches, int level)
     }
 }
 
-void IdentNode::gen(AbstractGenerator& g) {}
+void IdentNode::gen(AbstractGenerator& g)
+{
+    //local?
+    //g.gen()
+}
 
 void IntNode::gen(AbstractGenerator& g)
 {

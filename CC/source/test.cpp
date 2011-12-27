@@ -27,6 +27,7 @@ const int TEST_ALL_SIZE = 5;
 
 void runTests(string testBlock)
 {
+    system("remove_test_exe_files.bat");
     int i = 0;
     while(i < TEST_ALL_SIZE)
     {
@@ -84,21 +85,33 @@ void Tester::attachTypelessFilename(wstring filename)
     _currentTest.append(ctmp, l);
 }
 
-void Tester::runFile(string& testBlock)
+void Tester::redirectStreams(string& testBlock)
 {
-    streambuf *backup;
-    _outStream.open(string(
-        _currentTest + (testBlock == "generator" ? ".asm" : ".log")
-    ).c_str());
-    if(!_outStream.good())
+    _outStream.open(
+        string(_currentTest + (testBlock == "generator" ? ".asm" : ".log")).c_str());
+    _errStream.open((string(_currentTest + ".log")).c_str());
+    if(!_outStream.good() || !_errStream.good())
         throw BadFile();
 
-    //redirect cout to outputfile
     backup = cout.rdbuf();
+    ebackup = cerr.rdbuf();
     cout.rdbuf(_outStream.rdbuf());
+    cerr.rdbuf(_errStream.rdbuf());
+}
+
+void Tester::restoreStreams()
+{
+    cout.rdbuf(backup);
+    cerr.rdbuf(ebackup);
+    _outStream.close();
+    _errStream.close();
+}
+
+void Tester::runFile(string& testBlock)
+{
+    redirectStreams(testBlock);
 
     Tokenizer t(_currentTest + ".in");
-
     try
     {
         if(testBlock == "tokenizer")
@@ -117,14 +130,16 @@ void Tester::runFile(string& testBlock)
             g.generate();
             g.out();
 
-            string redirect("2>" + _currentTest + ".log");
-            string file("/coff " + _currentTest + ".asm " + redirect);
-            LPWSTR wfile = (LPWSTR)malloc((file.size() + 1) * sizeof(WCHAR));
-            MultiByteToWideChar(CP_ACP, 0, file.c_str(), file.size() + 1, wfile, file.size() + 1);
-            ShellExecuteW(NULL, L"open", L"ml.exe", wfile, NULL, SW_SHOW);
-            //_currentTest.exe wont be at the path you want it to
-            //wfile = (LPWSTR)malloc((file.size() + 1) * sizeof(WCHAR));
-            //ShellExecuteW(NULL, L"open", L".exe", wfile, NULL, SW_SHOW);
+            restoreStreams();
+            string redirect("1>2>" + _currentTest + ".log");
+            string exeFile(_currentTest + ".exe ");
+            system((
+                "ml.exe /coff " + _currentTest + ".asm " +
+                "/Fe" + exeFile + redirect).c_str());
+            if(ifstream(exeFile.c_str()) != NULL)
+                system((exeFile + redirect).c_str());
+            testsCount++;
+            return;
         }
         else
         {
@@ -140,12 +155,10 @@ void Tester::runFile(string& testBlock)
     }
     catch(LuCCException& e)
     {
-        cout << "Error: " << e.text() << endl;
+        cerr << "Error: " << e.text() << endl;
     }
 
-    //restore stdout
-    cout.rdbuf(backup);
-    _outStream.close();
+    restoreStreams();
 
     testsCount++;
 }
