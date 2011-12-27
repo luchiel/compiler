@@ -13,7 +13,7 @@ enum AsmRegister { rEAX, rEBX, rECX, rEDX, rESI, rEDI, rESP, rEBP, rCL };
 enum AsmCommand
 {
     cPush, cPop,
-    cAdd, cSub, cImul, cIdiv, cNeg, cInc, cDec,
+    cAdd, cSub, cImul, cIdiv, cNeg, cInc, cDec, cCdq,
     cMov, cLea, 
     cOr, cXor, cAnd, cNot, cShl, cShr,
     cCmp, cTest,

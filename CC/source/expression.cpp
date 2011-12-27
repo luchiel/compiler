@@ -307,17 +307,21 @@ void BinaryNode::gen(AbstractGenerator& g, bool withResult)
     else switch(type)
     {
         case TOK_MOD:
+            g.gen(cCdq);
             g.gen(cIdiv, rEBX);
             g.gen(cMov, rEAX, rEDX);
             break;
+        case TOK_DIV:
+            g.gen(cCdq);
+            g.gen(cIdiv, rEBX);
+            break;
         case TOK_ASTERISK: g.gen(cImul, rEAX, rEBX); break;
-        case TOK_DIV:      g.gen(cIdiv, rEBX); break;
         case TOK_PLUS:     g.gen(cAdd, rEAX, rEBX); break;
         case TOK_MINUS:    g.gen(cSub, rEAX, rEBX); break;
         case TOK_SHL:
         case TOK_SHR:
             g.gen(cMov, rECX, rEBX);
-            g.gen(type == TOK_SHL ? cShl : cShr, rCL);
+            g.gen(type == TOK_SHL ? cShl : cShr, rEAX, rCL);
             break;
         case TOK_L:  g.genIntCmp(cSetL); break;
         case TOK_G:  g.genIntCmp(cSetG); break;
@@ -351,9 +355,8 @@ void AssignmentNode::gen(AbstractGenerator& g, bool withResult)
     if
     (
         type == TOK_ADD_ASSIGN || type == TOK_SUB_ASSIGN ||
-        type == TOK_MUL_ASSIGN || type == TOK_ASSIGN ||
         type == TOK_AND_ASSIGN || type == TOK_XOR_ASSIGN ||
-        type == TOK_OR_ASSIGN
+        type == TOK_OR_ASSIGN || type == TOK_ASSIGN
     )
     {
         left->genLValue(g);
@@ -362,7 +365,6 @@ void AssignmentNode::gen(AbstractGenerator& g, bool withResult)
         g.gen(cPop, rEAX);
         switch(type)
         {
-            case TOK_MUL_ASSIGN: g.gen(cImul, rEAX + Offset(0), rEBX); break;
             case TOK_ADD_ASSIGN: g.gen(cAdd, rEAX + Offset(0), rEBX); break;
             case TOK_SUB_ASSIGN: g.gen(cSub, rEAX + Offset(0), rEBX); break;
             case TOK_AND_ASSIGN: g.gen(cAnd, rEAX + Offset(0), rEBX); break;
@@ -382,17 +384,22 @@ void AssignmentNode::gen(AbstractGenerator& g, bool withResult)
     //float currently ignored
     switch(type)
     {
+        case TOK_MUL_ASSIGN:
+            g.gen(cImul, rEAX, rEBX);
+            break;
         case TOK_MOD_ASSIGN:
+            g.gen(cCdq);
             g.gen(cIdiv, rEBX);
             g.gen(cMov, rEAX, rEDX);
             break;
         case TOK_DIV_ASSIGN:
+            g.gen(cCdq);
             g.gen(cIdiv, rEBX);
             break;
         case TOK_SHL_ASSIGN:
         case TOK_SHR_ASSIGN:
             g.gen(cMov, rECX, rEBX);
-            g.gen(type == TOK_SHL_ASSIGN ? cShl : cShr, rCL);
+            g.gen(type == TOK_SHL_ASSIGN ? cShl : cShr, rEAX, rCL);
             break;
     }
     g.gen(cPop, rECX);

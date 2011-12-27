@@ -58,6 +58,7 @@ void Command::out()
         cmdNames[cProc] = new string("proc");
         cmdNames[cEndp] = new string("endp");
         cmdNames[cRet] = new string("ret");
+        cmdNames[cCdq] = new string("cdq");
     //cCmp, cTest,
     //cJE, cJNE, cJL, cJG, cJLE, cLGE, cJZ, cJNZ,
     //cSetE, cSetNE, cSetL, cSetG, cSetLE, cSetGE, cSetZ, cSetNZ,

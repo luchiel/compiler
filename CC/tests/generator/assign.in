@@ -1,0 +1,29 @@
+void main()
+{
+int a;
+a = 2;
+printf("%d ", a);
+a += 2;
+printf("%d ", a);
+a *= 2;
+printf("%d ", a);
+a -= 2;
+printf("%d ", a);
+a /= 2;
+printf("%d ", a);
+a %= 2;
+printf("%d\t", a);
+
+a = 4;
+a >>= 2;
+printf("%d ", a);
+a <<= 2;
+printf("%d\t", a);
+
+a |= 1;
+printf("%d ", a);
+a &= 1;
+printf("%d ", a);
+a ^= 2;
+printf("%d ", a);
+}
