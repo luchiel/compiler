@@ -43,7 +43,7 @@ public:
     virtual void out(int indent, bool noFirst = true);
 
     virtual bool operator==(Symbol& symbol);
-    virtual int size();
+    virtual unsigned int size();
     void calculateOffsets();
 };
 

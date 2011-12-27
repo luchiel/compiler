@@ -348,13 +348,57 @@ void CastNode::gen(AbstractGenerator& g, bool withResult)
 
 void AssignmentNode::gen(AbstractGenerator& g, bool withResult)
 {
+    if
+    (
+        type == TOK_ADD_ASSIGN || type == TOK_SUB_ASSIGN ||
+        type == TOK_MUL_ASSIGN || type == TOK_ASSIGN ||
+        type == TOK_AND_ASSIGN || type == TOK_XOR_ASSIGN ||
+        type == TOK_OR_ASSIGN
+    )
+    {
+        left->genLValue(g);
+        right->gen(g);
+        g.gen(cPop, rEBX);
+        g.gen(cPop, rEAX);
+        switch(type)
+        {
+            case TOK_MUL_ASSIGN: g.gen(cImul, rEAX + Offset(0), rEBX); break;
+            case TOK_ADD_ASSIGN: g.gen(cAdd, rEAX + Offset(0), rEBX); break;
+            case TOK_SUB_ASSIGN: g.gen(cSub, rEAX + Offset(0), rEBX); break;
+            case TOK_AND_ASSIGN: g.gen(cAnd, rEAX + Offset(0), rEBX); break;
+            case TOK_XOR_ASSIGN: g.gen(cXor, rEAX + Offset(0), rEBX); break;
+            case TOK_OR_ASSIGN:  g.gen(cOr, rEAX + Offset(0), rEBX); break;
+            default:             g.gen(cMov, rEAX + Offset(0), rEBX);
+        }
+        if(withResult)
+            g.gen(cPush, rEAX);
+        return;
+    }
     left->genLValue(g);
+    left->gen(g);
     right->gen(g);
     g.gen(cPop, rEBX);
     g.gen(cPop, rEAX);
-    g.gen(cMov, rEAX + Offset(0), rEBX);
+    //float currently ignored
+    switch(type)
+    {
+        case TOK_MOD_ASSIGN:
+            g.gen(cIdiv, rEBX);
+            g.gen(cMov, rEAX, rEDX);
+            break;
+        case TOK_DIV_ASSIGN:
+            g.gen(cIdiv, rEBX);
+            break;
+        case TOK_SHL_ASSIGN:
+        case TOK_SHR_ASSIGN:
+            g.gen(cMov, rECX, rEBX);
+            g.gen(type == TOK_SHL_ASSIGN ? cShl : cShr, rCL);
+            break;
+    }
+    g.gen(cPop, rECX);
+    g.gen(cMov, rECX + Offset(0), rEAX);
     if(withResult)
-        g.gen(cPush, rEAX);
+        g.gen(cPush, rECX);
 }
 
 void ExpressionNode::gen(AbstractGenerator& g, bool withResult) {}

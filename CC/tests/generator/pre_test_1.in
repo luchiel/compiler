@@ -1,0 +1,10 @@
+int inc()
+{
+printf("%d", 1);
+return 2;
+}
+
+void main()
+{
+printf("%d", inc());
+}

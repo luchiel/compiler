@@ -26,6 +26,7 @@ void Generator::genCode(SymbolTypeFunction* f)
         f->body->gen(*this);
         return;
     }
+    currentParamSize = f->args->offset();
     gen(cProc, "f_" + f->name);
     gen(cPush, rEBP);
     gen(cMov, rEBP, rESP);

@@ -186,19 +186,19 @@ bool SymbolTypeFunction::operator==(Symbol& symbol)
     return !(s->name != name || *s->type != *type || *s->args != *args);
 }
 
-int SymbolTypeAlias::size()
+unsigned int SymbolTypeAlias::size()
 {
     return resolveAlias()->size();
 }
 
-int SymbolTypeArray::size()
+unsigned int SymbolTypeArray::size()
 {
     if(dynamic_cast<IntNode*>(length) == NULL)
         throw NotSupported("Array size can be only primary int expression");
     return static_cast<IntNode*>(length)->value * type->size();
 }
 
-int SymbolTypeStruct::size()
+unsigned int SymbolTypeStruct::size()
 {
     if(_size != 0)
         return _size;

@@ -38,7 +38,7 @@ public:
     ENode* expr;
     ReturnStatement(ENode* expr_): expr(expr_) {}
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
-    virtual void gen(AbstractGenerator& g, bool withResult = true) {}
+    virtual void gen(AbstractGenerator& g, bool withResult = true);
 };
 
 class EmptyExpressionStatement: public Node

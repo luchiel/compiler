@@ -43,7 +43,7 @@ public:
     virtual void out(int indent, bool noFirst = true);
     virtual Symbol* resolveAlias();
     virtual bool operator==(Symbol& symbol) { return true; }
-    virtual int size() { return 1; }
+    virtual unsigned int size() { return 1; }
 };
 
 class SymbolType: public Symbol
@@ -67,7 +67,7 @@ public:
     virtual Symbol* resolveAlias();
 
     virtual bool operator==(Symbol& symbol);
-    virtual int size();
+    virtual unsigned int size();
 };
 
 class TypedSymbolType: public SymbolType
@@ -118,7 +118,7 @@ public:
     SymbolTypeArray(SymbolType* type_, string name_):
         SymbolTypePointer(type_, name_), length(NULL) { classType = CT_ARRAY; }
     virtual void out(int indent, bool noFirst = true);
-    virtual int size();
+    virtual unsigned int size();
 };
 
 class SymbolUnknownType: public SymbolType

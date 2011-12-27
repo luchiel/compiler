@@ -93,7 +93,9 @@ protected:
     int labelNum;
 
 public:
-    AbstractGenerator(): labelNum(0) {}
+    int currentParamSize;
+
+    AbstractGenerator(): labelNum(0), currentParamSize(0) {}
 
     virtual void gen(Command com, Argument a1, Argument a2, Argument a3) {}
     virtual void gen(Command com, Argument a1, Argument a2) {}

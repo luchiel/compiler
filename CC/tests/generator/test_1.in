@@ -1,0 +1,14 @@
+int a;
+
+int inc(int b)
+{
+b += 1;
+return b;
+}
+
+void main()
+{
+a = 5;
+a = inc(a);
+printf("%d", a);
+}
