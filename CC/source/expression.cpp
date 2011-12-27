@@ -152,15 +152,16 @@ void IdentNode::gen(AbstractGenerator& g, bool withResult)
         //
         return;
     }
-    switch(static_cast<SymbolVariable*>(var)->varType)
+    SymbolVariable* v = static_cast<SymbolVariable*>(var);
+    switch(v->varType)
     {
         case VT_LOCAL:
             g.gen(cMov, rEAX, rEBP);
-            g.gen(cAdd, rEAX, var->offset * 4);
+            g.gen(cSub, rEAX, var->offset * 4);
             break;
         case VT_PARAM:
             g.gen(cMov, rEAX, rEBP);
-            g.gen(cAdd, rEAX, -4 * (var->offset + var->size() + 1));
+            g.gen(cAdd, rEAX, 4 * (var->offset + 2));
             break;
         case VT_GLOBAL:
             if(withResult)
@@ -169,7 +170,9 @@ void IdentNode::gen(AbstractGenerator& g, bool withResult)
             return;
     }
     if(withResult)
-        g.gen(cPush, rEAX + Offset(0));
+        for(int i = v->type->size() - 1; i >= 0; --i)
+            g.gen(cPush, rEAX + Offset(i * 4));
+        //g.gen(cPush, rEAX + Offset(0));
 }
 
 void IntNode::gen(AbstractGenerator& g, bool withResult)
@@ -217,17 +220,21 @@ void PostfixNode::gen(AbstractGenerator& g, bool withResult)
 void CallNode::gen(AbstractGenerator& g, bool withResult)
 {
     bool isPrintf = only->expType->name == "printf";
-    int offset =
-        static_cast<SymbolTypeFunction*>(only->expType->resolveAlias())->args->offset();
+    SymbolTypeFunction* f = static_cast<SymbolTypeFunction*>(only->expType->resolveAlias());
+    int retTypeSize = f->type->size();
     if(!isPrintf)
-        g.gen(cAdd, rESP, offset * 4);
+        g.gen(cSub, rESP, retTypeSize * 4);
 
+    f->args->offset();
     for(int j = params.size() - 1; j >= 0; --j)
         params[j]->gen(g);
 
     g.gen(cCall, isPrintf ? "crt_printf" : "f_" + only->expType->name);
-    for(unsigned int j = 0; j < params.size(); ++j)
-        g.gen(cPop, rEBX);
+
+    if(!isPrintf)
+        g.gen(cAdd, rESP, f->args->offset() * 4);
+    else
+        g.gen(cAdd, rESP, 4 * params.size());
 
     if(isPrintf && withResult)
         g.gen(cPush, rEAX); //if noResult -> must kill var
@@ -237,7 +244,11 @@ void UnaryNode::gen(AbstractGenerator& g, bool withResult)
 {
     if(type == TOK_ASTERISK)
     {
-        return; //offset = 0? [ebx], where ebx - pointer?
+        only->genLValue(g);
+        g.gen(cPop, rEAX);
+        if(withResult)
+            g.gen(cPush, rEAX + Offset(0));
+        return;
     }
     only->gen(g);
     g.gen(cPop, rEAX);
@@ -354,15 +365,16 @@ void CallNode::genLValue(AbstractGenerator& g) {}
 void IdentNode::genLValue(AbstractGenerator& g)
 {
     assert(isLValue);
-    switch(static_cast<SymbolVariable*>(var)->varType)
+    SymbolVariable* v = static_cast<SymbolVariable*>(var);
+    switch(v->varType)
     {
         case VT_LOCAL:
             g.gen(cMov, rEAX, rEBP);
-            g.gen(cAdd, rEAX, var->offset * 4);
+            g.gen(cSub, rEAX, var->offset * 4);
             break;
         case VT_PARAM:
             g.gen(cMov, rEAX, rEBP);
-            g.gen(cAdd, rEAX, -4 * (var->offset + var->size() + 1));
+            g.gen(cAdd, rEAX, 4 * (v->offset + 2));
             break;
         case VT_GLOBAL:
             g.gen(cPush, "v_" + var->name);
@@ -385,6 +397,12 @@ void PostfixNode::performCommonGenPart(AbstractGenerator& g)
             break;
         case TOK_DOT:
         case TOK_ARROW:
+            SymbolTypeStruct* s = static_cast<SymbolTypeStruct*>(
+                type == TOK_DOT ?
+                    only->expType :
+                    static_cast<SymbolTypePointer*>(only->expType)->type
+            );
+            s->calculateOffsets();
             if(type == TOK_DOT)
                 only->genLValue(g);
             else

@@ -98,7 +98,7 @@ void SymbolTable::addToStack(AbstractGenerator& g)
     {
         if(_ordered[i]->classType != CT_VAR)
             continue;
-        g.gen(cAdd, rESP, static_cast<SymbolVariable*>(_ordered[i])->type->size() * 4);
+        g.gen(cSub, rESP, static_cast<SymbolVariable*>(_ordered[i])->type->size() * 4);
         _ordered[i]->offset = offset;
         offset += static_cast<SymbolVariable*>(_ordered[i])->type->size();
     }
@@ -110,7 +110,10 @@ unsigned int SymbolTable::offset()
     if(_offset == 0)
         for(unsigned int i = 0; i < size(); ++i)
             if(_ordered[i]->classType == CT_VAR)
+            {
+                _ordered[i]->offset = _offset;
                 _offset += static_cast<SymbolVariable*>(_ordered[i])->type->size();
+            }
     return _offset;
 }
 

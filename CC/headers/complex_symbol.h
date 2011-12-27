@@ -33,16 +33,18 @@ class SymbolTypeStruct: public SymbolType
 {
 private:
     int _size;
+    bool _calculated;
 public:
     string tag;
     SymbolTable* fields;
     SymbolTypeStruct(const string& name_, const string& tag_):
-        SymbolType(name_), _size(0), tag(tag_), fields(new SymbolTable())
+        SymbolType(name_), _size(0), _calculated(false), tag(tag_), fields(new SymbolTable())
         { classType = CT_STRUCT; }
     virtual void out(int indent, bool noFirst = true);
 
     virtual bool operator==(Symbol& symbol);
     virtual int size();
+    void calculateOffsets();
 };
 
 }

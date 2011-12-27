@@ -219,4 +219,12 @@ void SymbolTypeFunction::localizeSymbols()
             static_cast<SymbolVariable*>((*body->_locals)[i])->varType = VT_LOCAL;
 }
 
+void SymbolTypeStruct::calculateOffsets()
+{
+    if(_calculated)
+        return;
+    size();
+    _calculated = true;
+}
+
 }
