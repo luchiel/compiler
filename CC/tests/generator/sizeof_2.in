@@ -1,0 +1,4 @@
+void main()
+{
+printf("%d", sizeof(int[100]));
+}

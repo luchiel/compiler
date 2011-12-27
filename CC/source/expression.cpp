@@ -252,14 +252,17 @@ void UnaryNode::gen(AbstractGenerator& g, bool withResult)
             g.gen(cPush, rEAX + Offset(0));
         return;
     }
+    else if(type == TOK_AMP)
+    {
+        only->genLValue(g);
+        if(!withResult)
+            g.gen(cPop, rEAX);
+        return;
+    }
     only->gen(g);
     g.gen(cPop, rEAX);
     switch(type)
     {
-        case TOK_AMP: //?
-            only->genLValue(g);
-            g.gen(cPop, rEAX);
-            break;
         case TOK_INC:
         case TOK_DEC:
             only->genLValue(g);
@@ -341,7 +344,10 @@ void BinaryNode::gen(AbstractGenerator& g, bool withResult)
 
 void SizeofNode::gen(AbstractGenerator& g, bool withResult)
 {
-    g.gen(cMov, rEAX, symbolType->size() * 4);
+    if(symbolType != NULL)
+        g.gen(cMov, rEAX, symbolType->size() * 4);
+    else
+        g.gen(cMov, rEAX, only->expType->size() * 4);
     if(withResult)
         g.gen(cPush, rEAX);
 }
@@ -413,8 +419,6 @@ void AssignmentNode::gen(AbstractGenerator& g, bool withResult)
 void ExpressionNode::gen(AbstractGenerator& g, bool withResult) {}
 void TernaryNode::gen(AbstractGenerator& g, bool withResult) {}
 
-void CallNode::genLValue(AbstractGenerator& g) {}
-
 void IdentNode::genLValue(AbstractGenerator& g)
 {
     assert(isLValue);
@@ -456,11 +460,10 @@ void PostfixNode::performCommonGenPart(AbstractGenerator& g)
                     static_cast<SymbolTypePointer*>(only->expType)->type
             );
             s->calculateOffsets();
-            if(type == TOK_DOT)
-                only->genLValue(g);
-            else
-                only->gen(g);
+            only->genLValue(g);
             g.gen(cPop, rEAX);
+            if(type == TOK_ARROW)
+                g.gen(cLea, rEAX, rEAX + Offset(0));
             g.gen(cAdd, rEAX, static_cast<IdentNode*>(tail)->var->offset * 4);
             break;
     }
@@ -473,6 +476,13 @@ void PostfixNode::genLValue(AbstractGenerator& g)
     g.gen(cPush, rEAX);
 }
 
-void UnaryNode::genLValue(AbstractGenerator& g) {}
+void UnaryNode::genLValue(AbstractGenerator& g)
+{
+    assert(isLValue);
+    only->genLValue(g);
+    g.gen(cPop, rEAX);
+    g.gen(cMov, rEAX, rEAX + Offset(0));
+    g.gen(cPush, rEAX);
+}
 
 }

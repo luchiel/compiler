@@ -1,0 +1,8 @@
+void main()
+{
+struct {int t; int x;} *tx, nptx;
+tx = &nptx;
+tx->t = 0;
+tx->x = tx->t + 1;
+printf("%d", tx->x);
+}

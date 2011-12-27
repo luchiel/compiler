@@ -59,9 +59,26 @@ void Command::out()
         cmdNames[cEndp] = new string("endp");
         cmdNames[cRet] = new string("ret");
         cmdNames[cCdq] = new string("cdq");
-    //cCmp, cTest,
-    //cJE, cJNE, cJL, cJG, cJLE, cLGE, cJZ, cJNZ,
-    //cSetE, cSetNE, cSetL, cSetG, cSetLE, cSetGE, cSetZ, cSetNZ,
+        cmdNames[cTest] = new string("test");
+        cmdNames[cCmp] = new string("cmp");
+
+        cmdNames[cSetE] = new string("sete");
+        cmdNames[cSetNE] = new string("setne");
+        cmdNames[cSetL] = new string("setl");
+        cmdNames[cSetG] = new string("setg");
+        cmdNames[cSetLE] = new string("setle");
+        cmdNames[cSetGE] = new string("setge");
+        cmdNames[cSetZ] = new string("setz");
+        cmdNames[cSetNZ] = new string("setnz");
+
+        cmdNames[cJE] = new string("je");
+        cmdNames[cJNE] = new string("jne");
+        cmdNames[cJL] = new string("jl");
+        cmdNames[cJG] = new string("jg");
+        cmdNames[cJLE] = new string("jle");
+        cmdNames[cJGE] = new string("jge");
+        cmdNames[cJZ] = new string("jz");
+        cmdNames[cJNZ] = new string("jnz");
     }
     cout << '\t' << *cmdNames[command] << '\t';
     for(unsigned int i = 0; i < args.size(); ++i)

@@ -17,7 +17,7 @@ enum AsmCommand
     cMov, cLea, 
     cOr, cXor, cAnd, cNot, cShl, cShr,
     cCmp, cTest,
-    cJE, cJNE, cJL, cJG, cJLE, cLGE, cJZ, cJNZ,
+    cJE, cJNE, cJL, cJG, cJLE, cJGE, cJZ, cJNZ,
     cSetE, cSetNE, cSetL, cSetG, cSetLE, cSetGE, cSetZ, cSetNZ,
     cLabel, cCall, cProc, cEndp, cRet
 };
@@ -54,19 +54,19 @@ public:
         string* sArg;
     }
     value;
-    Argument(ArgType type_): type(type_) {}
-    Argument(int v_): type(atConst), offset(-1) { value.constArg = v_; }
     Argument(AsmRegister r_): type(atReg), offset(-1) { value.regArg = r_; }
-	Argument(string v_, ArgType type_): type(type_), offset(-1) { value.sArg = new string(v_); }
+    Argument(ArgType type_): type(type_), offset(-1) {}
+    Argument(int v_): type(atConst), offset(-1) { value.constArg = v_; }
+    Argument(string v_, ArgType type_): type(type_), offset(-1)
+        { value.sArg = new string(v_); }
     Argument(string v_): offset(-1)
     {
         value.sArg = new string(v_);
-        type = v_[0] == 'l' ? atLabel : atMem; //c -> offset
+        type = v_[0] == 'l' ? atLabel : atMem; //!f -> offset
     }
     Argument(const Argument& a): type(a.type), offset(a.offset), value(a.value) {}
 
     virtual void out();
-//    Argument& operator+(Offset arg);
 };
 
 class Offset

@@ -102,7 +102,6 @@ public:
     virtual void out(unsigned int depth, vector<bool>* branches, int level = 0);
 
     virtual void gen(AbstractGenerator& g, bool withResult = true);
-    virtual void genLValue(AbstractGenerator& g);
 };
 
 class UnaryNode: public ENode
