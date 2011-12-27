@@ -209,7 +209,9 @@ void PostfixNode::gen(AbstractGenerator& g, bool withResult)
             g.gen(cPop, rEBX);
             g.gen(cMov, rEAX, rEBX + Offset(0));
             g.gen(type == TOK_INC ? cInc : cDec, rEBX + Offset(0));
-            break;
+            if(withResult)
+                g.gen(cPush, rEAX);
+            return;
         default:
             performCommonGenPart(g);
     }

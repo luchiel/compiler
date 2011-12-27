@@ -122,7 +122,7 @@ void Argument::out()
                 regNames[rEBP] = new string("ebp");
                 regNames[rCL] = new string("cl");
             }
-            if(offset != -1) cout << '[';
+            if(offset != -1) cout << "dword ptr [";
             cout << *regNames[value.regArg];
             if(offset != -1) cout << '+' << offset << ']';
             return;

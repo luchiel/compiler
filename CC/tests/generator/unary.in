@@ -1,0 +1,15 @@
+void main()
+{
+int a;
+a = -5;
+printf("%d ", a);
+a = -a;
+printf("%d ", a);
+a++;
+printf("%d ", a);
+++a;
+printf("%d ", ++a);
+--a;
+printf("%d ", a--);
+printf("%d ", a);
+}
