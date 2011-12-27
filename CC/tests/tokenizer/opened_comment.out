@@ -1,2 +1,1 @@
-(line, col)		Type		Text, Value
 Error: TokenError:1:5 Unexpected EOF in comment
