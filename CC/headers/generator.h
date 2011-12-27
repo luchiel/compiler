@@ -33,6 +33,7 @@ public:
     virtual void gen(Command com, Argument a1, Argument a2, Argument a3);
     virtual void gen(Command com, Argument a1, Argument a2);
     virtual void gen(Command com, Argument a1);
+    virtual void gen(Command com);
     virtual void genLabel(Argument* a);
     virtual string addConstant(const string& s);
 };

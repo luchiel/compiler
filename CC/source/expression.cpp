@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <iostream>
 #include <vector>
+#include <assert.h>
 #include "expression.h"
 #include "dictionaries.h"
+#include "complex_symbol.h"
 
 using namespace std;
 
@@ -143,82 +145,95 @@ void SizeofNode::out(unsigned int depth, vector<bool>* branches, int level)
     }
 }
 
-void IdentNode::gen(AbstractGenerator& g)
+void IdentNode::gen(AbstractGenerator& g, bool withResult)
 {
-    //local?
-    //g.gen()
+    if(var->classType == CT_FUNCTION)
+    {
+        //
+        return;
+    }
+    switch(static_cast<SymbolVariable*>(var)->varType)
+    {
+        case VT_LOCAL:
+            g.gen(cMov, rEAX, rEBP);
+            g.gen(cAdd, rEAX, var->offset * 4);
+            break;
+        case VT_PARAM:
+            g.gen(cMov, rEAX, rEBP);
+            g.gen(cAdd, rEAX, -4 * (var->offset + var->size() + 1));
+            break;
+        case VT_GLOBAL:
+            if(withResult)
+                g.gen(cMov, rEAX, "v_" + var->name);
+                g.gen(cPush, rEAX + Offset(0));
+            return;
+    }
+    if(withResult)
+        g.gen(cPush, rEAX + Offset(0));
 }
 
-void IntNode::gen(AbstractGenerator& g)
+void IntNode::gen(AbstractGenerator& g, bool withResult)
 {
     g.gen(cMov, rEAX, value);
-    g.gen(cPush, rEAX);
+    if(withResult)
+        g.gen(cPush, rEAX);
 }
 
-void CharNode::gen(AbstractGenerator& g)
+void CharNode::gen(AbstractGenerator& g, bool withResult)
 {
     g.gen(cMov, rEAX, value);
-    g.gen(cPush, rEAX);
+    if(withResult)
+        g.gen(cPush, rEAX);
 }
 
-void StringNode::gen(AbstractGenerator& g)
+void StringNode::gen(AbstractGenerator& g, bool withResult)
 {
     string s = g.addConstant(value);
     g.gen(cMov, rEAX, s);
-    g.gen(cPush, rEAX);
+    if(withResult)
+        g.gen(cPush, rEAX);
 }
 
-void FloatNode::gen(AbstractGenerator& g) {}
+void FloatNode::gen(AbstractGenerator& g, bool withResult) {}
 
-void PostfixNode::gen(AbstractGenerator& g)
+void PostfixNode::gen(AbstractGenerator& g, bool withResult)
 {
     switch(type)
     {
-        case TOK_L_SQUARE:
-            only->genLValue(g);
-            tail->gen(g);
-            g.gen(cPop, rEBX);
-            g.gen(cPop, rEAX);
-            g.gen(cImul, rEBX, only->expType->size() * 4);
-            g.gen(cAdd, rEAX, rEBX);
-            break;
-        case TOK_DOT:
-        case TOK_ARROW:
-            if(type == TOK_DOT)
-                only->genLValue(g);
-            else
-                only->gen(g);
-            g.gen(cPop, rEAX);
-            g.gen(cAdd, rEAX, tail->expType->offset * 4);
-            break;
         case TOK_INC:
         case TOK_DEC:
             only->genLValue(g);
             g.gen(cPop, rEBX);
-            g.gen(cMov, rEAX, rEBX + 0);
-            g.gen(type == TOK_INC ? cInc : cDec, rEBX + 0);
+            g.gen(cMov, rEAX, rEBX + Offset(0));
+            g.gen(type == TOK_INC ? cInc : cDec, rEBX + Offset(0));
             break;
+        default:
+            performCommonGenPart(g);
     }
-    g.gen(cPush, rEAX);
+    if(withResult)
+        g.gen(cPush, rEAX + Offset(0));
 }
 
-void CallNode::gen(AbstractGenerator& g)
+void CallNode::gen(AbstractGenerator& g, bool withResult)
 {
-    //place for res if not printf
     bool isPrintf = only->expType->name == "printf";
+    int offset =
+        static_cast<SymbolTypeFunction*>(only->expType->resolveAlias())->args->offset();
     if(!isPrintf)
-        ;//place for res if not printf
+        g.gen(cAdd, rESP, offset * 4);
+
     for(int j = params.size() - 1; j >= 0; --j)
         params[j]->gen(g);
 
     g.gen(cCall, isPrintf ? "crt_printf" : "f_" + only->expType->name);
     for(unsigned int j = 0; j < params.size(); ++j)
         g.gen(cPop, rEBX);
-    if(isPrintf)
-        g.gen(cPush, rEAX);
+
+    if(isPrintf && withResult)
+        g.gen(cPush, rEAX); //if noResult -> must kill var
 }
 
-void UnaryNode::gen(AbstractGenerator& g)
+void UnaryNode::gen(AbstractGenerator& g, bool withResult)
 {
     if(type == TOK_ASTERISK)
     {
@@ -236,8 +251,8 @@ void UnaryNode::gen(AbstractGenerator& g)
         case TOK_DEC:
             only->genLValue(g);
             g.gen(cPop, rEBX);
-            g.gen(type == TOK_INC ? cInc : cDec, rEBX + 0);
-            g.gen(cMov, rEAX, rEBX + 0);
+            g.gen(type == TOK_INC ? cInc : cDec, rEBX + Offset(0));
+            g.gen(cMov, rEAX, rEBX + Offset(0));
             break;
         case TOK_NOT:
             g.gen(cXor, rECX, rECX);
@@ -249,10 +264,11 @@ void UnaryNode::gen(AbstractGenerator& g)
         case TOK_MINUS: g.gen(cNeg, rEAX); break;
         case TOK_PLUS:  break;
     }
-    g.gen(cPush, rEAX);
+    if(withResult)
+        g.gen(cPush, rEAX);
 }
 
-void BinaryNode::gen(AbstractGenerator& g)
+void BinaryNode::gen(AbstractGenerator& g, bool withResult)
 {
     if(type == TOK_LOGICAL_AND || type == TOK_LOGICAL_OR)
     {
@@ -302,29 +318,90 @@ void BinaryNode::gen(AbstractGenerator& g)
         case TOK_XOR: g.gen(cXor, rEAX, rEBX); break;
         case TOK_OR:  g.gen(cOr, rEAX, rEBX); break;
     }
-    g.gen(cPush, rEAX);
+    if(withResult)
+        g.gen(cPush, rEAX);
 }
 
-void SizeofNode::gen(AbstractGenerator& g)
+void SizeofNode::gen(AbstractGenerator& g, bool withResult)
 {
     g.gen(cMov, rEAX, symbolType->size() * 4);
-    g.gen(cPush, rEAX);
+    if(withResult)
+        g.gen(cPush, rEAX);
 }
 
-void CastNode::gen(AbstractGenerator& g)
+void CastNode::gen(AbstractGenerator& g, bool withResult)
 {
-    element->gen(g);
+    element->gen(g, withResult);
     //int to float! float to int!
 }
 
-void AssignmentNode::gen(AbstractGenerator& g) {}
-void ExpressionNode::gen(AbstractGenerator& g) {}
-void TernaryNode::gen(AbstractGenerator& g) {}
+void AssignmentNode::gen(AbstractGenerator& g, bool withResult)
+{
+    left->genLValue(g);
+    right->gen(g);
+    g.gen(cPop, rEBX);
+    g.gen(cPop, rEAX);
+    g.gen(cMov, rEAX + Offset(0), rEBX);
+    if(withResult)
+        g.gen(cPush, rEAX);
+}
+
+void ExpressionNode::gen(AbstractGenerator& g, bool withResult) {}
+void TernaryNode::gen(AbstractGenerator& g, bool withResult) {}
 
 void CallNode::genLValue(AbstractGenerator& g) {}
 
-void IdentNode::genLValue(AbstractGenerator& g) {}
-void PostfixNode::genLValue(AbstractGenerator& g) {}
+void IdentNode::genLValue(AbstractGenerator& g)
+{
+    assert(isLValue);
+    switch(static_cast<SymbolVariable*>(var)->varType)
+    {
+        case VT_LOCAL:
+            g.gen(cMov, rEAX, rEBP);
+            g.gen(cAdd, rEAX, var->offset * 4);
+            break;
+        case VT_PARAM:
+            g.gen(cMov, rEAX, rEBP);
+            g.gen(cAdd, rEAX, -4 * (var->offset + var->size() + 1));
+            break;
+        case VT_GLOBAL:
+            g.gen(cPush, "v_" + var->name);
+            return;
+    }
+    g.gen(cPush, rEAX);
+}
+
+void PostfixNode::performCommonGenPart(AbstractGenerator& g)
+{
+    switch(type)
+    {
+        case TOK_L_SQUARE:
+            only->genLValue(g);
+            tail->gen(g);
+            g.gen(cPop, rEBX);
+            g.gen(cPop, rEAX);
+            g.gen(cImul, rEBX, only->expType->size() * 4);
+            g.gen(cAdd, rEAX, rEBX);
+            break;
+        case TOK_DOT:
+        case TOK_ARROW:
+            if(type == TOK_DOT)
+                only->genLValue(g);
+            else
+                only->gen(g);
+            g.gen(cPop, rEAX);
+            g.gen(cAdd, rEAX, static_cast<IdentNode*>(tail)->var->offset * 4);
+            break;
+    }
+}
+
+void PostfixNode::genLValue(AbstractGenerator& g)
+{
+    assert(isLValue);
+    performCommonGenPart(g);
+    g.gen(cPush, rEAX);
+}
+
 void UnaryNode::genLValue(AbstractGenerator& g) {}
 
 }

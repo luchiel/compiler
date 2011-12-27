@@ -19,7 +19,7 @@ enum AsmCommand
     cCmp, cTest,
     cJE, cJNE, cJL, cJG, cJLE, cLGE, cJZ, cJNZ,
     cSetE, cSetNE, cSetL, cSetG, cSetLE, cSetGE, cSetZ, cSetNZ,
-    cLabel, cCall,
+    cLabel, cCall, cProc, cEndp, cRet
 };
 
 enum ArgType { atReg, atMem, atConst, atLabel };
@@ -66,7 +66,16 @@ public:
     Argument(const Argument& a): type(a.type), offset(a.offset), value(a.value) {}
 
     virtual void out();
-    Argument& operator+(const int& arg);
+//    Argument& operator+(Offset arg);
+};
+
+class Offset
+{
+public:
+    int offset;
+    Offset(const int& o): offset(o) {}
+    friend Argument operator+(Argument arg, Offset o);
+    friend Argument operator-(Argument arg, Offset o);
 };
 
 class Command
@@ -89,6 +98,7 @@ public:
     virtual void gen(Command com, Argument a1, Argument a2, Argument a3) {}
     virtual void gen(Command com, Argument a1, Argument a2) {}
     virtual void gen(Command com, Argument a1) {}
+    virtual void gen(Command com) {}
     virtual void genLabel(Argument* a) {}
     virtual string addConstant(const string& s) { return ""; }
 

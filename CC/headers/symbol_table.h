@@ -5,6 +5,7 @@
 #include <map>
 #include <string>
 #include "symbol.h"
+#include "abstract_generator.h"
 
 using namespace std;
 
@@ -18,6 +19,7 @@ class SymbolTable
 protected:
     map< pair<string, NameType>, Symbol*> _symbols;
     vector<Symbol*> _ordered;
+    int _offset;
 
 public:
     SymbolTable* parent;
@@ -28,9 +30,11 @@ public:
     Symbol* findSymbol(const string& name, NameType nt);
 
     unsigned int size() const { return _ordered.size(); }
+    unsigned int offset();
     void out(int indent);
+    void addToStack(AbstractGenerator& g);
 
-    SymbolTable(): parent(NULL) {}
+    SymbolTable(): _offset(0), parent(NULL) {}
     ~SymbolTable();
 
     Symbol* operator[](const int i) const;

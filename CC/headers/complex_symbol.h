@@ -26,6 +26,7 @@ public:
     virtual void out(int indent, bool noFirst = true);
 
     virtual bool operator==(Symbol& symbol);
+    void localizeSymbols();
 };
 
 class SymbolTypeStruct: public SymbolType

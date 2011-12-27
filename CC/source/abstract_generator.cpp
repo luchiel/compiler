@@ -25,6 +25,15 @@ void Command::out()
         cout << ":\n";
         return;
     }
+    else if(command == cProc || command == cEndp)
+    {
+        if(command == cProc) cout << '\n';
+        args[0]->out();
+        cout << (command == cProc ? " proc\n" : " endp\n");
+        if(command == cEndp) cout << '\n';
+        return;
+    }
+    //map not required. Just case with word setters?
     if(cmdNames.size() == 0)
     {
         cmdNames[cPush] = new string("push");
@@ -46,6 +55,9 @@ void Command::out()
         cmdNames[cShr] = new string("shr");
         cmdNames[cLabel] = new string(":");
         cmdNames[cCall] = new string("call");
+        cmdNames[cProc] = new string("proc");
+        cmdNames[cEndp] = new string("endp");
+        cmdNames[cRet] = new string("ret");
     //cCmp, cTest,
     //cJE, cJNE, cJL, cJG, cJLE, cLGE, cJZ, cJNZ,
     //cSetE, cSetNE, cSetL, cSetG, cSetLE, cSetGE, cSetZ, cSetNZ,
@@ -74,10 +86,16 @@ void RData::out()
     cout << name << " db \"" << value << "\",0\n";
 }
 
-Argument& Argument::operator+(const int& arg)
+Argument operator+(Argument arg, Offset o)
 {
-    offset = arg;
-    return *this;
+    arg.offset = o.offset;
+    return arg;
+}
+
+Argument operator-(Argument arg, Offset o)
+{
+    arg.offset = -o.offset;
+    return arg;
 }
 
 Argument AbstractGenerator::label()
@@ -103,7 +121,9 @@ void Argument::out()
                 regNames[rEBP] = new string("ebp");
                 regNames[rCL] = new string("cl");
             }
+            if(offset != -1) cout << '[';
             cout << *regNames[value.regArg];
+            if(offset != -1) cout << '+' << offset << ']';
             return;
         case atLabel:
             cout << *value.sArg;
@@ -112,7 +132,7 @@ void Argument::out()
             cout << value.constArg;
             break;
         case atMem:
-            if((*value.sArg)[0] == 'c' && *value.sArg != "crt_printf")
+            if((*value.sArg)[0] != 'f' && *value.sArg != "crt_printf")
                 cout << "offset ";
             cout << *value.sArg;
             break;

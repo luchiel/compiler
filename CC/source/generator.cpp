@@ -26,11 +26,14 @@ void Generator::genCode(SymbolTypeFunction* f)
         f->body->gen(*this);
         return;
     }
+    gen(cProc, "f_" + f->name);
     gen(cPush, rEBP);
     gen(cMov, rEBP, rESP);
     f->body->gen(*this);
     gen(cMov, rESP, rEBP);
     gen(cPop, rEBP);
+    gen(cRet);
+    gen(cEndp, "f_" + f->name);
 }
 
 void Generator::genData(const SymbolTable& t)
@@ -67,7 +70,6 @@ void Generator::out()
     cout << "\n.data\n";
     for(unsigned int i = 0; i < dataPart.size(); ++i)
         dataPart[i]->out();
-    //cout << "\n.rdata\n";
     for(unsigned int i = 0; i < rdataPart.size(); ++i)
         rdataPart[i]->out();
     cout << "\n.code\n";
@@ -103,6 +105,11 @@ void Generator::gen(Command com, Argument a1, Argument a2)
 void Generator::gen(Command com, Argument a1)
 {
     com.args.push_back(new Argument(a1));
+    codePart.push_back(com);
+}
+
+void Generator::gen(Command com)
+{
     codePart.push_back(com);
 }
 
