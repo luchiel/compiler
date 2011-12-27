@@ -1,0 +1,19 @@
+struct point { int x, y; };
+
+void a(struct point c)
+{
+c.x = c.x + 4;
+printf("%d %d\t", c.x, c.y);
+}
+
+void main()
+{
+struct point m;
+
+m.x = 6;
+m.y = 7;
+
+a(m);
+
+printf("%d %d\t", m.x, m.y);
+}

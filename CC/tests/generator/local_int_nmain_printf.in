@@ -1,0 +1,11 @@
+void a()
+{
+int j;
+j = 5;
+printf("%d", j);
+}
+
+void main()
+{
+a();
+}

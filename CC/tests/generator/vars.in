@@ -1,0 +1,6 @@
+int a;
+float c[6];
+struct {int b; int c[5];} d;
+struct d { struct d* a; struct {int d[24];} b, *c; } e;
+
+int main(){}

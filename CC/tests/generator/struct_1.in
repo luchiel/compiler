@@ -1,0 +1,9 @@
+void main()
+{
+struct { int x, y; } point;
+
+point.x = 6;
+point.y = 7;
+
+printf("%d %d", point.x, point.y);
+}
