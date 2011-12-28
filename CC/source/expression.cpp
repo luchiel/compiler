@@ -249,7 +249,12 @@ void UnaryNode::gen(AbstractGenerator& g, bool withResult)
         only->genLValue(g);
         g.gen(cPop, rEAX);
         if(withResult)
-            g.gen(cPush, rEAX + Offset(0));
+        {
+            if(only->expType->isArray())
+                g.gen(cPush, rEAX);
+            else
+                g.gen(cPush, rEAX + Offset(0));
+        }
         return;
     }
     else if(type == TOK_AMP)
@@ -291,14 +296,14 @@ void BinaryNode::gen(AbstractGenerator& g, bool withResult)
         left->gen(g);
         g.gen(cPop, rEAX);
         g.gen(cTest, rEAX, rEAX);
-        Argument a = g.label();
-        g.gen(type == TOK_LOGICAL_AND ? cJZ : cJNZ, a);
+        Argument* a = g.label();
+        g.gen(type == TOK_LOGICAL_AND ? cJZ : cJNZ, *a);
 
         right->gen(g);
         g.gen(cPop, rEAX);
         g.gen(cTest, rEAX, rEAX);
 
-        g.genLabel(&a);
+        g.genLabel(a);
         g.gen(cPush, rEAX);
     }
     left->gen(g);
@@ -462,8 +467,8 @@ void PostfixNode::performCommonGenPart(AbstractGenerator& g)
             s->calculateOffsets();
             only->genLValue(g);
             g.gen(cPop, rEAX);
-            if(type == TOK_ARROW)
-                g.gen(cLea, rEAX, rEAX + Offset(0));
+            //if(type == TOK_ARROW)
+            //    g.gen(cMov, rEAX, rEAX + Offset(0));
             g.gen(cAdd, rEAX, static_cast<IdentNode*>(tail)->var->offset * 4);
             break;
     }

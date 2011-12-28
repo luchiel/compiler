@@ -15,12 +15,12 @@ namespace LuCCompiler
 class SelectionStatement: public Node
 {
 public:
-    Node* _expr;
+    ENode* _expr;
     Node* _then;
     Node* _else;
     SelectionStatement(): _expr(NULL), _then(NULL), _else(NULL) {}
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
-    virtual void gen(AbstractGenerator& g, bool withResult = true) {}
+    virtual void gen(AbstractGenerator& g, bool withResult = true);
 };
 
 class JumpStatement: public Node
@@ -29,7 +29,7 @@ public:
     TokenType _type;
     JumpStatement(TokenType type): _type(type) {}
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
-    virtual void gen(AbstractGenerator& g, bool withResult = true) {}
+    virtual void gen(AbstractGenerator& g, bool withResult = true);
 };
 
 class ReturnStatement: public Node
@@ -62,23 +62,26 @@ class IterationStatement: public Node
 public:
     TokenType _type;
     Node* _loop;
-    Node* _expr;
+    ENode* _expr;
     IterationStatement(): _type(TOK_UNDEF), _loop(NULL), _expr(NULL) {}
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
-    virtual void gen(AbstractGenerator& g, bool withResult = true) {}
+    virtual void gen(AbstractGenerator& g, bool withResult = true);
 };
 
-class ForStatement: public IterationStatement
+class ForStatement: public Node
 {
 public:
     SymbolTable* _iterators;
+    TokenType _type;
+    Node* _loop;
+    Node* _expr;
     Node* _expr2;
     Node* _expr3;
     ForStatement():
-        IterationStatement(), _iterators(new SymbolTable()),
-        _expr2(NULL), _expr3(NULL) { _type = TOK_FOR; }
+        _iterators(new SymbolTable()), _type(TOK_FOR),
+        _loop(NULL), _expr(NULL), _expr2(NULL), _expr3(NULL) {}
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
-    virtual void gen(AbstractGenerator& g, bool withResult = true) {}
+    virtual void gen(AbstractGenerator& g, bool withResult = true);
 };
 
 class CompoundStatement: public Node

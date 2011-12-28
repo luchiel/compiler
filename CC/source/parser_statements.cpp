@@ -92,6 +92,8 @@ Node* Parser::parseSelectionStatement()
         _tokens->next();
         consumeTokenOfType(TOK_L_BRACKET, "'(' expected");
         node->_expr = parseExpression();
+        if(_mode == PM_SYMBOLS && node->_expr->expType != _int)
+            throw makeException("expression must be of type int");
         consumeTokenOfType(TOK_R_BRACKET, "')' expected");
         node->_then = parseStatement();
         if(tokenType() == TOK_ELSE)
@@ -114,6 +116,8 @@ Node* Parser::parseIterationStatement()
         _tokens->next();
         consumeTokenOfType(TOK_L_BRACKET, "'(' expected");
         node->_expr = parseExpression();
+        if(_mode == PM_SYMBOLS && node->_expr->expType != _int)
+            throw makeException("expression must be of type int");
         consumeTokenOfType(TOK_R_BRACKET, "')' expected");
 
         _jumpAllowed++;
@@ -135,6 +139,8 @@ Node* Parser::parseIterationStatement()
         consumeTokenOfType(TOK_WHILE, "'while' expected");
         consumeTokenOfType(TOK_L_BRACKET, "'(' expected");
         node->_expr = parseExpression();
+        if(_mode == PM_SYMBOLS && node->_expr->expType != _int)
+            throw makeException("expression must be of type int");
         consumeTokenOfType(TOK_R_BRACKET, "')' expected");
         consumeTokenOfType(TOK_SEP, "';' expected");
         return node;

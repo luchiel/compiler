@@ -17,9 +17,9 @@ enum AsmCommand
     cMov, cLea, 
     cOr, cXor, cAnd, cNot, cShl, cShr,
     cCmp, cTest,
-    cJE, cJNE, cJL, cJG, cJLE, cJGE, cJZ, cJNZ,
+    cJE, cJNE, cJL, cJG, cJLE, cJGE, cJZ, cJNZ, cJmp,
     cSetE, cSetNE, cSetL, cSetG, cSetLE, cSetGE, cSetZ, cSetNZ,
-    cLabel, cCall, cProc, cEndp, cRet
+    cLabel, cCall, cProc, cEndp, cRet,
 };
 
 enum ArgType { atReg, atMem, atConst, atLabel };
@@ -91,6 +91,8 @@ class AbstractGenerator
 {
 protected:
     int labelNum;
+    vector<Argument*> breakStack;
+    vector<Argument*> continueStack;
 
 public:
     int currentParamSize;
@@ -105,7 +107,13 @@ public:
     virtual string addConstant(const string& s) { return ""; }
 
     void genIntCmp(const Command& cmpcmd);
-    Argument label();
+    Argument* label();
+
+    void pushJumpLabels(Argument* breakA, Argument* continueA);
+    void popJumpLabels();
+
+    Argument breakLabel() { return *breakStack[breakStack.size() - 1]; }
+    Argument continueLabel() { return *continueStack[continueStack.size() - 1]; }
 };
 
 }

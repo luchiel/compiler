@@ -110,4 +110,70 @@ void ReturnStatement::gen(AbstractGenerator& g, bool withResult)
     g.gen(cAdd, rESP, expr->expType->size());
 }
 
+void SelectionStatement::gen(AbstractGenerator& g, bool withResult)
+{
+    _expr->gen(g);
+    g.gen(cPop, rEAX);
+    Argument* l1 = g.label();
+    Argument* l2 = g.label();
+    g.gen(cTest, rEAX, rEAX);
+    g.gen(cJZ, *l1);
+    _then->gen(g, false);
+    g.gen(cJmp, *l2);
+    g.genLabel(l1);
+    if(_else != NULL)
+        _else->gen(g, false);
+    g.genLabel(l2);
+}
+
+void JumpStatement::gen(AbstractGenerator& g, bool withResult)
+{
+    if(_type == TOK_RETURN)
+    {
+        return;
+    }
+    //jumps + pop all
+    if(_type == TOK_BREAK)
+        g.gen(cJmp, g.breakLabel());
+    else
+        g.gen(cJmp, g.continueLabel());
+}
+
+void IterationStatement::gen(AbstractGenerator& g, bool withResult)
+{
+    if(_type == TOK_DO)
+    {
+        Argument* l1 = g.label();
+        Argument* l2 = g.label(); //continue label
+        Argument* l3 = g.label(); //break label
+        g.genLabel(l1);
+        g.pushJumpLabels(l3, l2);
+        _loop->gen(g, false);
+        g.popJumpLabels();
+        g.genLabel(l2);
+        _expr->gen(g);
+        g.gen(cPop, rEAX);
+        g.gen(cTest, rEAX, rEAX);
+        g.gen(cJNZ, *l1);
+        g.genLabel(l3);
+    }
+    else
+    {
+        Argument* l1 = g.label(); //continue label
+        Argument* l2 = g.label(); //break label
+        g.genLabel(l1);
+        _expr->gen(g);
+        g.gen(cPop, rEAX);
+        g.gen(cTest, rEAX, rEAX);
+        g.gen(cJZ, *l2);
+        g.pushJumpLabels(l2, l1);
+        _loop->gen(g, false);
+        g.popJumpLabels();
+        g.gen(cJmp, *l1);
+        g.genLabel(l2);
+    }
+}
+
+void ForStatement::gen(AbstractGenerator& g, bool withResult) {}
+
 }

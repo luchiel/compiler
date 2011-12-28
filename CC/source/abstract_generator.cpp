@@ -17,6 +17,18 @@ void AbstractGenerator::genIntCmp(const Command& cmpcmd)
     gen(cMov, rEAX, rECX);
 }
 
+void AbstractGenerator::pushJumpLabels(Argument* breakA, Argument* continueA)
+{
+    breakStack.push_back(breakA);
+    continueStack.push_back(continueA);
+}
+
+void AbstractGenerator::popJumpLabels()
+{
+    breakStack.pop_back();
+    continueStack.pop_back();
+}
+
 void Command::out()
 {
     if(command == cLabel)
@@ -79,6 +91,7 @@ void Command::out()
         cmdNames[cJGE] = new string("jge");
         cmdNames[cJZ] = new string("jz");
         cmdNames[cJNZ] = new string("jnz");
+        cmdNames[cJmp] = new string("jmp");
     }
     cout << '\t' << *cmdNames[command] << '\t';
     for(unsigned int i = 0; i < args.size(); ++i)
@@ -116,10 +129,10 @@ Argument operator-(Argument arg, Offset o)
     return arg;
 }
 
-Argument AbstractGenerator::label()
+Argument* AbstractGenerator::label()
 {
     labelNum++;
-    return Argument(itostr(labelNum));
+    return new Argument("l" + itostr(labelNum));
 }
 
 void Argument::out()
