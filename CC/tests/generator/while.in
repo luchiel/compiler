@@ -1,0 +1,11 @@
+void main()
+{
+int j; j = 0;
+int i; i = 9;
+while(i - j > 1)
+{
+printf("%d ", (i - j) * (i - j));
+i--;
+j++;
+}
+}
