@@ -46,7 +46,7 @@ void ExpressionStatement::out(unsigned int depth, vector<bool>* branches, int le
 
 void ExpressionStatement::gen(AbstractGenerator& g, bool withResult)
 {
-    _expr->gen(g, false);
+    _expr->gen(g, withResult);
 }
 
 void IterationStatement::out(unsigned int depth, vector<bool>* branches, int level)
@@ -96,7 +96,7 @@ void CompoundStatement::gen(AbstractGenerator& g, bool withResult)
 {
     _locals->addToStack(g);
     for(unsigned int i = 0; i < _items->size(); ++i)
-        (*_items)[i]->gen(g);
+        (*_items)[i]->gen(g, false);
 }
 
 void ReturnStatement::gen(AbstractGenerator& g, bool withResult)
@@ -130,7 +130,7 @@ void JumpStatement::gen(AbstractGenerator& g, bool withResult)
 {
     if(_type == TOK_RETURN)
     {
-        return;
+        return;//jump to eof, add label =)
     }
     //jumps + pop all
     if(_type == TOK_BREAK)
@@ -174,6 +174,28 @@ void IterationStatement::gen(AbstractGenerator& g, bool withResult)
     }
 }
 
-void ForStatement::gen(AbstractGenerator& g, bool withResult) {}
+void ForStatement::gen(AbstractGenerator& g, bool withResult)
+{
+    _expr->gen(g, false);
+    Argument* l1 = g.label();
+    Argument* l2 = g.label(); //continue label
+    Argument* l3 = g.label(); //break label
+    g.genLabel(l1);
+    if(dynamic_cast<EmptyExpressionStatement*>(_expr2) == NULL)
+    {
+        _expr2->gen(g);
+        g.gen(cPop, rEAX);
+        g.gen(cTest, rEAX, rEAX);
+        g.gen(cJZ, *l3);
+    }
+    g.pushJumpLabels(l3, l2);
+    _loop->gen(g, false);
+    g.popJumpLabels();
+    g.genLabel(l2);
+    if(_expr3 != NULL)
+        _expr3->gen(g, false);
+    g.gen(cJmp, *l1);
+    g.genLabel(l3);
+}
 
 }

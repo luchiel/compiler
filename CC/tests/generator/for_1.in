@@ -1,0 +1,6 @@
+void main()
+{
+int i;
+for(i = 0; i < 5; ++i)
+  printf("%d ", i * i - 6);
+}

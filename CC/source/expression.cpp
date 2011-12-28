@@ -304,7 +304,9 @@ void BinaryNode::gen(AbstractGenerator& g, bool withResult)
         g.gen(cTest, rEAX, rEAX);
 
         g.genLabel(a);
-        g.gen(cPush, rEAX);
+        if(withResult)
+            g.gen(cPush, rEAX);
+        return;
     }
     left->gen(g);
     right->gen(g);
