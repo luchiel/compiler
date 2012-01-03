@@ -247,12 +247,7 @@ void UnaryNode::gen(AbstractGenerator& g, bool withResult)
         only->genLValue(g);
         g.gen(cPop, rEAX);
         if(withResult)
-        {
-            //if(only->expType->isArray())
-            //    g.gen(cPush, rEAX);
-            //else
             g.gen(cPush, rEAX + Offset(0));
-        }
         return;
     }
     else if(type == TOK_AMP)
@@ -487,9 +482,12 @@ void UnaryNode::genLValue(AbstractGenerator& g)
 {
     assert(isLValue);
     only->genLValue(g);
-    g.gen(cPop, rEAX);
-    g.gen(cMov, rEAX, rEAX + Offset(0));
-    g.gen(cPush, rEAX);
+    if(type != TOK_ASTERISK || !only->expType->isArray())
+    {
+        g.gen(cPop, rEAX);
+        g.gen(cMov, rEAX, rEAX + Offset(0));
+        g.gen(cPush, rEAX);
+    }
 }
 
 }
