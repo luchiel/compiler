@@ -499,7 +499,7 @@ void Tokenizer::read()
                     {
                         if(_buffer[j] == '*' && j < _buffer.size() - 1 && _buffer[j + 1] == '/')
                         {
-                            j += 2;
+                            j++;//j += 2;
                             _state = IS_NONE;
                             break;
                         }
@@ -512,6 +512,7 @@ void Tokenizer::read()
                         j = 0;
                     }
                 }
+                _index = j + 1;
                 break;
         };
         j++;
