@@ -6,6 +6,7 @@
 #include "tokenizer.h"
 #include "parser.h"
 #include "expression.h"
+#include "generator.h"
 
 using namespace LuCCompiler;
 
@@ -33,8 +34,9 @@ int main(int argc, char *argv[])
             {
                 Tokenizer t(argv[1]);
                 Parser p(&t);
-                p.parse();
-                p.out();
+                Generator g(p.parse());
+                g.generate();
+                g.out();
             }
             catch(exception& e)
             {
