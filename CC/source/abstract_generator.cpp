@@ -154,7 +154,12 @@ void Argument::out()
             }
             if(offset != -1) cout << "dword ptr [";
             cout << *regNames[value.regArg];
-            if(offset != -1) cout << '+' << offset << ']';
+            if(offset != -1)
+            {
+                if(offset != 0)
+                    cout << (offset > 0 ? "+" : "") << offset;
+                cout << ']';
+            }
             return;
         case atLabel:
             cout << *value.sArg;
