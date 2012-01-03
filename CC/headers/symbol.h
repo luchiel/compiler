@@ -90,10 +90,10 @@ public:
     SymbolType* type;
     VariableType varType;
 
-    SymbolVariable(SymbolType* type_, string name_, VariableType varType_ = VT_GLOBAL):
+    SymbolVariable(SymbolType* type_, string name_, VariableType varType_ = VT_LOCAL):
         Symbol(name_), initializer(NULL), type(type_), varType(varType_)
         { classType = CT_VAR; }
-    SymbolVariable(SymbolType* type_, string name_, Node* initializer_, VariableType varType_ = VT_GLOBAL):
+    SymbolVariable(SymbolType* type_, string name_, Node* initializer_, VariableType varType_ = VT_LOCAL):
         Symbol(name_), initializer(initializer_), type(type_), varType(varType_)
         { classType = CT_VAR; }
     virtual void out(int indent, bool noFirst = true);

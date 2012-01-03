@@ -91,29 +91,20 @@ SymbolTable::~SymbolTable()
     //cycle? Carefully delete everyone?
 }
 
-void SymbolTable::addToStack(AbstractGenerator& g)
-{
-    int offset = 0;
-    for(unsigned int i = 0; i < _ordered.size(); ++i)
-    {
-        if(_ordered[i]->classType != CT_VAR)
-            continue;
-        g.gen(cSub, rESP, static_cast<SymbolVariable*>(_ordered[i])->type->size() * 4);
-        _ordered[i]->offset = offset;
-        offset += static_cast<SymbolVariable*>(_ordered[i])->type->size();
-    }
-    _offset = offset;
-}
-
 unsigned int SymbolTable::offset()
 {
+    if(parent == NULL)
+        return 0;
     if(_offset == 0)
+    {
+        _offset = parent->offset();
         for(unsigned int i = 0; i < size(); ++i)
             if(_ordered[i]->classType == CT_VAR)
             {
                 _ordered[i]->offset = _offset;
                 _offset += static_cast<SymbolVariable*>(_ordered[i])->type->size();
             }
+    }
     return _offset;
 }
 
@@ -198,7 +189,7 @@ SymbolTableStack* initPrimarySymbolTableStack()
     primarySymbolTable->addSymbol(void_ptr, 0, 0, 0);
     IntNode* zero = new IntNode(0);
     zero->expType = static_cast<SymbolType*>(primarySymbolTable->getSymbol("int", 0, 0));
-    primarySymbolTable->addSymbol(new SymbolVariable(void_ptr, "NULL", zero), 0, 0, 0);
+    primarySymbolTable->addSymbol(new SymbolVariable(void_ptr, "NULL", zero, VT_GLOBAL), 0, 0, 0);
 
     primarySymbolTable->addSymbol(new SymbolTypeFunction(int_, "printf"), 0, 0, 0);
 

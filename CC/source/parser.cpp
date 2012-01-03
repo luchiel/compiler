@@ -164,7 +164,7 @@ void Parser::addStructMember(SymbolType* initial)
 {
     SymbolType* type = parseDeclarator(initial);
     safeAddSymbol(type);
-    addSymbol(new SymbolVariable(type, _varName, VT_LOCAL));
+    addSymbol(new SymbolVariable(type, _varName));
     _varName = "";
 }
 

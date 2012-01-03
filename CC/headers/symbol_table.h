@@ -32,7 +32,6 @@ public:
     unsigned int size() const { return _ordered.size(); }
     unsigned int offset();
     void out(int indent);
-    void addToStack(AbstractGenerator& g);
 
     SymbolTable(): _offset(0), parent(NULL) {}
     ~SymbolTable();

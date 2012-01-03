@@ -94,9 +94,10 @@ void CompoundStatement::out(unsigned int depth, vector<bool>* branches, int leve
 
 void CompoundStatement::gen(AbstractGenerator& g, bool withResult)
 {
-    _locals->addToStack(g);
+    g.gen(cSub, rESP, (_locals->offset() - _locals->parent->offset()) * 4);
     for(unsigned int i = 0; i < _items->size(); ++i)
         (*_items)[i]->gen(g, false);
+    g.gen(cAdd, rESP, (_locals->offset() - _locals->parent->offset()) * 4);
 }
 
 void ReturnStatement::gen(AbstractGenerator& g, bool withResult)
@@ -128,15 +129,14 @@ void SelectionStatement::gen(AbstractGenerator& g, bool withResult)
 
 void JumpStatement::gen(AbstractGenerator& g, bool withResult)
 {
-    if(_type == TOK_RETURN)
+    if(_type == TOK_BREAK)
+        g.gen(cJmp, g.breakLabel());
+    else if(_type == TOK_CONTINUE)
+        g.gen(cJmp, g.continueLabel());
+    else
     {
         return;//jump to eof, add label =)
     }
-    //jumps + pop all
-    if(_type == TOK_BREAK)
-        g.gen(cJmp, g.breakLabel());
-    else
-        g.gen(cJmp, g.continueLabel());
 }
 
 void IterationStatement::gen(AbstractGenerator& g, bool withResult)
