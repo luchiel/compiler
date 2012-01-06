@@ -207,17 +207,17 @@ PostfixNode* Parser::parseFunctionCall(ENode* core)
             break;
         consumeTokenOfType(TOK_COMMA, "',' expected");
     }
-    if(_mode == PM_NO_SYMBOLS || core->expType->name == "printf")
-    {
-        consumeTokenOfType(TOK_R_BRACKET, "')' expected");
+    consumeTokenOfType(TOK_R_BRACKET, "')' expected");
+    if(_mode == PM_NO_SYMBOLS)
         return node;
-    }
-    node->expType = static_cast<SymbolTypeFunction*>(
-        core->expType->resolveAlias()
-    )->type;
 
     SymbolTypeFunction* f =
         static_cast<SymbolTypeFunction*>(core->expType->resolveAlias());
+    node->expType = f->type;
+
+    if(f->name == "printf")
+        return node;
+
     unsigned int j = 0;
     for(unsigned int i = 0; i < f->args->size(); ++i)
     {
@@ -245,7 +245,6 @@ PostfixNode* Parser::parseFunctionCall(ENode* core)
     }
     if(j < node->params.size())
         throw makeException("Too many arguments");
-    consumeTokenOfType(TOK_R_BRACKET, "')' expected");
     return node;
 }
 

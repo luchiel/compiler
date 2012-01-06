@@ -12,5 +12,7 @@ void main()
   printf("%d ", abs_sum(5, 5));
   printf("%d ", abs_sum(-5, 5));
   printf("%d ", abs_sum(5, -5));
-  printf("%d", abs_sum(-5, -5));
+  int i;
+  i = printf("%d ", abs_sum(-5, -5));
+  printf("%d", i);
 }
