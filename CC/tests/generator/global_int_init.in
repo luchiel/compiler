@@ -1,0 +1,6 @@
+int a = 100500;
+
+void main()
+{
+printf("%d", a);
+}
