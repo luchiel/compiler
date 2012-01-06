@@ -21,6 +21,7 @@ function main
 	+-{;}
 	  | 
 	  +-{()}
+				type <int>
 	    | 
 	    +-{printf}
 					function printf
