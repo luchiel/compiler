@@ -52,8 +52,9 @@ void Generator::genData(const SymbolTable& t)
         Data* d = new Data("v_" + var->name, var->type->size());
         dataPart.push_back(d);
 
-        if(dynamic_cast<InitializerList*>(var->initializer) == NULL)
-        {/*do initialize*/}//else currently not supported
+        if(var->initializer != NULL && static_cast<ENode*>(var->initializer)->isIntConst())
+            d->init.intInit = static_cast<IntNode*>(var->initializer)->value;
+        //elses currently not supported
     }
 }
 

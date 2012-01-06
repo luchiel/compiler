@@ -29,7 +29,13 @@ class Data
 public:
     string name;
     int size;
-    Data(const string& name_, const int size_): name(name_), size(size_) {}
+    union
+    {
+        int intInit;
+        float floatInit;
+    }
+    init;
+    Data(const string& name_, const int size_): name(name_), size(size_) { init.intInit = 0; }
     void out();
 };
 

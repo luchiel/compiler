@@ -95,6 +95,7 @@ void CompoundStatement::out(unsigned int depth, vector<bool>* branches, int leve
 void CompoundStatement::gen(AbstractGenerator& g, bool withResult)
 {
     g.gen(cSub, rESP, (_locals->offset() - _locals->parent->offset()) * 4);
+    _locals->genInitLocals(g);
     for(unsigned int i = 0; i < _items->size(); ++i)
         (*_items)[i]->gen(g, false);
     g.gen(cAdd, rESP, (_locals->offset() - _locals->parent->offset()) * 4);
@@ -176,7 +177,10 @@ void IterationStatement::gen(AbstractGenerator& g, bool withResult)
 
 void ForStatement::gen(AbstractGenerator& g, bool withResult)
 {
-    _expr->gen(g, false);
+    g.gen(cSub, rESP, (_iterators->offset() - _iterators->parent->offset()) * 4);
+    _iterators->genInitLocals(g);
+    if(_expr != NULL)
+        _expr->gen(g, false);
     Argument* l1 = g.label();
     Argument* l2 = g.label(); //continue label
     Argument* l3 = g.label(); //break label
@@ -196,6 +200,7 @@ void ForStatement::gen(AbstractGenerator& g, bool withResult)
         _expr3->gen(g, false);
     g.gen(cJmp, *l1);
     g.genLabel(l3);
+    g.gen(cAdd, rESP, (_iterators->offset() - _iterators->parent->offset()) * 4);
 }
 
 }

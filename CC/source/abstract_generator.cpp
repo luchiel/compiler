@@ -107,7 +107,7 @@ void Data::out()
 {
     cout << name << " dd ";
     if(size == 1)
-        cout << "0\n";
+        cout << init.intInit << "\n";
     else
         cout << size << " dup(0)\n";
 }

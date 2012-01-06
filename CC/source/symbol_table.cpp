@@ -108,6 +108,20 @@ unsigned int SymbolTable::offset()
     return _offset;
 }
 
+void SymbolTable::genInitLocals(AbstractGenerator& g)
+{
+    for(unsigned int i = 0; i < size(); ++i)
+        if((*this)[i]->classType == CT_VAR)
+        {
+            SymbolVariable* var = static_cast<SymbolVariable*>((*this)[i]);
+            if(var->initializer != NULL && static_cast<ENode*>(var->initializer)->isIntConst())
+                g.gen(
+                    cMov, rEBP + Offset(-var->offset * 4),
+                    static_cast<IntNode*>(var->initializer)->value
+                );
+        }
+}
+
 Symbol* SymbolTableStack::findSymbol(const string& name)
 {
     SymbolTable* c = _current;

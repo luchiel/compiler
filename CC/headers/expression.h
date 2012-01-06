@@ -25,6 +25,7 @@ public:
     bool isLValue;
     ENode(): expType(NULL), isLValue(false) {}
     virtual void genLValue(AbstractGenerator& g) {}
+    virtual bool isIntConst() { return false; }
 };
 
 class IdentNode: public ENode
@@ -50,23 +51,21 @@ public:
     virtual void gen(AbstractGenerator& g, bool withResult = true);
 };
 
-class CharNode: public ENode
-{
-public:
-    int value;
-    CharNode(const string& value_): ENode(), value(value_[0]) {}
-    virtual void out(unsigned int depth, vector<bool>* branches, int level = 0);
-
-    virtual void gen(AbstractGenerator& g, bool withResult = true);
-};
-
 class IntNode: public ENode
 {
 public:
     int value;
     IntNode(const int value_): ENode(), value(value_) {}
     virtual void out(unsigned int depth, vector<bool>* branches, int level = 0);
+    virtual void gen(AbstractGenerator& g, bool withResult = true);
+    virtual bool isIntConst() { return true; }
+};
 
+class CharNode: public IntNode
+{
+public:
+    CharNode(const string& value_): IntNode(value_[0]) {}
+    virtual void out(unsigned int depth, vector<bool>* branches, int level = 0);
     virtual void gen(AbstractGenerator& g, bool withResult = true);
 };
 
