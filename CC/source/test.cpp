@@ -25,13 +25,13 @@ const string TEST_ALL[] = {
 };
 const int TEST_ALL_SIZE = 5;
 
-void runTests(string testBlock)
+void runTests(string testBlock, bool tagOptimized)
 {
     system("remove_test_exe_files.bat");
     int i = 0;
     while(i < TEST_ALL_SIZE)
     {
-        Tester t;
+        Tester t(tagOptimized);
 
         string currentTest(testBlock == "all" ? TEST_ALL[i] : testBlock);
         //path to tests
@@ -127,7 +127,7 @@ void Tester::runFile(string& testBlock)
         {
             Parser p(&t);
             Generator g(p.parse());
-            g.generate();
+            g.generate(optimized);
             g.out();
 
             restoreStreams();

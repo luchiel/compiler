@@ -67,8 +67,7 @@ void Generator::genData(const SymbolTable& t)
 void Generator::out()
 {
     cout <<
-        ".586\n.model flat, stdcall\n"
-
+        ".686\n.xmm\n.model flat, stdcall\n"
         "include \\masm32\\include\\msvcrt.inc\n"
         "include \\masm32\\include\\kernel32.inc\n"
         "includelib \\masm32\\lib\\kernel32.lib\n"
@@ -82,18 +81,20 @@ void Generator::out()
     for(unsigned int i = 0; i < rdataPart.size(); ++i)
         rdataPart[i]->out();
     cout << "\n.code\n";
-    for(unsigned int i = 0; i < codePart.size(); ++i)
-        codePart[i].out();
+    for(list<Command>::iterator j = codePart.begin(); j != codePart.end(); ++j)
+        j->out();
 
     cout << "call ExitProcess\n\nend main" << endl;
 }
 
-void Generator::generate()
+void Generator::generate(bool doOptimize)
 {
     genData(*symbols);
     if(main == NULL)
         throw NoFunctionDefinition("main");
     genCode(main);
+    if(doOptimize)
+        optimize();
 }
 
 void Generator::gen(Command com, Argument a1, Argument a2, Argument a3)
@@ -134,6 +135,31 @@ string Generator::addConstant(const string& s)
     RData* r = new RData("c_" + itostr(labelNum++), s);
     rdataPart.push_back(r);
     return r->name;
+}
+
+void Generator::optimize()
+{
+    while(modified)
+    {
+		modified = false;
+        list<Command>::iterator i = codePart.begin();
+        while(i != codePart.end())
+		{
+			bool tryOptimize =
+                /*
+                tryUnitePushPop(i) ||
+                tryAlwaysTrue ||
+                tryAddSub1 ||
+                tryAddSub0 ||
+                tryMul0 ||
+                tryCodeNotReachable ||
+                tryUniteLabels;*/
+                tryAddSub0(i);
+            if(!tryOptimize)
+                i++; //if func modifies smth it moves iterator to next pos
+            modified = modified || tryOptimize;
+		}
+    }
 }
 
 }

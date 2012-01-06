@@ -108,7 +108,7 @@ void ReturnStatement::gen(AbstractGenerator& g, bool withResult)
     g.gen(cMov, rEAX, rEBP);
     g.gen(cAdd, rEAX, 4 * (g.currentParamSize + 2));
     for(unsigned int i = 0; i < expr->expType->size(); ++i)
-        g.gen(cMov, rEAX + Offset(i * 4), rEBX); //ebx has to be address here to copy all the ret.arg
+        g.gen(cMov, rEAX + Offset(i * 4), rEBX);
     g.gen(cAdd, rESP, expr->expType->size());
     g.gen(cJmp, g.returnLabel());
 }

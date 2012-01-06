@@ -92,6 +92,8 @@ void Command::out()
         cmdNames[cJZ] = new string("jz");
         cmdNames[cJNZ] = new string("jnz");
         cmdNames[cJmp] = new string("jmp");
+
+        cmdNames[cMovss] = new string("movss");
     }
     cout << '\t' << *cmdNames[command] << '\t';
     for(unsigned int i = 0; i < args.size(); ++i)
@@ -101,6 +103,20 @@ void Command::out()
             cout << ',';
     }
     cout << '\n';
+}
+
+bool Command::operator==(Command c)
+{
+    bool result = command == c.command && args.size() == c.args.size();
+    vector<Argument*>::iterator i = args.begin();
+    vector<Argument*>::iterator j = c.args.begin();
+    while(result && i != args.end())
+    {
+        result = **i == **j;
+        ++i;
+        ++j;
+    }
+    return result;
 }
 
 void Data::out()
@@ -151,6 +167,8 @@ void Argument::out()
                 regNames[rESP] = new string("esp");
                 regNames[rEBP] = new string("ebp");
                 regNames[rCL] = new string("cl");
+
+                regNames[rXMM0] = new string("xmm0");
             }
             if(offset != -1) cout << "dword ptr [";
             cout << *regNames[value.regArg];
@@ -167,12 +185,29 @@ void Argument::out()
         case atConst:
             cout << value.constArg;
             break;
+        case atConstF:
+            cout << value.constArgF;
+            break;
         case atMem:
             if((*value.sArg)[0] != 'f' && *value.sArg != "crt_printf")
                 cout << "offset ";
             cout << *value.sArg;
             break;
     }
+}
+
+bool Argument::operator==(const Argument& a)
+{
+    if(type != a.type || offset != a.offset)
+        return false;
+    switch(type)
+    {
+        case atReg: return value.regArg == a.value.regArg;
+        case atConst: return value.constArg == a.value.constArg;
+        case atConstF: return value.constArgF == a.value.constArgF;
+        default: return *value.sArg == *a.value.sArg;
+    }
+    return false;
 }
 
 }

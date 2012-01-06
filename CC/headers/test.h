@@ -25,7 +25,8 @@ private:
     void restoreStreams();
 
 public:
-    Tester(): testsCount(0), testsPassed(0) {}
+    bool optimized;
+    Tester(bool opt_ = false): testsCount(0), testsPassed(0), optimized(opt_) {}
     void attachTypelessFilename(wstring filename);
     void runFile(string& testBlock);
     void estimateResult();
@@ -34,7 +35,7 @@ public:
 
 class FindFileError: public exception {};
 
-void runTests(string testBlock);
+void runTests(string testBlock, bool tagOptimized);
 
 }
 

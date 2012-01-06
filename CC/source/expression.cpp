@@ -170,32 +170,45 @@ void IdentNode::gen(AbstractGenerator& g, bool withResult)
     if(withResult)
         for(int i = v->type->size() - 1; i >= 0; --i)
             g.gen(cPush, rEAX + Offset(i * 4));
-        //g.gen(cPush, rEAX + Offset(0));
 }
 
 void IntNode::gen(AbstractGenerator& g, bool withResult)
 {
-    g.gen(cMov, rEAX, value);
     if(withResult)
+    {
+        g.gen(cMov, rEAX, value);
         g.gen(cPush, rEAX);
+    }
 }
 
 void CharNode::gen(AbstractGenerator& g, bool withResult)
 {
-    g.gen(cMov, rEAX, value);
     if(withResult)
+    {
+        g.gen(cMov, rEAX, value);
         g.gen(cPush, rEAX);
+    }
 }
 
 void StringNode::gen(AbstractGenerator& g, bool withResult)
 {
-    string s = g.addConstant(value);
-    g.gen(cMov, rEAX, s);
     if(withResult)
+    {
+        string s = g.addConstant(value);
+        g.gen(cMov, rEAX, s);
         g.gen(cPush, rEAX);
+    }
 }
 
-void FloatNode::gen(AbstractGenerator& g, bool withResult) {}
+void FloatNode::gen(AbstractGenerator& g, bool withResult)
+{
+    if(withResult)
+    {
+        g.gen(cMovss, rXMM0, value);
+        g.gen(cSub, rESP, 4);
+        g.gen(cMovss, rESP + Offset(0), rXMM0);
+    }
+}
 
 void PostfixNode::gen(AbstractGenerator& g, bool withResult)
 {
@@ -214,7 +227,8 @@ void PostfixNode::gen(AbstractGenerator& g, bool withResult)
             performCommonGenPart(g);
     }
     if(withResult)
-        g.gen(cPush, rEAX + Offset(0));
+        for(int i = expType->size() - 1; i >= 0; --i)
+            g.gen(cPush, rEAX + Offset(i * 4));
 }
 
 void CallNode::gen(AbstractGenerator& g, bool withResult)
@@ -239,7 +253,7 @@ void CallNode::gen(AbstractGenerator& g, bool withResult)
     }
     else
     {
-        g.gen(cAdd, rESP, 4 * params.size());
+        g.gen(cAdd, rESP, params.size() * 4);
         if(withResult)
             g.gen(cPush, rEAX);
     }
@@ -437,12 +451,10 @@ void IdentNode::genLValue(AbstractGenerator& g)
     switch(v->varType)
     {
         case VT_LOCAL:
-            g.gen(cMov, rEAX, rEBP);
-            g.gen(cSub, rEAX, var->offset * 4);
+            g.gen(cLea, rEAX, rEBP + Offset(-var->offset * 4));
             break;
         case VT_PARAM:
-            g.gen(cMov, rEAX, rEBP);
-            g.gen(cAdd, rEAX, 4 * (v->offset + 2));
+            g.gen(cLea, rEAX, rEBP + Offset(4 * (var->offset + 2)));
             break;
         case VT_GLOBAL:
             g.gen(cPush, "v_" + var->name);

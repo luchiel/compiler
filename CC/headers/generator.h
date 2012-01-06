@@ -2,6 +2,7 @@
 #define GENERATOR_H
 
 #include <vector>
+#include <list>
 #include <string>
 #include "symbol.h"
 #include "complex_symbol.h"
@@ -20,14 +21,20 @@ private:
     SymbolTypeFunction* main;
     vector<Data*> dataPart;
     vector<RData*> rdataPart;
-    vector<Command> codePart;
+    list<Command> codePart;
+
+    bool modified;
+
     void genData(const SymbolTable& t);
     void genCode(SymbolTypeFunction* f);
 
+    void optimize();
+    bool tryAddSub0(list<Command>::iterator& i);
+
 public:
     Generator(SymbolTable* symbols_):
-        AbstractGenerator(), symbols(symbols_), main(NULL) {}
-    void generate();
+        AbstractGenerator(), symbols(symbols_), main(NULL), modified(true) {}
+    void generate(bool doOptimize = false);
     void out();
 
     virtual void gen(Command com, Argument a1, Argument a2, Argument a3);

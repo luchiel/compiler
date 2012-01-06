@@ -23,10 +23,10 @@ int main(int argc, char *argv[])
     {
         if(!strcmp(argv[1], "--test"))
         {
-            if(argc == 1)
+            if(argc == 2)
                 printf("What block would you like to test?\n");
             else
-                runTests(argv[2]);
+                runTests(argv[2], argc == 4 && !strcmp(argv[3], "+o"));
         }
         else
         {
