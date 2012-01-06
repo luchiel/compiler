@@ -1,0 +1,16 @@
+int abs_sum(int a, int b)
+{
+  if(a > 0 && b > 0)
+    return a + b;
+  if(a > 0) return a - b;
+  if(b > 0) return -a + b;
+  return - a - b;
+}
+
+void main()
+{
+  printf("%d ", abs_sum(5, 5));
+  printf("%d ", abs_sum(-5, 5));
+  printf("%d ", abs_sum(5, -5));
+  printf("%d", abs_sum(-5, -5));
+}

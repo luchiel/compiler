@@ -110,6 +110,7 @@ void ReturnStatement::gen(AbstractGenerator& g, bool withResult)
     for(unsigned int i = 0; i < expr->expType->size(); ++i)
         g.gen(cMov, rEAX + Offset(i * 4), rEBX); //ebx has to be address here to copy all the ret.arg
     g.gen(cAdd, rESP, expr->expType->size());
+    g.gen(cJmp, g.returnLabel());
 }
 
 void SelectionStatement::gen(AbstractGenerator& g, bool withResult)
@@ -135,9 +136,7 @@ void JumpStatement::gen(AbstractGenerator& g, bool withResult)
     else if(_type == TOK_CONTINUE)
         g.gen(cJmp, g.continueLabel());
     else
-    {
-        return;//jump to eof, add label =)
-    }
+        g.gen(cJmp, g.returnLabel());
 }
 
 void IterationStatement::gen(AbstractGenerator& g, bool withResult)

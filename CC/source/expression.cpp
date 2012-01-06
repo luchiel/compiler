@@ -232,12 +232,17 @@ void CallNode::gen(AbstractGenerator& g, bool withResult)
     g.gen(cCall, isPrintf ? "crt_printf" : "f_" + only->expType->name);
 
     if(!isPrintf)
+    {
         g.gen(cAdd, rESP, f->args->offset() * 4);
+        if(!withResult)
+            g.gen(cAdd, rESP, retTypeSize * 4);
+    }
     else
+    {
         g.gen(cAdd, rESP, 4 * params.size());
-
-    if(isPrintf && withResult)
-        g.gen(cPush, rEAX); //if noResult -> must kill var
+        if(withResult)
+            g.gen(cPush, rEAX);
+    }
 }
 
 void UnaryNode::gen(AbstractGenerator& g, bool withResult)
@@ -416,8 +421,14 @@ void AssignmentNode::gen(AbstractGenerator& g, bool withResult)
         g.gen(cPush, rECX);
 }
 
-void ExpressionNode::gen(AbstractGenerator& g, bool withResult) {}
-void TernaryNode::gen(AbstractGenerator& g, bool withResult) {}
+void ExpressionNode::gen(AbstractGenerator& g, bool withResult)
+{
+    left->gen(g, false);
+    right->gen(g);
+}
+
+void TernaryNode::gen(AbstractGenerator& g, bool withResult)
+{}
 
 void IdentNode::genLValue(AbstractGenerator& g)
 {

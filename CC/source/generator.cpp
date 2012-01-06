@@ -27,14 +27,20 @@ void Generator::genCode(SymbolTypeFunction* f)
         return;
     }
     currentParamSize = f->args->offset();
+
+    genReturnLabel();
+
     gen(cProc, "f_" + f->name);
     gen(cPush, rEBP);
     gen(cMov, rEBP, rESP);
     f->body->gen(*this);
+    genLabel(new Argument(returnLabel()));
     gen(cMov, rESP, rEBP);
     gen(cPop, rEBP);
     gen(cRet);
     gen(cEndp, "f_" + f->name);
+
+    popReturnLabel();
 }
 
 void Generator::genData(const SymbolTable& t)
