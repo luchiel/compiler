@@ -207,7 +207,6 @@ bool Argument::operator==(const Argument& a)
         case atConstF: return value.constArgF == a.value.constArgF;
         default: return *value.sArg == *a.value.sArg;
     }
-    return false;
 }
 
 }

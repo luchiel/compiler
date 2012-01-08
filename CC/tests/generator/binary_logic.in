@@ -1,4 +1,6 @@
 void main()
 {
-printf("%d", 5 == 5 || 1 / 0);
+int* a;
+a = NULL;
+printf("%d %d", 5 == 5 || 1 / 0, a != NULL && *a == 4);
 }

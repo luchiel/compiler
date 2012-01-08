@@ -307,17 +307,21 @@ void BinaryNode::gen(AbstractGenerator& g, bool withResult)
     {
         left->gen(g);
         g.gen(cPop, rEAX);
+        g.gen(cXor, rECX, rECX);
         g.gen(cTest, rEAX, rEAX);
+        g.gen(cSetNZ, rCL); //jcc & setcc do not modify flags
         Argument* a = g.label();
         g.gen(type == TOK_LOGICAL_AND ? cJZ : cJNZ, *a);
 
         right->gen(g);
         g.gen(cPop, rEAX);
+        g.gen(cXor, rECX, rECX);
         g.gen(cTest, rEAX, rEAX);
+        g.gen(cSetNZ, rCL);
 
         g.genLabel(a);
         if(withResult)
-            g.gen(cPush, rEAX);
+            g.gen(cPush, rECX);
         return;
     }
     left->gen(g);
@@ -330,14 +334,13 @@ void BinaryNode::gen(AbstractGenerator& g, bool withResult)
     }
     else switch(type)
     {
-        case TOK_MOD:
-            g.gen(cCdq);
-            g.gen(cIdiv, rEBX);
-            g.gen(cMov, rEAX, rEDX);
-            break;
         case TOK_DIV:
+        case TOK_MOD:
+            g.gen(cXor, rEDX, rEDX);
             g.gen(cCdq);
             g.gen(cIdiv, rEBX);
+            if(type == TOK_MOD)
+                g.gen(cMov, rEAX, rEDX);
             break;
         case TOK_ASTERISK: g.gen(cImul, rEAX, rEBX); break;
         case TOK_PLUS:     g.gen(cAdd, rEAX, rEBX); break;
@@ -415,13 +418,12 @@ void AssignmentNode::gen(AbstractGenerator& g, bool withResult)
             g.gen(cImul, rEAX, rEBX);
             break;
         case TOK_MOD_ASSIGN:
-            g.gen(cCdq);
-            g.gen(cIdiv, rEBX);
-            g.gen(cMov, rEAX, rEDX);
-            break;
         case TOK_DIV_ASSIGN:
+            g.gen(cXor, rEDX, rEDX);
             g.gen(cCdq);
             g.gen(cIdiv, rEBX);
+            if(type == TOK_MOD_ASSIGN)
+                g.gen(cMov, rEAX, rEDX);
             break;
         case TOK_SHL_ASSIGN:
         case TOK_SHR_ASSIGN:
