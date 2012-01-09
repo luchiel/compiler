@@ -162,7 +162,7 @@ bool Generator::tryUnitePushPop(list<Command>::iterator& i)
     return true;
 }
 
-bool Generator::tryUniteMov(list<Command>::iterator& i)
+bool Generator::tryMovMov(list<Command>::iterator& i)
 {
     list<Command>::iterator j(i);
     j--;
@@ -317,6 +317,48 @@ bool Generator::tryLeaPushIncDec(list<Command>::iterator& i)
         i->args[0]->offset = -1;
 
     return true;
+}
+
+bool Generator::tryMovTest(list<Command>::iterator& i)
+{
+    if(i->command != cTest)
+        return false;
+    list<Command>::iterator j(i);
+    j--;
+    if(j->command != cMov || j->args[1]->type != atReg || *i->args[0] != *j->args[0])
+        return false;
+    delete i->args[0];
+    delete i->args[1];
+    i->args[0] = new Argument(*j->args[1]);
+    i->args[1] = new Argument(*j->args[1]);
+    return true;
+}
+
+bool Generator::trySetTestJmp(list<Command>::iterator& i)
+{
+    if(i->command != cJZ && i->command != cJNZ)
+        return false;
+    list<Command>::iterator j(i); j--;
+    if(j->command != cTest || j == codePart.begin())
+        return false;
+    list<Command>::iterator k(j); k--;
+    switch(k->command)
+    {
+        case cSetE:
+        case cSetNE:
+        case cSetL:
+        case cSetG:
+        case cSetLE:
+        case cSetGE:
+        case cSetZ:
+        case cSetNZ:
+            i->command = i->command == cJNZ ? k->corresponding() : k->reverse();
+            codePart.erase(j);
+            codePart.erase(k);
+            return true;
+        default:
+            return false;
+    }
 }
 
 }

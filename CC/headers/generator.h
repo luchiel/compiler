@@ -29,11 +29,12 @@ private:
     void genCode(SymbolTypeFunction* f);
 
     void optimize();
+
     bool tryAddSub0(list<Command>::iterator& i);
     bool tryAddSub1(list<Command>::iterator& i);
     bool tryUniteLabels(list<Command>::iterator& i);
     bool tryUnitePushPop(list<Command>::iterator& i);
-    bool tryUniteMov(list<Command>::iterator& i);
+    bool tryMovMov(list<Command>::iterator& i);
     bool tryMovSelf(list<Command>::iterator& i);
     bool tryLiftPop(list<Command>::iterator& i);
     void swapListItems(list<Command>::iterator& i, list<Command>::iterator& j);
@@ -44,6 +45,8 @@ private:
     bool tryLeaMov(list<Command>::iterator& i);
     bool tryJmpLabel(list<Command>::iterator& i);
     bool tryLeaPushIncDec(list<Command>::iterator& iterator);
+    bool tryMovTest(list<Command>::iterator& i);
+    bool trySetTestJmp(list<Command>::iterator& i);
 
 public:
     Generator(SymbolTable* symbols_):

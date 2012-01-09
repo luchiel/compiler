@@ -1,5 +1,6 @@
 #include <iostream>
 #include <map>
+#include <cassert>
 #include "exception.h"
 #include "abstract_generator.h"
 
@@ -8,6 +9,38 @@ namespace LuCCompiler
 
 map<AsmRegister, string*> regNames;
 map<AsmCommand, string*> cmdNames;
+
+AsmCommand Command::corresponding()
+{
+    switch(command)
+    {
+        case cSetE:  return cJE;
+        case cSetNE: return cJNE;
+        case cSetL:  return cJL;
+        case cSetG:  return cJG;
+        case cSetLE: return cJLE;
+        case cSetGE: return cJGE;
+        case cSetZ:  return cJZ;
+        case cSetNZ: return cJNZ;
+        default: assert(false);
+    }
+}
+
+AsmCommand Command::reverse()
+{
+    switch(command)
+    {
+        case cSetE:  return cJNE;
+        case cSetNE: return cJE;
+        case cSetL:  return cJGE;
+        case cSetG:  return cJLE;
+        case cSetLE: return cJG;
+        case cSetGE: return cJL;
+        case cSetZ:  return cJNZ;
+        case cSetNZ: return cJZ;
+        default: assert(false);
+    }
+}
 
 void AbstractGenerator::genIntCmp(const Command& cmpcmd)
 {

@@ -105,6 +105,10 @@ public:
     AsmCommand command;
     vector<Argument*> args;
     Command(AsmCommand c_): command(c_) {}
+
+    AsmCommand corresponding();
+    AsmCommand reverse();
+
     void out();
     bool operator==(Command c);
 };
@@ -119,7 +123,6 @@ protected:
 
 public:
     int currentParamSize;
-
 
     AbstractGenerator(): labelNum(0), currentParamSize(0) {}
 
