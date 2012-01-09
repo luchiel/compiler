@@ -361,4 +361,26 @@ bool Generator::trySetTestJmp(list<Command>::iterator& i)
     }
 }
 
+bool Generator::tryLabelJmp(list<Command>::iterator& i)
+{
+    if(i->command != cJmp)
+        return false;
+    list<Command>::iterator j(i); j--;
+    if(j->command != cLabel)
+        return false;
+    for(list<Command>::iterator k = codePart.begin(); k != codePart.end(); ++k)
+        if
+        (
+            k->args.size() > 0 && k->args[0]->type == atLabel &&
+            *k->args[0]->value.sArg == *j->args[0]->value.sArg && k != j
+        )
+            k->args[0]->value.sArg = i->args[0]->value.sArg;
+    delete j->args[0]->value.sArg;
+    codePart.erase(j);
+    j = i;
+    i++;
+    codePart.erase(j);
+    return true;
+}
+
 }

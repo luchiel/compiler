@@ -34,7 +34,7 @@ void Generator::genCode(SymbolTypeFunction* f)
     gen(cPush, rEBP);
     gen(cMov, rEBP, rESP);
     f->body->gen(*this);
-    genLabel(new Argument(returnLabel()));
+    genLabel(&returnLabel());
     gen(cMov, rESP, rEBP);
     gen(cPop, rEBP);
     gen(cRet);
@@ -162,6 +162,7 @@ void Generator::optimize()
                     || tryLeaPushIncDec(i)
                     || tryMovTest(i)
                     || trySetTestJmp(i)
+                    || tryLabelJmp(i)
                 )
                 || tryAddSub0(i)
                 || tryAddSub1(i)

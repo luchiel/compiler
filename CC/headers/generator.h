@@ -47,6 +47,7 @@ private:
     bool tryLeaPushIncDec(list<Command>::iterator& iterator);
     bool tryMovTest(list<Command>::iterator& i);
     bool trySetTestJmp(list<Command>::iterator& i);
+    bool tryLabelJmp(list<Command>::iterator& i);
 
 public:
     Generator(SymbolTable* symbols_):

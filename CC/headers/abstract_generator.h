@@ -142,9 +142,9 @@ public:
     void genReturnLabel() { returnStack.push_back(label()); }
     void popReturnLabel() { returnStack.pop_back(); }
 
-    Argument breakLabel() { return *breakStack[breakStack.size() - 1]; }
-    Argument continueLabel() { return *continueStack[continueStack.size() - 1]; }
-    Argument returnLabel() { return *returnStack[returnStack.size() - 1]; }
+    Argument& breakLabel() { return *breakStack[breakStack.size() - 1]; }
+    Argument& continueLabel() { return *continueStack[continueStack.size() - 1]; }
+    Argument& returnLabel() { return *returnStack[returnStack.size() - 1]; }
 };
 
 }
