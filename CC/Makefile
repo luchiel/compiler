@@ -7,7 +7,7 @@ SOURCES = $(notdir $(wildcard $(SOURCES_PATH)/*.cpp))
 OBJECTS = $(addprefix $(OBJECTS_PATH)/, $(SOURCES:.cpp=.o))
 
 export CPATH = $(CURDIR)/headers
-CXXFLAGS += -Wall -Wextra -Wno-unused -Wno-switch
+CXXFLAGS += -Wall -Wextra -Wno-unused -Wno-switch -Wno-parentheses
 
 all: $(APPNAME)
 
