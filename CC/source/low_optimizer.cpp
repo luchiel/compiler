@@ -81,9 +81,9 @@ bool Generator::tryMakeOpWithImm(list<Command>::iterator& i)
     }
 }
 
-bool Generator::tryRemoveUselessMov(list<Command>::iterator& i)
+bool Generator::tryRemoveUselessMovLea(list<Command>::iterator& i)
 {
-    if(i->command != cMov || i->args[0]->offset != -1)
+    if(i->command != cMov && i->command != cLea || i->args[0]->offset != -1)
         return false;
     list<Command>::iterator j(i);
     j++;
@@ -274,6 +274,23 @@ bool Generator::tryLeaMov(list<Command>::iterator& i)
     i->args[1]->offset += iOffset;
     if(*i->args[0] == *j->args[0])
         codePart.erase(j);
+    return true;
+}
+
+bool Generator::tryJmpLabel(list<Command>::iterator& i)
+{
+    if(i->command != cJmp)
+        return false;
+    list<Command>::iterator j(i);
+    j++;
+    if(j == codePart.end() || j->command == cLabel)
+        return false;
+    while(j != codePart.end() && j->command != cLabel)
+    {
+        list<Command>::iterator k(j);
+        j++;
+        codePart.erase(k);
+    }
     return true;
 }
 

@@ -39,9 +39,10 @@ private:
     void swapListItems(list<Command>::iterator& i, list<Command>::iterator& j);
     bool isAddSubWithImm(Command& com, int imm = 0, bool noExactImm = true);
     bool tryMakeOpWithImm(list<Command>::iterator& i);
-    bool tryRemoveUselessMov(list<Command>::iterator& i);
+    bool tryRemoveUselessMovLea(list<Command>::iterator& i);
     bool tryUniteAddSub(list<Command>::iterator& i);
     bool tryLeaMov(list<Command>::iterator& i);
+    bool tryJmpLabel(list<Command>::iterator& i);
 
 public:
     Generator(SymbolTable* symbols_):

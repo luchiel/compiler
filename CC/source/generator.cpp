@@ -163,7 +163,8 @@ void Generator::optimize()
                 || tryAddSub0(i)
                 || tryAddSub1(i)
                 || tryMovSelf(i)
-                || tryRemoveUselessMov(i);
+                || tryRemoveUselessMovLea(i)
+                || tryJmpLabel(i)
                 ;
             if(!tryOptimize)
                 i++;
