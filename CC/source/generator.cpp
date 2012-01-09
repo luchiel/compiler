@@ -149,7 +149,7 @@ void Generator::optimize()
                 /*
                 tryAlwaysTrue ||
                 tryMul0 ||
-                tryCodeNotReachable ||*/
+                */
                 (i == codePart.begin() ?
                     false :
                        tryUniteLabels(i)
@@ -159,6 +159,7 @@ void Generator::optimize()
                     || tryMakeOpWithImm(i)
                     || tryUniteAddSub(i)
                     || tryLeaMov(i)
+                    || tryLeaPushIncDec(i)
                 )
                 || tryAddSub0(i)
                 || tryAddSub1(i)

@@ -43,6 +43,7 @@ private:
     bool tryUniteAddSub(list<Command>::iterator& i);
     bool tryLeaMov(list<Command>::iterator& i);
     bool tryJmpLabel(list<Command>::iterator& i);
+    bool tryLeaPushIncDec(list<Command>::iterator& iterator);
 
 public:
     Generator(SymbolTable* symbols_):

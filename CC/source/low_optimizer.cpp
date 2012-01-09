@@ -270,7 +270,7 @@ bool Generator::tryLeaMov(list<Command>::iterator& i)
         return false;
     int iOffset = i->args[1]->offset;
     delete i->args[1];
-    i->args[1] = j->args[1];
+    i->args[1] = new Argument(*j->args[1]);
     i->args[1]->offset += iOffset;
     if(*i->args[0] == *j->args[0])
         codePart.erase(j);
@@ -291,6 +291,31 @@ bool Generator::tryJmpLabel(list<Command>::iterator& i)
         j++;
         codePart.erase(k);
     }
+    return true;
+}
+
+bool Generator::tryLeaPushIncDec(list<Command>::iterator& i)
+{
+    if(i->command != cPush && i->command != cInc && i->command != cDec)
+        return false;
+    list<Command>::iterator j(i);
+    j--;
+    if
+    (
+           j->command != cLea
+        || j->args[0]->offset != -1
+        || !equalUpToOffset(*j->args[0], *i->args[0])
+        || i->args[0]->offset != -1 && i->args[0]->offset != 0
+        || i->args[0]->offset == -1 && j->args[1]->offset != 0
+    )
+        return false;
+
+    bool removeOffset = i->args[0]->offset == -1;
+    delete i->args[0];
+    i->args[0] = new Argument(*j->args[1]);
+    if(removeOffset)
+        i->args[0]->offset = -1;
+
     return true;
 }
 
