@@ -8,11 +8,30 @@ namespace LuCCompiler
 bool Generator::isAddSubWithImm(Command& com, int imm, bool noExactImm)
 {
     return
-        (com.command == cAdd || com.command == cSub) &&
-        (
-               com.args[1]->type == atConst && (noExactImm || com.args[1]->value.constArg == imm)
-            || com.args[1]->type == atConstF && (noExactImm || com.args[1]->value.constArgF == imm)
-        );
+           (com.command == cAdd || com.command == cSub)
+        && (com.args[1]->type == atConst)
+        && (noExactImm || com.args[1]->value.constArg == imm);
+}
+
+bool Generator::tryUniteAddSub(list<Command>::iterator& i)
+{
+    if(!isAddSubWithImm(*i))
+        return false;
+    list<Command>::iterator j(i);
+    j--;
+    if(!isAddSubWithImm(*j))
+        return false;
+    if(*i->args[0] != *j->args[0])
+        return false;
+    int iVal = i->args[1]->value.constArg;
+    int jVal = j->args[1]->value.constArg;
+    int sum = 0;
+    sum += i->command == cAdd ? iVal : -iVal;
+    sum += j->command == cAdd ? jVal : -jVal;
+    codePart.erase(j);
+    i->command = sum > 0 ? cAdd : cSub;
+    i->args[1]->value.constArg = sum > 0 ? sum : -sum;
+    return true;
 }
 
 bool Generator::tryAddSub0(list<Command>::iterator& i)

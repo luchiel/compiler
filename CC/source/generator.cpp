@@ -157,6 +157,7 @@ void Generator::optimize()
                     || tryUniteMov(i)
                     || tryLiftPop(i)
                     || tryMakeOpWithImm(i)
+                    || tryUniteAddSub(i)
                 )
                 || tryAddSub0(i)
                 || tryAddSub1(i)
@@ -164,7 +165,7 @@ void Generator::optimize()
                 || tryRemoveUselessMov(i);
                 ;
             if(!tryOptimize)
-                i++; //if func modifies smth it moves iterator to next pos
+                i++;
             modified = modified || tryOptimize;
         }
     }
