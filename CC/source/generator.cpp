@@ -141,24 +141,32 @@ void Generator::optimize()
 {
     while(modified)
     {
-		modified = false;
+        modified = false;
         list<Command>::iterator i = codePart.begin();
         while(i != codePart.end())
-		{
-			bool tryOptimize =
+        {
+            bool tryOptimize =
                 /*
-                tryUnitePushPop(i) ||
                 tryAlwaysTrue ||
-                tryAddSub1 ||
-                tryAddSub0 ||
                 tryMul0 ||
-                tryCodeNotReachable ||
-                tryUniteLabels;*/
-                tryAddSub0(i);
+                tryCodeNotReachable ||*/
+                (i == codePart.begin() ?
+                    false :
+                       tryUniteLabels(i)
+                    || tryUnitePushPop(i)
+                    || tryUniteMov(i)
+                    || tryLiftPop(i)
+                    || tryMakeOpWithImm(i)
+                )
+                || tryAddSub0(i)
+                || tryAddSub1(i)
+                || tryMovSelf(i)
+                || tryRemoveUselessMov(i);
+                ;
             if(!tryOptimize)
                 i++; //if func modifies smth it moves iterator to next pos
             modified = modified || tryOptimize;
-		}
+        }
     }
 }
 

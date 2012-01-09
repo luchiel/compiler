@@ -30,6 +30,16 @@ private:
 
     void optimize();
     bool tryAddSub0(list<Command>::iterator& i);
+    bool tryAddSub1(list<Command>::iterator& i);
+    bool tryUniteLabels(list<Command>::iterator& i);
+    bool tryUnitePushPop(list<Command>::iterator& i);
+    bool tryUniteMov(list<Command>::iterator& i);
+    bool tryMovSelf(list<Command>::iterator& i);
+    bool tryLiftPop(list<Command>::iterator& i);
+    void swapListItems(list<Command>::iterator& i, list<Command>::iterator& j);
+    bool isAddSubWithImm(Command& com, int imm = 0, bool noExactImm = true);
+    bool tryMakeOpWithImm(list<Command>::iterator& i);
+    bool tryRemoveUselessMov(list<Command>::iterator& i);
 
 public:
     Generator(SymbolTable* symbols_):
