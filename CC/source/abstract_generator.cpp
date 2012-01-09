@@ -98,6 +98,7 @@ void Command::out()
         cmdNames[cNot] = new string("not");
         cmdNames[cShl] = new string("shl");
         cmdNames[cShr] = new string("shr");
+        cmdNames[cSar] = new string("sar");
         cmdNames[cLabel] = new string(":");
         cmdNames[cCall] = new string("call");
         cmdNames[cProc] = new string("proc");

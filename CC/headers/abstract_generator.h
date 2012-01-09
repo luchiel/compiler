@@ -20,7 +20,7 @@ enum AsmCommand
     cPush, cPop,
     cAdd, cSub, cImul, cIdiv, cNeg, cInc, cDec, cCdq,
     cMov, cLea, 
-    cOr, cXor, cAnd, cNot, cShl, cShr,
+    cOr, cXor, cAnd, cNot, cShl, cShr, cSar,
     cCmp, cTest,
     cJE, cJNE, cJL, cJG, cJLE, cJGE, cJZ, cJNZ, cJmp,
     cSetE, cSetNE, cSetL, cSetG, cSetLE, cSetGE, cSetZ, cSetNZ,

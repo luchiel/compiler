@@ -61,7 +61,7 @@ bool Generator::tryMakeOpWithImm(list<Command>::iterator& i)
 {
     list<Command>::iterator j(i);
     j--;
-    if(j->command != cMov || j->args[1]->type != atConst)
+    if(j->command != cMov)
         return false;
     switch(i->command)
     {
@@ -71,10 +71,37 @@ bool Generator::tryMakeOpWithImm(list<Command>::iterator& i)
         case cOr:
         case cAnd:
         case cXor:
-            if(*j->args[0] != *i->args[1])
+            if(j->args[1]->type == atConst)
+            {
+                if(*j->args[0] != *i->args[1])
+                    return false;
+                delete i->args[1];
+                i->args[1] = new Argument(*j->args[1]);
+            }
+            /*else if(equalUpToOffset(*j->args[0], *i->args[0]))
+            {
+                if(i->command == cImul || j->args[1]->type == atMem)
+                    return false;
+                if(i->args[0]->offset == j->args[0]->offset)
+                {
+                    if(j->args[1]->offset == -1)
+                        return false;
+                    delete i->args[0];
+                    i->args[0] = new Argument(*j->args[1]);
+                    //mov eax,dword ptr [ebp]
+                    //sub eax,4
+                }
+                else
+                {
+                    if(j->args[1]->offset != -1)
+                        return false;
+                    i->args[0]->value.regArg = j->args[1]->value.regArg;
+                    //mov eax,ebp
+                    //add dword ptr [eax],5
+                }
+            }*/
+            else
                 return false;
-            delete i->args[1];
-            i->args[1] = new Argument(*j->args[1]);
             return true;
         default:
             return false;
@@ -258,8 +285,7 @@ bool Generator::tryLeaMov(list<Command>::iterator& i)
 {
     if(i->command != cMov || i->args[1]->offset == -1)
         return false;
-    list<Command>::iterator j(i);
-    j--;
+    list<Command>::iterator j(i); j--;
     if
     (
            j->command != cLea
@@ -274,6 +300,33 @@ bool Generator::tryLeaMov(list<Command>::iterator& i)
     i->args[1]->offset += iOffset;
     if(*i->args[0] == *j->args[0])
         codePart.erase(j);
+    return true;
+}
+
+bool Generator::tryOtherLeaMov(list<Command>::iterator& i)
+{
+    if
+    (
+           i->command != cMov
+        || i->args[0]->offset != 0
+        || i->args[1]->type != atConst
+            && (i->args[1]->type != atReg || i->args[1]->offset != -1)
+        || equalUpToOffset(*i->args[0], *i->args[1])
+    )
+        return false;
+
+    list<Command>::iterator j(i); j--;
+    if
+    (
+           j->command != cLea
+        || j->args[0]->offset != -1
+        || !equalUpToOffset(*i->args[0], *j->args[0])
+        || j->args[1]->offset == -1
+    )
+        return false;
+
+    delete i->args[0];
+    i->args[0] = new Argument(*j->args[1]);
     return true;
 }
 
@@ -380,6 +433,75 @@ bool Generator::tryLabelJmp(list<Command>::iterator& i)
     j = i;
     i++;
     codePart.erase(j);
+    return true;
+}
+
+bool Generator::isPowerOf2(int a)
+{
+    return a != 0 && (a & (a - 1)) == 0;
+}
+
+int Generator::log2(int a)
+{
+    int result = 1;
+    while(a > 2)
+    {
+        a /= 2;
+        result++;
+    }
+    return result;
+}
+
+bool Generator::tryImulWithImm(list<Command>::iterator& i)
+{
+    if(i->command != cImul || i->args[1]->type != atConst)
+        return false;
+    int value = i->args[1]->value.constArg;
+    if(value == 0)
+    {
+        delete i->args[1];
+        i->command = cXor;
+        i->args[1] = new Argument(i->args[0]->value.regArg);
+    }
+    else if(isPowerOf2(value))
+    {
+        delete i->args[1];
+        i->command = cShl;
+        i->args[1] = new Argument(log2(value));
+    }
+    else
+        return false;
+    return true;
+}
+
+bool Generator::tryIdivWithImm(list<Command>::iterator& i)
+{
+    //disabled because of % operation
+    if(i->command != cIdiv)
+        return false;
+    list<Command>::iterator j(i);
+    int k = 0;
+    while(j != codePart.begin() && k++ < 3)
+        j--;
+    if
+    (
+           k < 3
+        || j->command != cMov
+        || j->args[1]->type != atConst
+        || !isPowerOf2(j->args[1]->value.constArg)
+        || *j->args[0] != *i->args[0]
+    )
+        return false;
+    delete i->args[0];
+    i->command = cSar;
+    i->args[0] = new Argument(rEAX);
+    i->args.push_back(new Argument(log2(j->args[1]->value.constArg)));
+
+    j++;
+    list<Command>::iterator l(j); l++;
+    codePart.erase(j);
+    codePart.erase(l);
+
     return true;
 }
 

@@ -146,10 +146,6 @@ void Generator::optimize()
         while(i != codePart.end())
         {
             bool tryOptimize =
-                /*
-                tryAlwaysTrue ||
-                tryMul0 ||
-                */
                 (i == codePart.begin() ?
                     false :
                        tryUniteLabels(i)
@@ -163,12 +159,15 @@ void Generator::optimize()
                     || tryMovTest(i)
                     || trySetTestJmp(i)
                     || tryLabelJmp(i)
+                    || tryOtherLeaMov(i)
+                    //|| tryIdivWithImm(i)
                 )
                 || tryAddSub0(i)
                 || tryAddSub1(i)
                 || tryMovSelf(i)
                 || tryRemoveUselessMovLea(i)
                 || tryJmpLabel(i)
+                || tryImulWithImm(i)
                 ;
             if(!tryOptimize)
                 i++;

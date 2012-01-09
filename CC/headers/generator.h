@@ -30,6 +30,9 @@ private:
 
     void optimize();
 
+    bool isPowerOf2(int a);
+    int log2(int a);
+
     bool tryAddSub0(list<Command>::iterator& i);
     bool tryAddSub1(list<Command>::iterator& i);
     bool tryUniteLabels(list<Command>::iterator& i);
@@ -43,11 +46,14 @@ private:
     bool tryRemoveUselessMovLea(list<Command>::iterator& i);
     bool tryUniteAddSub(list<Command>::iterator& i);
     bool tryLeaMov(list<Command>::iterator& i);
+    bool tryOtherLeaMov(list<Command>::iterator& i);
     bool tryJmpLabel(list<Command>::iterator& i);
     bool tryLeaPushIncDec(list<Command>::iterator& iterator);
     bool tryMovTest(list<Command>::iterator& i);
     bool trySetTestJmp(list<Command>::iterator& i);
     bool tryLabelJmp(list<Command>::iterator& i);
+    bool tryImulWithImm(list<Command>::iterator& i);
+    bool tryIdivWithImm(list<Command>::iterator& i);
 
 public:
     Generator(SymbolTable* symbols_):

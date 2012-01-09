@@ -1,0 +1,12 @@
+struct point { int x, y; };
+struct line { struct point a, b; };
+
+void main()
+{
+struct line A[3];
+A[2].a.x = 1;
+A[2].a.y = 2;
+A[2].b.x = A[2].a.x;
+A[2].b.y = A[2].a.x + A[2].a.y + A[2].b.x;
+printf("%d", A[2].b.y);
+}
