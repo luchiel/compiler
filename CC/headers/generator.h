@@ -41,6 +41,7 @@ private:
     bool tryMakeOpWithImm(list<Command>::iterator& i);
     bool tryRemoveUselessMov(list<Command>::iterator& i);
     bool tryUniteAddSub(list<Command>::iterator& i);
+    bool tryLeaMov(list<Command>::iterator& i);
 
 public:
     Generator(SymbolTable* symbols_):

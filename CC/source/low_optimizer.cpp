@@ -254,4 +254,27 @@ bool Generator::tryLiftPop(list<Command>::iterator& i)
     return true;
 }
 
+bool Generator::tryLeaMov(list<Command>::iterator& i)
+{
+    if(i->command != cMov || i->args[1]->offset == -1)
+        return false;
+    list<Command>::iterator j(i);
+    j--;
+    if
+    (
+           j->command != cLea
+        || !equalUpToOffset(*j->args[0], *i->args[1])
+        || j->args[0]->offset != -1
+        || j->args[1]->offset == -1
+    )
+        return false;
+    int iOffset = i->args[1]->offset;
+    delete i->args[1];
+    i->args[1] = j->args[1];
+    i->args[1]->offset += iOffset;
+    if(*i->args[0] == *j->args[0])
+        codePart.erase(j);
+    return true;
+}
+
 }
