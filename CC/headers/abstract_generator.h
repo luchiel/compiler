@@ -86,6 +86,8 @@ public:
 
     virtual void out();
     bool operator==(const Argument& a);
+    bool operator!=(const Argument& a) { return !(*this == a); }
+    friend bool equalUpToOffset(const Argument& a, const Argument& b);
 };
 
 class Offset

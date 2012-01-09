@@ -198,14 +198,22 @@ void Argument::out()
 
 bool Argument::operator==(const Argument& a)
 {
-    if(type != a.type || offset != a.offset)
+    return equalUpToOffset(a, *this) && offset == a.offset;
+}
+
+bool equalUpToOffset(const Argument& a, const Argument& b)
+{
+    if(b.type != a.type)
         return false;
-    switch(type)
+    switch(b.type)
     {
-        case atReg: return value.regArg == a.value.regArg;
-        case atConst: return value.constArg == a.value.constArg;
-        case atConstF: return value.constArgF == a.value.constArgF;
-        default: return *value.sArg == *a.value.sArg;
+        case atReg:
+            return b.value.regArg == a.value.regArg ||
+                   (a.value.regArg == rECX || a.value.regArg == rCL)
+                && (b.value.regArg == rECX || b.value.regArg == rCL);
+        case atConst: return b.value.constArg == a.value.constArg;
+        case atConstF: return b.value.constArgF == a.value.constArgF;
+        default: return *b.value.sArg == *a.value.sArg;
     }
 }
 
