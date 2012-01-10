@@ -77,6 +77,7 @@ ENode* Parser::parseBinaryExpression(int priority)
                                 " operation with pointer must be of type int"
                             );
                         node->expType = node->left->expType;
+                        node->varType = node->left->varType;
                         break;
                     }
                 case TOK_ASTERISK:
@@ -174,7 +175,10 @@ ENode* Parser::parsePrimaryExpression()
                     throw makeException("Unexpected symbol " + _tokens->get().text);
                 node = new IdentNode(_tokens->get().text, v);
                 if(v->classType == CT_VAR)
+                {
                     node->expType = static_cast<SymbolVariable*>(v)->type;
+                    node->varType = static_cast<SymbolVariable*>(v)->varType;
+                }
                 else
                     node->expType = static_cast<SymbolTypeFunction*>(v);
             }
@@ -214,6 +218,7 @@ PostfixNode* Parser::parseFunctionCall(ENode* core)
     SymbolTypeFunction* f =
         static_cast<SymbolTypeFunction*>(core->expType->resolveAlias());
     node->expType = f->type;
+    node->varType = VT_LOCAL;
 
     if(f->name == "printf")
         return node;
@@ -272,6 +277,7 @@ ENode* Parser::parsePostfixExpression()
                     node->expType = static_cast<SymbolTypePointer*>(
                         core->expType->resolveAlias()
                     )->type;
+                    node->varType = node->only->varType;
                     node->isLValue = true;
                 }
                 break;
@@ -298,6 +304,7 @@ ENode* Parser::parsePostfixExpression()
                 {
                     _symbols->pop();
                     node->expType = node->tail->expType;
+                    node->varType = node->only->varType;
                     node->isLValue = true;
                 }
                 break;
@@ -316,6 +323,7 @@ ENode* Parser::parsePostfixExpression()
                 {
                     _symbols->pop();
                     node->expType = node->tail->expType;
+                    node->varType = node->only->varType;
                     node->isLValue = true;
                 }
                 break;
@@ -405,6 +413,7 @@ ENode* Parser::parseUnaryExpression()
                         if(!node->only->isLValue)
                             throw makeException("Lvalue required as operand");
                         node->expType = new SymbolTypePointer(node->only->expType, "");
+                        node->varType = node->only->varType;
                         break;
                     case TOK_ASTERISK:
                         if(!node->only->expType->isPointer())
@@ -412,6 +421,7 @@ ENode* Parser::parseUnaryExpression()
                         node->expType = static_cast<SymbolTypePointer*>(
                             node->only->expType->resolveAlias()
                         )->type;
+                        node->varType = node->only->varType;
                         node->isLValue = true;
                         break;
                     case TOK_NOT:
@@ -451,7 +461,10 @@ ENode* Parser::parseCastExpression()
 
         CastNode* cast = new CastNode(type, node);
         if(_mode == PM_SYMBOLS)
+        {
             cast->expType = cast->type;
+            cast->varType = node->varType;
+        }
         return cast;
     }
     return parseUnaryExpression();
@@ -563,6 +576,7 @@ ENode* Parser::parseAssignmentExpression()
                             throw makeException("Both operands must be of type int");
                 }
                 node->expType = node->left->expType;
+                node->varType = node->left->varType;
             }
             return node;
         default:

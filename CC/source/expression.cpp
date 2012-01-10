@@ -169,7 +169,7 @@ void IdentNode::gen(AbstractGenerator& g, bool withResult)
     }
     if(withResult)
         for(int i = v->type->size() - 1; i >= 0; --i)
-            g.gen(cPush, rEAX + Offset(i * 4));
+            g.gen(cPush, rEAX + Offset(i * 4 * (varType == VT_LOCAL ? -1 : 1)));
 }
 
 void IntNode::gen(AbstractGenerator& g, bool withResult)
@@ -391,10 +391,12 @@ void AssignmentNode::gen(AbstractGenerator& g, bool withResult)
         type == TOK_OR_ASSIGN || type == TOK_ASSIGN
     )
     {
-        left->genLValue(g);
         right->gen(g);
-        g.gen(cPop, rEBX);
+        left->genLValue(g);
         g.gen(cPop, rEAX);
+
+        if(type != TOK_ASSIGN)
+            g.gen(cPop, rEBX);
         switch(type)
         {
             case TOK_ADD_ASSIGN: g.gen(cAdd, rEAX + Offset(0), rEBX); break;
@@ -402,10 +404,16 @@ void AssignmentNode::gen(AbstractGenerator& g, bool withResult)
             case TOK_AND_ASSIGN: g.gen(cAnd, rEAX + Offset(0), rEBX); break;
             case TOK_XOR_ASSIGN: g.gen(cXor, rEAX + Offset(0), rEBX); break;
             case TOK_OR_ASSIGN:  g.gen(cOr, rEAX + Offset(0), rEBX); break;
-            default:             g.gen(cMov, rEAX + Offset(0), rEBX);
+            default:
+                for(unsigned int i = 0; i < expType->size(); ++i)
+                {
+                    g.gen(cPop, rEBX);
+                    g.gen(cMov, rEAX + Offset(i * 4 * (varType == VT_LOCAL ? -1 : 1)), rEBX);
+                }
         }
         if(withResult)
-            g.gen(cPush, rEAX);
+            for(int i = expType->size() - 1; i >= 0; --i)
+                g.gen(cPush, rEAX + Offset(i * 4));
         return;
     }
     left->genLValue(g);
@@ -493,7 +501,10 @@ void PostfixNode::performCommonGenPart(AbstractGenerator& g)
             g.gen(cPop, rEAX);
             //if(type == TOK_ARROW)
             //    g.gen(cMov, rEAX, rEAX + Offset(0));
-            g.gen(cAdd, rEAX, static_cast<IdentNode*>(tail)->var->offset * 4);
+            g.gen(
+                only->varType == VT_LOCAL ? cSub : cAdd,
+                rEAX, static_cast<IdentNode*>(tail)->var->offset * 4
+            );
             break;
     }
 }

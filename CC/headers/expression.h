@@ -23,7 +23,8 @@ protected:
 public:
     SymbolType* expType;
     bool isLValue;
-    ENode(): expType(NULL), isLValue(false) {}
+    VariableType varType;
+    ENode(): expType(NULL), isLValue(false), varType(VT_UNDEF) {}
     virtual void genLValue(AbstractGenerator& g) {}
     virtual bool isIntConst() { return false; }
 };

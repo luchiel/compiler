@@ -164,7 +164,9 @@ void Parser::addStructMember(SymbolType* initial)
 {
     SymbolType* type = parseDeclarator(initial);
     safeAddSymbol(type);
-    addSymbol(new SymbolVariable(type, _varName));
+    addSymbol(new SymbolVariable(
+        type, _varName, _symbols->isGlobal() ? VT_GLOBAL : VT_LOCAL
+    ));
     _varName = "";
 }
 
@@ -319,7 +321,9 @@ void Parser::addParsedSymbols(SymbolType* type, Node* initializer, bool isTypede
             if(*type == *getSymbol("void"))
                 throw makeException("Variable declared as void");
             safeAddSymbol(type);
-            addSymbol(new SymbolVariable(type, _varName, initializer));
+            addSymbol(new SymbolVariable(
+                type, _varName, initializer, _symbols->isGlobal() ? VT_GLOBAL : VT_LOCAL
+            ));
         }
         else
         {

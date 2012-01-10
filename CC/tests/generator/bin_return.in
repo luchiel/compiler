@@ -1,0 +1,19 @@
+struct point {int x, y;} z;
+
+struct point zero()
+{
+  struct point a;
+  a.x = 0;
+  a.y = 1;
+  printf("%d %d  ", a.x, a.y);
+  return a;
+}
+
+void main()
+{
+  struct point b;
+  b = zero();
+  printf("%d %d  ", b.x, b.y);
+  z = zero();
+  printf("%d %d", z.x, z.y);
+}

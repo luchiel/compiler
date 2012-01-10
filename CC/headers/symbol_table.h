@@ -60,6 +60,7 @@ public:
     void push(SymbolTable* t);
     void pop();
     void out();
+    bool isGlobal() { return _current == _root; }
 
     SymbolTableStack(SymbolTable* root, SymbolTable* current):
         _current(current), _innerIdx(0), _root(root) {}

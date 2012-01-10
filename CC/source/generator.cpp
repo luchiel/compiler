@@ -58,7 +58,7 @@ void Generator::genData(const SymbolTable& t)
             continue;
         }
         SymbolVariable* var = static_cast<SymbolVariable*>(t[j]);
-        var->varType = VT_GLOBAL;
+        //var->varType = VT_GLOBAL;
         Data* d = new Data("v_" + var->name, var->type->size());
         dataPart.push_back(d);
 
