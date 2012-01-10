@@ -1,0 +1,48 @@
+int a[10];
+
+void swap(int *a, int *b)
+{
+  int c;
+  c = *a;
+  *a = *b;
+  *b = c;
+}
+
+void qsort(int l, int r)
+{
+  int i; i = l;
+  int j; j = r;
+  int q; q = l + (r - l) / 2;
+  do
+  {
+    while(a[i] < a[q]) i++;
+    while(a[j] > a[q]) j--;
+    if(i <= j)
+    {
+      if(i != j)
+        swap(&a[i], &a[j]);
+      i++; j--;
+    }
+  }
+  while(i < j);
+  if(j > l)
+    qsort(l, j);
+  if(i < r)
+    qsort(i, r);
+}
+
+void main()
+{
+  for(int i = 0; i < 3; ++i)
+    a[i] = 4 - i;
+  for(int i = 3; i < 8; ++i)
+    a[i] = i * i / 2;
+  for(int i = 8; i < 10; ++i)
+    a[i] = -10 + i;
+  for(int i = 0; i < 10; ++i)
+    printf("%d ", a[i]);
+  qsort(0, 9);
+  printf("\t");
+  for(int i = 0; i < 10; ++i)
+    printf("%d ", a[i]);
+}
