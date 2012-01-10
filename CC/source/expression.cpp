@@ -405,7 +405,7 @@ void AssignmentNode::gen(AbstractGenerator& g, bool withResult)
             case TOK_XOR_ASSIGN: g.gen(cXor, rEAX + Offset(0), rEBX); break;
             case TOK_OR_ASSIGN:  g.gen(cOr, rEAX + Offset(0), rEBX); break;
             default:
-                for(unsigned int i = 0; i < expType->size(); ++i)
+                for(unsigned int i = 0; i < right->expType->size(); ++i)
                 {
                     g.gen(cPop, rEBX);
                     g.gen(cMov, rEAX + Offset(i * 4 * (varType == VT_LOCAL ? -1 : 1)), rEBX);

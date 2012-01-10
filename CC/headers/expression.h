@@ -24,7 +24,7 @@ public:
     SymbolType* expType;
     bool isLValue;
     VariableType varType;
-    ENode(): expType(NULL), isLValue(false), varType(VT_UNDEF) {}
+    ENode(): expType(NULL), isLValue(false), varType(VT_GLOBAL) {}
     virtual void genLValue(AbstractGenerator& g) {}
     virtual bool isIntConst() { return false; }
 };

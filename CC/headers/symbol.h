@@ -21,7 +21,7 @@ enum ClassType
     CT_FUNCTION,
 };
 
-enum VariableType { VT_GLOBAL, VT_LOCAL, VT_PARAM, VT_UNDEF };
+enum VariableType { VT_GLOBAL, VT_LOCAL, VT_PARAM };
 
 class Symbol
 {

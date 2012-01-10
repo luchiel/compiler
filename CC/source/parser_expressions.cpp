@@ -488,7 +488,15 @@ ENode* Parser::parseConditionalExpression()
     {
         if(*node->thenOp->expType != *node->elseOp->expType)
         {
-            if(isFloat(*node->thenOp->expType) && isInt(*node->elseOp->expType))
+            if
+            (
+                *node->thenOp->expType == *_NULL->type && node->elseOp->expType->isPointer() ||
+                *node->elseOp->expType == *_NULL->type && node->thenOp->expType->isPointer()
+            )
+            {
+                node->thenOp->expType = node->elseOp->expType = _NULL->type;
+            }
+            else if(isFloat(*node->thenOp->expType) && isInt(*node->elseOp->expType))
             {
                 node->elseOp = new CastNode(_float, node->elseOp);
                 node->elseOp->expType = _float;
@@ -501,7 +509,6 @@ ENode* Parser::parseConditionalExpression()
             else
                 throw makeException("Incompatible types in ?:");
         }
-        //NULL ptr
         node->expType = node->thenOp->expType;
     }
 
