@@ -31,5 +31,10 @@ function main
 					type <0>
 						pointer to <int>
 	    | 
-	    +-{int 4}
+	    +-{*}
 					type <int>
+	      | 
+	      +-{int 4}
+						type <int>
+	      | 
+	      +-{int 4}

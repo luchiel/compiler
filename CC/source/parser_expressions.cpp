@@ -48,6 +48,7 @@ void Parser::performImplicitCast(BinaryNode* node, bool rightOnly)
 ENode* Parser::parseBinaryExpression(int priority)
 {
     BinaryNode* node = NULL;
+    BinaryNode* ptrMulNode = NULL;
     IdentNode* tmpl = NULL;
     IdentNode* tmpr = NULL;
     ENode* tmp = priority < 13 ?
@@ -76,6 +77,14 @@ ENode* Parser::parseBinaryExpression(int priority)
                                 "Right operand of " + operationName(node->type) +
                                 " operation with pointer must be of type int"
                             );
+                        ptrMulNode = new BinaryNode(TOK_ASTERISK, node->right);
+                        ptrMulNode->right = new IntNode(
+                            static_cast<SymbolTypePointer*>(node->left->expType)->type->size() * 4
+                        );
+                        ptrMulNode->expType = ptrMulNode->left->expType;
+                        ptrMulNode->varType = ptrMulNode->left->varType;
+                        node->right = ptrMulNode;
+
                         node->expType = node->left->expType;
                         node->varType = node->left->varType;
                         break;
@@ -518,6 +527,7 @@ ENode* Parser::parseConditionalExpression()
 ENode* Parser::parseAssignmentExpression()
 {
     AssignmentNode* node = NULL;
+    BinaryNode* ptrMulNode = NULL;
     ENode* tmp = parseConditionalExpression();
     switch(tokenType())
     {
@@ -547,6 +557,8 @@ ENode* Parser::parseAssignmentExpression()
                     case TOK_ASSIGN:
                         if(node->left->expType->isPointer())
                         {
+                            if(node->left->expType->isArray())
+                                throw makeException("Incompatible types");
                             if(*node->left->expType != *node->right->expType)
                                 if
                                 (
@@ -571,6 +583,13 @@ ENode* Parser::parseAssignmentExpression()
                         {
                             if(!isInt(*node->right->expType))
                                 throw makeException("Right operand is expected to be of type int");
+                            ptrMulNode = new BinaryNode(TOK_ASTERISK, node->right);
+                            ptrMulNode->right = new IntNode(
+                                static_cast<SymbolTypePointer*>(node->left->expType)->type->size() * 4
+                            );
+                            ptrMulNode->expType = ptrMulNode->left->expType;
+                            ptrMulNode->varType = ptrMulNode->left->varType;
+                            node->right = ptrMulNode;
                             break;
                         }
                     case TOK_MUL_ASSIGN:

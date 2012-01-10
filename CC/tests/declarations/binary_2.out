@@ -43,5 +43,10 @@ function main
 						type <1>
 							pointer to <float>
 	      | 
-	      +-{int 6}
+	      +-{*}
 						type <int>
+	        | 
+	        +-{int 6}
+							type <int>
+	        | 
+	        +-{int 4}

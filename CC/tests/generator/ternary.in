@@ -1,0 +1,9 @@
+void main()
+{
+  int a;
+  int b = 5;
+  a = b < 7 ? 5: 3;
+  printf("%d ", a);
+  a = b >= 6 ? 2 : 3;
+  printf("%d", a);
+}

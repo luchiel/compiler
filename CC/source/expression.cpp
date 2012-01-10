@@ -454,7 +454,20 @@ void ExpressionNode::gen(AbstractGenerator& g, bool withResult)
 }
 
 void TernaryNode::gen(AbstractGenerator& g, bool withResult)
-{}
+{
+    condition->gen(g);
+    g.gen(cPop, rEAX);
+    Argument* l1 = g.label();
+    Argument* l2 = g.label();
+    g.gen(cTest, rEAX, rEAX);
+    g.gen(cJZ, *l1);
+    thenOp->gen(g, withResult);
+    g.gen(cJmp, *l2);
+    g.genLabel(l1);
+    elseOp->gen(g, withResult);
+    g.genLabel(l2);
+    //result will be in stack after execution
+}
 
 void IdentNode::genLValue(AbstractGenerator& g)
 {
@@ -513,6 +526,22 @@ void PostfixNode::genLValue(AbstractGenerator& g)
 {
     assert(isLValue);
     performCommonGenPart(g);
+    g.gen(cPush, rEAX);
+}
+
+void BinaryNode::genLValue(AbstractGenerator& g)
+{
+    left->genLValue(g);
+    right->gen(g);
+    g.gen(cPop, rEBX);
+    g.gen(cPop, rEAX);
+    switch(type)
+    {
+        case TOK_PLUS:  g.gen(cAdd, rEAX, rEBX); break;
+        case TOK_MINUS: g.gen(cSub, rEAX, rEBX); break;
+        default:
+            assert(true);
+    }
     g.gen(cPush, rEAX);
 }
 
