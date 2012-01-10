@@ -159,7 +159,7 @@ void IdentNode::gen(AbstractGenerator& g, bool withResult)
             g.gen(cLea, rEAX, rEBP + Offset(-var->offset * 4));
             break;
         case VT_PARAM:
-            g.gen(cLea, rEAX, rEBP + Offset(4 * (var->offset + 2)));
+            g.gen(cLea, rEAX, rEBP + Offset((var->offset + 3) * 4));
             break;
         case VT_GLOBAL:
             if(withResult)
@@ -458,7 +458,7 @@ void IdentNode::genLValue(AbstractGenerator& g)
             g.gen(cLea, rEAX, rEBP + Offset(-var->offset * 4));
             break;
         case VT_PARAM:
-            g.gen(cLea, rEAX, rEBP + Offset(4 * (var->offset + 2)));
+            g.gen(cLea, rEAX, rEBP + Offset((var->offset + 3) * 4));
             break;
         case VT_GLOBAL:
             g.gen(cPush, "v_" + var->name);

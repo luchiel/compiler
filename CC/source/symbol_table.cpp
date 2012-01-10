@@ -87,8 +87,10 @@ void SymbolTable::out(int indent)
 
 SymbolTable::~SymbolTable()
 {
-    //objects. How to kill?
-    //cycle? Carefully delete everyone?
+    _symbols.clear();
+    for(unsigned int i = 0; i < _ordered.size(); ++i)
+        delete _ordered[i];
+    _ordered.clear();
 }
 
 unsigned int SymbolTable::offset()
@@ -98,10 +100,18 @@ unsigned int SymbolTable::offset()
     if(_offset == 0)
     {
         _offset = parent->offset();
+        bool isFuncLocals = false;
+        for(unsigned int i = 0; i < parent->size() && !isFuncLocals; ++i)
+            if((*parent)[i]->classType == CT_VAR)
+                if(static_cast<SymbolVariable*>((*parent)[i])->varType == VT_PARAM)
+                    isFuncLocals = true;
+
         for(unsigned int i = 0; i < size(); ++i)
             if(_ordered[i]->classType == CT_VAR)
             {
                 _ordered[i]->offset = _offset;
+                if(isFuncLocals)
+                    _ordered[i]->offset -= parent->offset();
                 _offset += static_cast<SymbolVariable*>(_ordered[i])->type->size();
             }
     }

@@ -33,8 +33,12 @@ void Generator::genCode(SymbolTypeFunction* f)
     gen(cProc, "f_" + f->name);
     gen(cPush, rEBP);
     gen(cMov, rEBP, rESP);
+
+    gen(cSub, rEBP, 4);
     f->body->gen(*this);
     genLabel(&returnLabel());
+    gen(cAdd, rEBP, 4);
+
     gen(cMov, rESP, rEBP);
     gen(cPop, rEBP);
     gen(cRet);
