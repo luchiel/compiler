@@ -178,6 +178,12 @@ void Generator::optimize()
             modified = modified || tryOptimize;
         }
     }
+    list<Command>::iterator i = codePart.begin();
+    while(i != codePart.end())
+    {
+        tryMov0(i);
+        i++;
+    }
 }
 
 }

@@ -35,6 +35,7 @@ private:
 
     bool tryAddSub0(list<Command>::iterator& i);
     bool tryAddSub1(list<Command>::iterator& i);
+    bool tryMov0(list<Command>::iterator& i);
     bool tryUniteLabels(list<Command>::iterator& i);
     bool tryUnitePushPop(list<Command>::iterator& i);
     bool tryMovMov(list<Command>::iterator& i);

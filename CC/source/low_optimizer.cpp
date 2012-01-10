@@ -57,6 +57,23 @@ bool Generator::tryAddSub1(list<Command>::iterator& i)
     return false;
 }
 
+bool Generator::tryMov0(list<Command>::iterator& i)
+{
+    if
+    (
+           i->command != cMov
+        || i->args[1]->type != atConst
+        || i->args[1]->value.constArg != 0
+        || i->args[0]->type != atReg
+        || i->args[0]->offset != -1
+    )
+        return false;
+    i->command = cXor;
+    delete i->args[1];
+    i->args[1] = new Argument(*i->args[0]);
+    return true;
+}
+
 bool Generator::tryMakeOpWithImm(list<Command>::iterator& i)
 {
     list<Command>::iterator j(i);
@@ -462,6 +479,12 @@ bool Generator::tryImulWithImm(list<Command>::iterator& i)
         delete i->args[1];
         i->command = cXor;
         i->args[1] = new Argument(i->args[0]->value.regArg);
+    }
+    if(value == 1)
+    {
+        list<Command>::iterator j(i);
+        i++;
+        codePart.erase(j);
     }
     else if(isPowerOf2(value))
     {
