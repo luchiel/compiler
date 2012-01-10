@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
             if(argc == 2)
                 printf("What block would you like to test?\n");
             else
-                runTests(argv[2], argc == 4 && !strcmp(argv[3], "+o"));
+                runTests(argv[2], argc == 4 && !strcmp(argv[3], "-o"));
         }
         else
         {

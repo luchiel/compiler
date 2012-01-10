@@ -288,7 +288,8 @@ char Tokenizer::trySymbol(unsigned int pos)
 }
 
 Tokenizer::Tokenizer(const string& filename):
-    _state(IS_NONE), _current(Token()), _prev(Token()), _next(Token()), _buffer(""), _index(0), _currentLine(0)
+    _state(IS_NONE), _current(Token()), _prev(Token()),
+    _next(Token()), _buffer(""), _index(0), _currentLine(0)
 {
     const string OPERATIONS = "+-=/*><%&^|!~.?[]";
 

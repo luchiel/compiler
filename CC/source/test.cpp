@@ -25,13 +25,13 @@ const string TEST_ALL[] = {
 };
 const int TEST_ALL_SIZE = 5;
 
-void runTests(string testBlock, bool tagOptimized)
+void runTests(string testBlock, bool tagNotOptimized)
 {
     system("remove_test_exe_files.bat");
     int i = 0;
     while(i < TEST_ALL_SIZE)
     {
-        Tester t(tagOptimized);
+        Tester t(!tagNotOptimized);
 
         string currentTest(testBlock == "all" ? TEST_ALL[i] : testBlock);
         //path to tests

@@ -30,6 +30,7 @@ function main
 							<no args>
 	    | 
 	    +-{,}
+					type <int>
 	      | 
 	      +-{string %s%d}
 						type <int*>

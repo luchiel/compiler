@@ -26,7 +26,7 @@ private:
 
 public:
     bool optimized;
-    Tester(bool opt_ = false): testsCount(0), testsPassed(0), optimized(opt_) {}
+    Tester(bool opt_): testsCount(0), testsPassed(0), optimized(opt_) {}
     void attachTypelessFilename(wstring filename);
     void runFile(string& testBlock);
     void estimateResult();
@@ -35,7 +35,7 @@ public:
 
 class FindFileError: public exception {};
 
-void runTests(string testBlock, bool tagOptimized);
+void runTests(string testBlock, bool tagNotOptimized);
 
 }
 
