@@ -265,6 +265,8 @@ void UnaryNode::gen(AbstractGenerator& g, bool withResult)
     {
         only->genLValue(g);
         g.gen(cPop, rEAX);
+        if(!only->expType->isArray())
+            g.gen(cMov, rEAX, rEAX + Offset(0));
         if(withResult)
             g.gen(cPush, rEAX + Offset(0));
         return;
