@@ -27,17 +27,18 @@ public:
 class JumpStatement: public Node
 {
 public:
-    TokenType _type;
-    JumpStatement(TokenType type): _type(type) {}
+    TokenType type;
+    JumpStatement(TokenType type_): type(type_) {}
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
     virtual void gen(AbstractGenerator& g, bool withResult = true);
+    virtual bool isJump() { return true; }
 };
 
-class ReturnStatement: public Node
+class ReturnStatement: public JumpStatement
 {
 public:
     ENode* expr;
-    ReturnStatement(ENode* expr_): expr(expr_) {}
+    ReturnStatement(ENode* expr_): JumpStatement(TOK_RETURN), expr(expr_) {}
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
     virtual void gen(AbstractGenerator& g, bool withResult = true);
 };

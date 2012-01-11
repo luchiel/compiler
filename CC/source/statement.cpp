@@ -20,7 +20,7 @@ void SelectionStatement::out(unsigned int depth, vector<bool>* branches, int lev
 void JumpStatement::out(unsigned int depth, vector<bool>* branches, int level)
 {
     makeNodeTop(depth, branches,
-        _type == TOK_BREAK ? "break" : _type == TOK_CONTINUE ? "continue" : "return",
+        type == TOK_BREAK ? "break" : type == TOK_CONTINUE ? "continue" : "return",
         level
     );
     (*branches)[depth] = true;
@@ -132,9 +132,9 @@ void SelectionStatement::gen(AbstractGenerator& g, bool withResult)
 
 void JumpStatement::gen(AbstractGenerator& g, bool withResult)
 {
-    if(_type == TOK_BREAK)
+    if(type == TOK_BREAK)
         g.gen(cJmp, g.breakLabel());
-    else if(_type == TOK_CONTINUE)
+    else if(type == TOK_CONTINUE)
         g.gen(cJmp, g.continueLabel());
     else
         g.gen(cJmp, g.returnLabel());
