@@ -1,0 +1,25 @@
+void main()
+{
+  int b = 4, i; i = -1;//i = -1;
+  while(1)
+  {
+    i++;
+    if(i == 2)
+    {
+      break;
+      printf("-never-");
+    }
+    if(b == 4)
+    {
+      printf("-twice-");
+      continue;
+      b++;
+    }
+  }
+  
+  printf("empty");
+  return;
+
+  int a = 100500;
+  printf("%d", a);
+}

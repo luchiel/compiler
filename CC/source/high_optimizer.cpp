@@ -121,9 +121,17 @@ Node* BinaryNode::tryOptimize()
 
 Node* CompoundStatement::tryOptimize()
 {
-    for(unsigned int i = 0; i < _items->size(); ++i)
+    vector<Node*>::iterator i = _items->begin();
+    while(i != _items->end())
     {
-        (*_items)[i] = (*_items)[i]->tryOptimize();
+        *i = (*i)->tryOptimize();
+        if((*i)->isJump())
+        {
+            if(++i != _items->end())
+                i = _items->erase(i, _items->end());
+            break;
+        }
+        i++;
     }
     return this;
 }
@@ -137,6 +145,9 @@ Node* ExpressionStatement::tryOptimize()
 Node* SelectionStatement::tryOptimize()
 {
     cond = static_cast<ENode*>(cond->tryOptimize());
+    thenExp = thenExp->tryOptimize();
+    if(elseExp != NULL)
+        elseExp = elseExp->tryOptimize();
     if(!cond->isConst())
         return this;
     double value = cond->isIntConst() ?
@@ -149,25 +160,34 @@ Node* SelectionStatement::tryOptimize()
 Node* IterationStatement::tryOptimize()
 {
     cond = static_cast<ENode*>(cond->tryOptimize());
+    loop = loop->tryOptimize();
     if(!cond->isConst())
         return this;
     double value = cond->isIntConst() ?
         static_cast<IntNode*>(cond)->value :
         static_cast<FloatNode*>(cond)->value;
-    return value == 0 ?
-        type == TOK_DO ? loop : new EmptyExpressionStatement() : this;
+    if(value == 0)
+        return type == TOK_DO ? loop : new EmptyExpressionStatement();
+    return this;
 }
 
 Node* ForStatement::tryOptimize()
 {
+    if(init != NULL)
+        init = init->tryOptimize();
     cond = cond->tryOptimize();
+    if(mod != NULL)
+        mod = mod->tryOptimize();
+    loop = loop->tryOptimize();
     ExpressionStatement* tcond = dynamic_cast<ExpressionStatement*>(cond);
     if(tcond == NULL || !tcond->expr->isConst())
         return this;
     double value = tcond->expr->isIntConst() ?
         static_cast<IntNode*>(tcond->expr)->value :
         static_cast<FloatNode*>(tcond->expr)->value;
-    return value == 0 ? new EmptyExpressionStatement() : this;
+    if(value == 0)
+        return new EmptyExpressionStatement();
+    return this;
 }
 
 }

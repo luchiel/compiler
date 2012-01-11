@@ -22,8 +22,10 @@ void Generator::genCode(SymbolTypeFunction* f)
     }
     else if(f->name == "main")
     {
+        genReturnLabel();
         genLabel(new Argument(f->name, atLabel));
         f->body->gen(*this);
+        genLabel(&returnLabel());
         return;
     }
     currentParamSize = f->args->offset();
