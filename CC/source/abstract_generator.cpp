@@ -78,7 +78,6 @@ void Command::out()
         if(command == cEndp) cout << '\n';
         return;
     }
-    //map not required. Just case with word setters?
     if(cmdNames.size() == 0)
     {
         cmdNames[cPush] = new string("push");

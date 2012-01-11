@@ -23,12 +23,15 @@ private:
     Tokenizer* _tokens;
     SymbolTableStack* _symbols;
     string _varName;
+    bool _optimized;
     ParseMode _mode;
     SymbolType* _int;
     SymbolType* _float;
     SymbolVariable* _NULL;
     SymbolType* _expectedReturnType;
     int _jumpAllowed;
+
+    set<SymbolTypeFunction*>* usedFunctions;
 
     TokenType tokenType() { return _tokens->get().type; }
 
@@ -85,12 +88,14 @@ private:
     void nullException(void* pointerToCheck, const string& e);
     void consumeTokenOfType(TokenType type, const string& except);
 
+    void optimize();
+
 public:
     SymbolTable* parse();
     void parseStat();
     void parseExpr();
 
-    Parser(Tokenizer* tokens);
+    Parser(Tokenizer* tokens, bool tagOptimized = false);
 
     void out();
 };

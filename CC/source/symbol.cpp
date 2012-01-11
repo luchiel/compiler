@@ -139,6 +139,20 @@ void SymbolTypeFunction::out(int indent, bool noFirst)
     }
 }
 
+bool SymbolTypeFunction::findCall(SymbolTypeFunction* func)
+{
+    if(callList->find(func) != callList->end())
+        return true;
+    bool result = false;
+    set<SymbolTypeFunction*>::iterator i = callList->begin();
+    while(i != callList->end())
+        if((*i)->findCall(func))
+            return true;
+        else
+            i++;
+    return false;
+}
+
 bool SymbolType::operator==(Symbol& symbol)
 {
     if(name == "float" && symbol.resolveAlias()->name == "int")

@@ -65,17 +65,11 @@ CompoundStatement* Parser::parseCompoundStatement()
         CompoundStatement* node = new CompoundStatement();
         _symbols->push(node->_locals);
         _tokens->next();
-        bool statementsStarted = false;
         while(tokenType() != TOK_R_BRACE)
         {
             Node* bi = parseBlockItem();
             if(bi != NULL)
-            {
-                statementsStarted = true;
                 node->_items->push_back(bi);
-            }
-            //else if(statementsStarted)
-            //    throw makeException("Declaration after statements");
         }
         _symbols->pop();
         consumeTokenOfType(TOK_R_BRACE, "'}' expected");

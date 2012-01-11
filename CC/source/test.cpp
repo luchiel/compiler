@@ -125,7 +125,7 @@ void Tester::runFile(string& testBlock)
         }
         else if(testBlock == "generator")
         {
-            Parser p(&t);
+            Parser p(&t, optimized);
             Generator g(p.parse());
             g.generate(optimized);
             g.out();

@@ -27,6 +27,8 @@ public:
     ENode(): expType(NULL), isLValue(false), varType(VT_GLOBAL) {}
     virtual void genLValue(AbstractGenerator& g) {}
     virtual bool isIntConst() { return false; }
+    virtual bool isFloatConst() { return false; }
+    bool isConst() { return isIntConst() || isFloatConst(); }
 };
 
 class IdentNode: public ENode
@@ -56,7 +58,8 @@ class IntNode: public ENode
 {
 public:
     int value;
-    IntNode(const int value_): ENode(), value(value_) {}
+    IntNode(const int value_, SymbolType* expType_ = NULL):
+        ENode(), value(value_) { expType = expType_; }
     virtual void out(unsigned int depth, vector<bool>* branches, int level = 0);
     virtual void gen(AbstractGenerator& g, bool withResult = true);
     virtual bool isIntConst() { return true; }
@@ -74,10 +77,12 @@ class FloatNode: public ENode
 {
 public:
     float value;
-    FloatNode(const float value_): ENode(), value(value_) {}
+    FloatNode(const float value_, SymbolType* expType_ = NULL):
+        ENode(), value(value_) { expType = expType_; }
     virtual void out(unsigned int depth, vector<bool>* branches, int level = 0);
 
     virtual void gen(AbstractGenerator& g, bool withResult = true);
+    virtual bool isFloatConst() { return true; }
 };
 
 class PostfixNode: public ENode
@@ -137,6 +142,7 @@ public:
 
     virtual void gen(AbstractGenerator& g, bool withResult = true);
     virtual void genLValue(AbstractGenerator& g);
+    virtual Node* tryOptimize();
 };
 
 class TernaryNode: public ENode
@@ -158,6 +164,7 @@ public:
     AssignmentNode(TokenType type_, ENode* left_): BinaryNode(type_, left_) {}
 
     virtual void gen(AbstractGenerator& g, bool withResult = true);
+    virtual Node* tryOptimize();
 };
 
 class ExpressionNode: public BinaryNode
@@ -177,6 +184,7 @@ public:
     virtual void out(unsigned int depth, vector<bool>* branches, int level = 0);
 
     virtual void gen(AbstractGenerator& g, bool withResult = true);
+    virtual Node* tryOptimize();
 };
 
 }

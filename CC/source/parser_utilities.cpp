@@ -71,7 +71,8 @@ void Parser::out()
         _symbols->out();
 }
 
-Parser::Parser(Tokenizer* tokens): _varName("")
+Parser::Parser(Tokenizer* tokens, bool tagOptimized):
+    _varName(""), _optimized(tagOptimized), usedFunctions(NULL)
 {
     _tokens = tokens;
     _symbols = initPrimarySymbolTableStack();
@@ -87,6 +88,8 @@ SymbolTable* Parser::parse()
 {
     _mode = PM_SYMBOLS;
     parseTranslationUnit();
+    if(_optimized)
+        optimize();
     return _symbols->_root;
 }
 

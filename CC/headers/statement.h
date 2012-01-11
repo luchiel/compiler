@@ -55,6 +55,7 @@ public:
     ExpressionStatement(Node* expr): _expr(expr) {}
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
     virtual void gen(AbstractGenerator& g, bool withResult = true);
+    virtual Node* tryOptimize();
 };
 
 class IterationStatement: public Node
@@ -93,6 +94,7 @@ public:
     ~CompoundStatement() { delete _items; }
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
     virtual void gen(AbstractGenerator& g, bool withResult = true);
+    virtual Node* tryOptimize();
 };
 
 }

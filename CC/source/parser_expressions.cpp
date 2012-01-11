@@ -189,7 +189,10 @@ ENode* Parser::parsePrimaryExpression()
                     node->varType = static_cast<SymbolVariable*>(v)->varType;
                 }
                 else
+                {
                     node->expType = static_cast<SymbolTypeFunction*>(v);
+                    usedFunctions->insert(static_cast<SymbolTypeFunction*>(v));
+                }
             }
             break;
         case TOK_L_BRACKET:
@@ -259,6 +262,9 @@ PostfixNode* Parser::parseFunctionCall(ENode* core)
     }
     if(j < node->params.size())
         throw makeException("Too many arguments");
+
+    usedFunctions->insert(f);
+
     return node;
 }
 

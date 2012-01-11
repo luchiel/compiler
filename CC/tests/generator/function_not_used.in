@@ -1,0 +1,18 @@
+int a();
+
+int d()
+{
+  d(); a(); d();
+  int (*c)() = &a;
+}
+
+int a()
+{
+  int b, c;
+  b = d();
+}
+
+void main()
+{
+  printf("see .asm");
+}

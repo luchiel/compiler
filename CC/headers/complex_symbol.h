@@ -4,6 +4,7 @@
 #include <vector>
 #include <map>
 #include <string>
+#include <set>
 #include "symbol.h"
 #include "symbol_table.h"
 #include "statement.h"
@@ -20,13 +21,17 @@ private:
 public:
     SymbolTable* args;
     CompoundStatement* body;
+    set<SymbolTypeFunction*>* callList;
     SymbolTypeFunction(SymbolType* type_, string name_):
-        TypedSymbolType(type_, name_), _bodyPrinted(false), args(new SymbolTable()), body(NULL)
+        TypedSymbolType(type_, name_), _bodyPrinted(false),
+        args(new SymbolTable()), body(NULL), callList(new set<SymbolTypeFunction*>())
         { classType = CT_FUNCTION; }
+    ~SymbolTypeFunction() { delete callList; }
     virtual void out(int indent, bool noFirst = true);
 
     virtual bool operator==(Symbol& symbol);
     void localizeSymbols();
+    bool findCall(SymbolTypeFunction* func);
 };
 
 class SymbolTypeStruct: public SymbolType

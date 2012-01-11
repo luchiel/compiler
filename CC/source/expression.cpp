@@ -311,7 +311,7 @@ void BinaryNode::gen(AbstractGenerator& g, bool withResult)
         g.gen(cPop, rEAX);
         g.gen(cXor, rECX, rECX);
         g.gen(cTest, rEAX, rEAX);
-        g.gen(cSetNZ, rCL); //jcc & setcc do not modify flags
+        g.gen(cSetNZ, rCL);
         Argument* a = g.label();
         g.gen(type == TOK_LOGICAL_AND ? cJZ : cJNZ, *a);
 
@@ -368,12 +368,14 @@ void BinaryNode::gen(AbstractGenerator& g, bool withResult)
 
 void SizeofNode::gen(AbstractGenerator& g, bool withResult)
 {
-    if(symbolType != NULL)
-        g.gen(cMov, rEAX, symbolType->size() * 4);
-    else
-        g.gen(cMov, rEAX, only->expType->size() * 4);
     if(withResult)
+    {
+        if(symbolType != NULL)
+            g.gen(cMov, rEAX, symbolType->size() * 4);
+        else
+            g.gen(cMov, rEAX, only->expType->size() * 4);
         g.gen(cPush, rEAX);
+    }
 }
 
 void CastNode::gen(AbstractGenerator& g, bool withResult)

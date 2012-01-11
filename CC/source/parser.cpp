@@ -371,11 +371,13 @@ bool Parser::parseDeclaration(bool definitionAllowed)
         if(!(f != NULL && f->body == NULL && *f == *function))
             addSymbol(function);
 
+        usedFunctions = function->callList;
         _expectedReturnType = function->type;
         _symbols->push(function->args);
         function->body = parseCompoundStatement();
         function->localizeSymbols();
         _symbols->pop();
+        usedFunctions = NULL;
 
         if(f != NULL && f->body == NULL && *f == *function)
             f->body = function->body;

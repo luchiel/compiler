@@ -132,6 +132,14 @@ void SymbolTable::genInitLocals(AbstractGenerator& g)
         }
 }
 
+
+void SymbolTable::erase(vector<Symbol*>::iterator& i)
+{
+    _symbols.erase(_symbols.find(make_pair((*i)->name, NT_NAME)));
+    i = _ordered.erase(i);
+    i--;
+}
+
 Symbol* SymbolTableStack::findSymbol(const string& name)
 {
     SymbolTable* c = _current;

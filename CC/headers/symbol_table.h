@@ -29,6 +29,10 @@ public:
     Symbol* findSymbol(const string& name);
     Symbol* findSymbol(const string& name, NameType nt);
 
+    vector<Symbol*>::iterator begin() { return _ordered.begin(); }
+    vector<Symbol*>::iterator end() { return _ordered.end(); }
+    void erase(vector<Symbol*>::iterator& i);
+
     unsigned int size() const { return _ordered.size(); }
     unsigned int offset();
     void out(int indent);
