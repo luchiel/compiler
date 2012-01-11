@@ -74,10 +74,34 @@ bool Generator::tryMov0(list<Command>::iterator& i)
     return true;
 }
 
-bool Generator::tryMakeOpWithImm(list<Command>::iterator& i)
+bool Generator::tryMovMov(list<Command>::iterator& i)
 {
     list<Command>::iterator j(i);
     j--;
+    if(i->command != cMov || j->command != cMov)
+        return false;
+    if(*i->args[1] == *j->args[0])
+    //mov eax,1; mov ebx,eax -> mov eax,1; mov ebx,1
+    {
+        if
+        (
+            i->args[0]->type == atReg && i->args[0]->offset != -1 &&
+            (
+                j->args[1]->type == atMem ||
+                j->args[1]->type == atReg && j->args[1]->offset != -1
+            )
+        )
+            return false;
+        delete i->args[1];
+        i->args[1] = new Argument(*j->args[1]);
+        return true;
+    }
+    return false;
+}
+
+bool Generator::tryMakeOpWithImm(list<Command>::iterator& i)
+{
+    list<Command>::iterator j(i); j--;
     if(j->command != cMov)
         return false;
     switch(i->command)
@@ -88,38 +112,31 @@ bool Generator::tryMakeOpWithImm(list<Command>::iterator& i)
         case cOr:
         case cAnd:
         case cXor:
-            if(j->args[1]->type == atConst)
+            if(j->args[1]->type == atConst && *j->args[0] == *i->args[1])
             {
-                if(*j->args[0] != *i->args[1])
-                    return false;
                 delete i->args[1];
                 i->args[1] = new Argument(*j->args[1]);
+                return true;
             }
-            /*else if(equalUpToOffset(*j->args[0], *i->args[0]))
-            {
-                if(i->command == cImul || j->args[1]->type == atMem)
-                    return false;
-                if(i->args[0]->offset == j->args[0]->offset)
-                {
-                    if(j->args[1]->offset == -1)
-                        return false;
-                    delete i->args[0];
-                    i->args[0] = new Argument(*j->args[1]);
-                    //mov eax,dword ptr [ebp]
-                    //sub eax,4
-                }
-                else
-                {
-                    if(j->args[1]->offset != -1)
-                        return false;
-                    i->args[0]->value.regArg = j->args[1]->value.regArg;
-                    //mov eax,ebp
-                    //add dword ptr [eax],5
-                }
-            }*/
-            else
+            if(i->command == cImul || !equalUpToOffset(*j->args[0], *i->args[0]))
                 return false;
-            return true;
+            if
+            (
+                i->args[0]->offset != -1 &&
+                j->args[0]->offset == -1 &&
+                j->args[1]->offset == -1 &&
+                j->args[1]->type != atMem
+            )
+            {
+                //mov eax,ebp
+                //add dword ptr [eax],5
+                int iOffset = i->args[0]->offset;
+                delete i->args[0];
+                i->args[0] = new Argument(*j->args[1]);
+                i->args[0]->offset = iOffset;
+                return true;
+            }
+            return false;
         default:
             return false;
     }
@@ -204,22 +221,6 @@ bool Generator::tryUnitePushPop(list<Command>::iterator& i)
     else
         return false;
     return true;
-}
-
-bool Generator::tryMovMov(list<Command>::iterator& i)
-{
-    list<Command>::iterator j(i);
-    j--;
-    if(i->command != cMov || j->command != cMov)
-        return false;
-    if(*i->args[1] == *j->args[0])
-    //mov eax,1; mov ebx,eax -> mov eax,1; mov ebx,1
-    {
-        delete i->args[1];
-        i->args[1] = new Argument(*j->args[1]);
-        return true;
-    }
-    return false;
 }
 
 bool Generator::tryMovSelf(list<Command>::iterator& i)
