@@ -85,6 +85,8 @@ void Generator::out()
         dataPart[i]->out();
     for(unsigned int i = 0; i < rdataPart.size(); ++i)
         rdataPart[i]->out();
+    for(unsigned int i = 0; i < fdataPart.size(); ++i)
+        fdataPart[i]->out();
     cout << "\n.code\n";
     for(list<Command>::iterator j = codePart.begin(); j != codePart.end(); ++j)
         j->out();
@@ -140,6 +142,13 @@ string Generator::addConstant(const string& s)
     RData* r = new RData("c_" + itostr(labelNum++), s);
     rdataPart.push_back(r);
     return r->name;
+}
+
+string Generator::addFloatConstant(const float& f)
+{
+    FData* fd = new FData("f_" + itostr(labelNum++), f);
+    fdataPart.push_back(fd);
+    return fd->name;
 }
 
 void Generator::optimize()

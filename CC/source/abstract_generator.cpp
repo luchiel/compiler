@@ -50,6 +50,15 @@ void AbstractGenerator::genIntCmp(const Command& cmpcmd)
     gen(cMov, rEAX, rECX);
 }
 
+void AbstractGenerator::genFloatCmp(const Command& cmpcmd)
+{
+    gen(cXor, rECX, rECX);
+    gen(cMovss, rXMM0, rESP + Offset(4));
+    gen(cComiss, rXMM0, rESP + Offset(0));
+    gen(cmpcmd, rCL);
+    gen(cMov, rEAX, rECX);
+}
+
 void AbstractGenerator::pushJumpLabels(Argument* breakA, Argument* continueA)
 {
     breakStack.push_back(breakA);
@@ -127,6 +136,7 @@ void Command::out()
         cmdNames[cJmp] = new string("jmp");
 
         cmdNames[cMovss] = new string("movss");
+        cmdNames[cComiss] = new string("comiss");
     }
     cout << '\t' << *cmdNames[command] << '\t';
     for(unsigned int i = 0; i < args.size(); ++i)
@@ -164,6 +174,11 @@ void Data::out()
 void RData::out()
 {
     cout << name << " db \"" << value << "\",0\n";
+}
+
+void FData::out()
+{
+    cout << name << " dd " << value << "\n";
 }
 
 Argument operator+(Argument arg, Offset o)

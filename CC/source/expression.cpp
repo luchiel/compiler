@@ -204,9 +204,12 @@ void FloatNode::gen(AbstractGenerator& g, bool withResult)
 {
     if(withResult)
     {
-        g.gen(cMovss, rXMM0, value);
-        g.gen(cSub, rESP, 4);
-        g.gen(cMovss, rESP + Offset(0), rXMM0);
+        string s = g.addFloatConstant(value);
+        //g.gen(cMovss, rXMM0, s);
+        //g.gen(cSub, rESP, 4);
+        //g.gen(cMovss, rESP + Offset(0), rXMM0);
+        g.gen(cMov, rEAX, s);
+        g.gen(cPush, rEAX);
     }
 }
 
@@ -328,39 +331,55 @@ void BinaryNode::gen(AbstractGenerator& g, bool withResult)
     }
     left->gen(g);
     right->gen(g);
-    g.gen(cPop, rEBX);
-    g.gen(cPop, rEAX);
-    if(expType->name == "float")
+    if(left->expType->name == "float")
     {
-        ;
+        switch(type)
+        {
+            //case TOK_DIV: break;
+            //case TOK_ASTERISK: g.gen(cImul, rEAX, rEBX); break;
+            //case TOK_PLUS:     g.gen(cAdd, rEAX, rEBX); break;
+            //case TOK_MINUS:    g.gen(cSub, rEAX, rEBX); break;
+            case TOK_L:  g.genFloatCmp(cSetL); break;
+            case TOK_G:  g.genFloatCmp(cSetG); break;
+            case TOK_LE: g.genFloatCmp(cSetLE); break;
+            case TOK_GE: g.genFloatCmp(cSetGE); break;
+            case TOK_E:  g.genFloatCmp(cSetE); break;
+            case TOK_NE: g.genFloatCmp(cSetNE); break;
+        }
     }
-    else switch(type)
+    else
     {
-        case TOK_DIV:
-        case TOK_MOD:
-            g.gen(cXor, rEDX, rEDX);
-            g.gen(cCdq);
-            g.gen(cIdiv, rEBX);
-            if(type == TOK_MOD)
-                g.gen(cMov, rEAX, rEDX);
-            break;
-        case TOK_ASTERISK: g.gen(cImul, rEAX, rEBX); break;
-        case TOK_PLUS:     g.gen(cAdd, rEAX, rEBX); break;
-        case TOK_MINUS:    g.gen(cSub, rEAX, rEBX); break;
-        case TOK_SHL:
-        case TOK_SHR:
-            g.gen(cMov, rECX, rEBX);
-            g.gen(type == TOK_SHL ? cShl : cShr, rEAX, rCL);
-            break;
-        case TOK_L:  g.genIntCmp(cSetL); break;
-        case TOK_G:  g.genIntCmp(cSetG); break;
-        case TOK_LE: g.genIntCmp(cSetLE); break;
-        case TOK_GE: g.genIntCmp(cSetGE); break;
-        case TOK_E:  g.genIntCmp(cSetE); break;
-        case TOK_NE: g.genIntCmp(cSetNE); break;
-        case TOK_AMP: g.gen(cAnd, rEAX, rEBX); break;
-        case TOK_XOR: g.gen(cXor, rEAX, rEBX); break;
-        case TOK_OR:  g.gen(cOr, rEAX, rEBX); break;
+        g.gen(cPop, rEBX);
+        g.gen(cPop, rEAX);
+
+        switch(type)
+        {
+            case TOK_DIV:
+            case TOK_MOD:
+                g.gen(cXor, rEDX, rEDX);
+                g.gen(cCdq);
+                g.gen(cIdiv, rEBX);
+                if(type == TOK_MOD)
+                    g.gen(cMov, rEAX, rEDX);
+                break;
+            case TOK_ASTERISK: g.gen(cImul, rEAX, rEBX); break;
+            case TOK_PLUS:     g.gen(cAdd, rEAX, rEBX); break;
+            case TOK_MINUS:    g.gen(cSub, rEAX, rEBX); break;
+            case TOK_SHL:
+            case TOK_SHR:
+                g.gen(cMov, rECX, rEBX);
+                g.gen(type == TOK_SHL ? cShl : cShr, rEAX, rCL);
+                break;
+            case TOK_L:  g.genIntCmp(cSetL); break;
+            case TOK_G:  g.genIntCmp(cSetG); break;
+            case TOK_LE: g.genIntCmp(cSetLE); break;
+            case TOK_GE: g.genIntCmp(cSetGE); break;
+            case TOK_E:  g.genIntCmp(cSetE); break;
+            case TOK_NE: g.genIntCmp(cSetNE); break;
+            case TOK_AMP: g.gen(cAnd, rEAX, rEBX); break;
+            case TOK_XOR: g.gen(cXor, rEAX, rEBX); break;
+            case TOK_OR:  g.gen(cOr, rEAX, rEBX); break;
+        }
     }
     if(withResult)
         g.gen(cPush, rEAX);

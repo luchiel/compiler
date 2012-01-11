@@ -21,6 +21,7 @@ private:
     SymbolTypeFunction* main;
     vector<Data*> dataPart;
     vector<RData*> rdataPart;
+    vector<FData*> fdataPart;
     list<Command> codePart;
 
     bool modified;
@@ -68,6 +69,7 @@ public:
     virtual void gen(Command com);
     virtual void genLabel(Argument* a);
     virtual string addConstant(const string& s);
+    virtual string addFloatConstant(const float& f);
 };
 
 }

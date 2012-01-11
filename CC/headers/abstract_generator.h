@@ -26,7 +26,7 @@ enum AsmCommand
     cSetE, cSetNE, cSetL, cSetG, cSetLE, cSetGE, cSetZ, cSetNZ,
     cLabel, cCall, cProc, cEndp, cRet,
 
-    cMovss, cAddss, cSubss, cMulss, cDivss, cCmpss, //cComiss
+    cMovss, cAddss, cSubss, cMulss, cDivss, cComiss,
     cCvtsi2ss, cCvtss2si,
 };
 
@@ -53,6 +53,15 @@ public:
     string name;
     string value;
     RData(const string& name_, const string& value_): name(name_), value(value_) {}
+    void out();
+};
+
+class FData
+{
+public:
+    string name;
+    float value;
+    FData(const string& name_, const float& value_): name(name_), value(value_) {}
     void out();
 };
 
@@ -132,8 +141,10 @@ public:
     virtual void gen(Command com) {}
     virtual void genLabel(Argument* a) {}
     virtual string addConstant(const string& s) { return ""; }
+    virtual string addFloatConstant(const float& f) { return ""; }
 
     void genIntCmp(const Command& cmpcmd);
+    void genFloatCmp(const Command& cmpcmd);
     Argument* label();
 
     void pushJumpLabels(Argument* breakA, Argument* continueA);
