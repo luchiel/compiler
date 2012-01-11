@@ -4,7 +4,6 @@ void main()
     printf("-BUG-");
   do
     printf("-onceIsOk-");
-  while(0);
-  //while(sizeof(int) != sizeof('c')); //sizeof is currently replaced with const at low-level
+  while(sizeof(int) != sizeof('c'));
   printf("-end-");
 }
