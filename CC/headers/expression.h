@@ -156,6 +156,7 @@ public:
     virtual void out(unsigned int depth, vector<bool>* branches, int level = 0);
 
     virtual void gen(AbstractGenerator& g, bool withResult = true);
+    virtual Node* tryOptimize();
 };
 
 class AssignmentNode: public BinaryNode

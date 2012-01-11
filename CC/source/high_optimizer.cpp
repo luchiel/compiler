@@ -3,6 +3,8 @@
 namespace LuCCompiler
 {
 
+double getConstValue(ENode* node);
+
 void Parser::optimize()
 {
     SymbolTable& sym(*_symbols->_root);
@@ -142,6 +144,23 @@ Node* ExpressionStatement::tryOptimize()
     return this;
 }
 
+double getConstValue(ENode* node)
+{
+    return node->isIntConst() ?
+        static_cast<IntNode*>(node)->value :
+        static_cast<FloatNode*>(node)->value;
+}
+
+Node* TernaryNode::tryOptimize()
+{
+    condition = static_cast<ENode*>(condition->tryOptimize());
+    thenOp = static_cast<ENode*>(thenOp->tryOptimize());
+    elseOp = static_cast<ENode*>(elseOp->tryOptimize());
+    if(!condition->isConst())
+        return this;
+    return getConstValue(condition) != 0 ? thenOp : elseOp;
+}
+
 Node* SelectionStatement::tryOptimize()
 {
     cond = static_cast<ENode*>(cond->tryOptimize());
@@ -150,10 +169,7 @@ Node* SelectionStatement::tryOptimize()
         elseExp = elseExp->tryOptimize();
     if(!cond->isConst())
         return this;
-    double value = cond->isIntConst() ?
-        static_cast<IntNode*>(cond)->value :
-        static_cast<FloatNode*>(cond)->value;
-    return value != 0 ? thenExp :
+    return getConstValue(cond) != 0 ? thenExp :
         elseExp != NULL ? elseExp : new EmptyExpressionStatement();
 }
 
@@ -163,10 +179,7 @@ Node* IterationStatement::tryOptimize()
     loop = loop->tryOptimize();
     if(!cond->isConst())
         return this;
-    double value = cond->isIntConst() ?
-        static_cast<IntNode*>(cond)->value :
-        static_cast<FloatNode*>(cond)->value;
-    if(value == 0)
+    if(getConstValue(cond) == 0)
         return type == TOK_DO ? loop : new EmptyExpressionStatement();
     return this;
 }
@@ -182,10 +195,7 @@ Node* ForStatement::tryOptimize()
     ExpressionStatement* tcond = dynamic_cast<ExpressionStatement*>(cond);
     if(tcond == NULL || !tcond->expr->isConst())
         return this;
-    double value = tcond->expr->isIntConst() ?
-        static_cast<IntNode*>(tcond->expr)->value :
-        static_cast<FloatNode*>(tcond->expr)->value;
-    if(value == 0)
+    if(getConstValue(tcond->expr) == 0)
         return new EmptyExpressionStatement();
     return this;
 }
