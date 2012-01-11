@@ -1,0 +1,4 @@
+void main()
+{
+printf("%d", 0 && 1 / 0);
+}

@@ -58,12 +58,24 @@ Node* CastNode::optimized()
 
 Node* BinaryNode::optimized()
 {
+    double l, r;
     left = static_cast<ENode*>(left->optimized());
+    if(!left->isConst())
+        return this;
+    if(type == TOK_LOGICAL_AND)
+    {
+        if(getConstValue(left) == 0)
+            return new IntNode(0, expType);
+    }
+    else if(type == TOK_LOGICAL_OR)
+    {
+        if(getConstValue(left) != 0)
+            return new IntNode(1, expType);
+    }
     right = static_cast<ENode*>(right->optimized());
-    if(!left->isConst() || !right->isConst()) //a - 5 - 4 ignored
+    if(!right->isConst()) //a - 5 - 4 ignored
         return this;
 
-    double l, r;
     if(left->isFloatConst())
     {
         l = static_cast<FloatNode*>(left)->value;
