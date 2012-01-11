@@ -24,7 +24,6 @@ void Parser::optimize()
                     f->body->tryOptimize();
                 //always true/false
                 //vars not used?
-                //consts
                 //wrap initializers
             }
         }
@@ -129,6 +128,28 @@ Node* CompoundStatement::tryOptimize()
 Node* ExpressionStatement::tryOptimize()
 {
     _expr = _expr->tryOptimize();
+    return this;
+}
+
+Node* SelectionStatement::tryOptimize()
+{
+    _expr = static_cast<ENode*>(_expr->tryOptimize());
+    if(!_expr->isConst())
+        return this;
+    double value = _expr->isIntConst() ?
+        static_cast<IntNode*>(_expr)->value :
+        static_cast<FloatNode*>(_expr)->value;
+    return value != 0 ? thenExp :
+        elseExp != NULL ? elseExp : new EmptyExpressionStatement();
+}
+
+Node* IterationStatement::tryOptimize()
+{
+    return this;
+}
+
+Node* ForStatement::tryOptimize()
+{
     return this;
 }
 

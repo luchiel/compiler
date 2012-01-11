@@ -1,0 +1,12 @@
+void main()
+{
+  if(1)
+    printf("true");
+  else
+    printf("false");
+  if(5 - 4 * 3 > 0)
+    printf("false");
+  else
+    printf("true");
+  if(0) 5;
+}

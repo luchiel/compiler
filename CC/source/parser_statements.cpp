@@ -89,11 +89,11 @@ Node* Parser::parseSelectionStatement()
         if(_mode == PM_SYMBOLS && node->_expr->expType != _int)
             throw makeException("expression must be of type int");
         consumeTokenOfType(TOK_R_BRACKET, "')' expected");
-        node->_then = parseStatement();
+        node->thenExp = parseStatement();
         if(tokenType() == TOK_ELSE)
         {
             _tokens->next();
-            node->_else = parseStatement();
+            node->elseExp = parseStatement();
         }
         return node;
     }

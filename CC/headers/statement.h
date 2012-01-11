@@ -16,11 +16,12 @@ class SelectionStatement: public Node
 {
 public:
     ENode* _expr;
-    Node* _then;
-    Node* _else;
-    SelectionStatement(): _expr(NULL), _then(NULL), _else(NULL) {}
+    Node* thenExp;
+    Node* elseExp;
+    SelectionStatement(): _expr(NULL), thenExp(NULL), elseExp(NULL) {}
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
     virtual void gen(AbstractGenerator& g, bool withResult = true);
+    virtual Node* tryOptimize();
 };
 
 class JumpStatement: public Node
@@ -67,6 +68,7 @@ public:
     IterationStatement(): _type(TOK_UNDEF), _loop(NULL), _expr(NULL) {}
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
     virtual void gen(AbstractGenerator& g, bool withResult = true);
+    virtual Node* tryOptimize();
 };
 
 class ForStatement: public Node
@@ -83,6 +85,7 @@ public:
         _loop(NULL), _expr(NULL), _expr2(NULL), _expr3(NULL) {}
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
     virtual void gen(AbstractGenerator& g, bool withResult = true);
+    virtual Node* tryOptimize();
 };
 
 class CompoundStatement: public Node

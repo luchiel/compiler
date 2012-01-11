@@ -12,9 +12,9 @@ void SelectionStatement::out(unsigned int depth, vector<bool>* branches, int lev
 {
     makeNodeTop(depth, branches, "if", level);
     printNodeWithIndent(depth, branches, false, _expr, level);
-    printNodeWithIndent(depth, branches, _else == NULL, _then, level);
-    if(_else != NULL)
-        printNodeWithIndent(depth, branches, true, _else, level);
+    printNodeWithIndent(depth, branches, elseExp == NULL, thenExp, level);
+    if(elseExp != NULL)
+        printNodeWithIndent(depth, branches, true, elseExp, level);
 }
 
 void JumpStatement::out(unsigned int depth, vector<bool>* branches, int level)
@@ -122,11 +122,11 @@ void SelectionStatement::gen(AbstractGenerator& g, bool withResult)
     Argument* l2 = g.label();
     g.gen(cTest, rEAX, rEAX);
     g.gen(cJZ, *l1);
-    _then->gen(g, false);
+    thenExp->gen(g, false);
     g.gen(cJmp, *l2);
     g.genLabel(l1);
-    if(_else != NULL)
-        _else->gen(g, false);
+    if(elseExp != NULL)
+        elseExp->gen(g, false);
     g.genLabel(l2);
 }
 
