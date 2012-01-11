@@ -25,6 +25,7 @@ void Parser::optimize()
                 //always true/false
                 //vars not used?
                 //wrap initializers
+                //in compound after break/continue/return
             }
         }
 }
@@ -121,36 +122,52 @@ Node* BinaryNode::tryOptimize()
 Node* CompoundStatement::tryOptimize()
 {
     for(unsigned int i = 0; i < _items->size(); ++i)
+    {
         (*_items)[i] = (*_items)[i]->tryOptimize();
+    }
     return this;
 }
 
 Node* ExpressionStatement::tryOptimize()
 {
-    _expr = _expr->tryOptimize();
+    expr = static_cast<ENode*>(expr->tryOptimize());
     return this;
 }
 
 Node* SelectionStatement::tryOptimize()
 {
-    _expr = static_cast<ENode*>(_expr->tryOptimize());
-    if(!_expr->isConst())
+    cond = static_cast<ENode*>(cond->tryOptimize());
+    if(!cond->isConst())
         return this;
-    double value = _expr->isIntConst() ?
-        static_cast<IntNode*>(_expr)->value :
-        static_cast<FloatNode*>(_expr)->value;
+    double value = cond->isIntConst() ?
+        static_cast<IntNode*>(cond)->value :
+        static_cast<FloatNode*>(cond)->value;
     return value != 0 ? thenExp :
         elseExp != NULL ? elseExp : new EmptyExpressionStatement();
 }
 
 Node* IterationStatement::tryOptimize()
 {
-    return this;
+    cond = static_cast<ENode*>(cond->tryOptimize());
+    if(!cond->isConst())
+        return this;
+    double value = cond->isIntConst() ?
+        static_cast<IntNode*>(cond)->value :
+        static_cast<FloatNode*>(cond)->value;
+    return value == 0 ?
+        type == TOK_DO ? loop : new EmptyExpressionStatement() : this;
 }
 
 Node* ForStatement::tryOptimize()
 {
-    return this;
+    cond = cond->tryOptimize();
+    ExpressionStatement* tcond = dynamic_cast<ExpressionStatement*>(cond);
+    if(tcond == NULL || !tcond->expr->isConst())
+        return this;
+    double value = tcond->expr->isIntConst() ?
+        static_cast<IntNode*>(tcond->expr)->value :
+        static_cast<FloatNode*>(tcond->expr)->value;
+    return value == 0 ? new EmptyExpressionStatement() : this;
 }
 
 }

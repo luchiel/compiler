@@ -1,0 +1,10 @@
+void main()
+{
+  while((5 - 5) * 3)
+    printf("-BUG-");
+  do
+    printf("-onceIsOk-");
+  while(0);
+  //while(sizeof(int) != sizeof('c')); //sizeof is currently replaced with const at low-level
+  printf("-end-");
+}

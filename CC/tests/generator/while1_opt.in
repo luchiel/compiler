@@ -1,0 +1,11 @@
+void main()
+{
+  int i = 3;
+  while(1)
+  {
+    if(i == 0)
+      break;
+    printf("(-o-)");
+    i--;
+  }
+}
