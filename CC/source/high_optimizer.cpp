@@ -23,24 +23,21 @@ void Parser::optimize()
             {
                 SymbolTypeFunction* f = static_cast<SymbolTypeFunction*>(*i);
                 if(f->body != NULL)
-                    f->body->tryOptimize();
-                //always true/false
-                //vars not used?
-                //wrap initializers
-                //in compound after break/continue/return
+                    f->body->optimized();
             }
         }
+    sym.optimizeInitializers();
 }
 
-Node* AssignmentNode::tryOptimize()
+Node* AssignmentNode::optimized()
 {
-    right = static_cast<ENode*>(right->tryOptimize());
+    right = static_cast<ENode*>(right->optimized());
     return this;
 }
 
-Node* CastNode::tryOptimize()
+Node* CastNode::optimized()
 {
-    element = static_cast<ENode*>(element->tryOptimize());
+    element = static_cast<ENode*>(element->optimized());
     ENode* rep = this;
     if(element->isIntConst())
     {
@@ -59,10 +56,10 @@ Node* CastNode::tryOptimize()
     return rep;
 }
 
-Node* BinaryNode::tryOptimize()
+Node* BinaryNode::optimized()
 {
-    left = static_cast<ENode*>(left->tryOptimize());
-    right = static_cast<ENode*>(right->tryOptimize());
+    left = static_cast<ENode*>(left->optimized());
+    right = static_cast<ENode*>(right->optimized());
     if(!left->isConst() || !right->isConst()) //a - 5 - 4 ignored
         return this;
 
@@ -121,16 +118,55 @@ Node* BinaryNode::tryOptimize()
     return this;
 }
 
-Node* CompoundStatement::tryOptimize()
+Node* SizeofNode::optimized()
 {
-    vector<Node*>::iterator i = _items->begin();
-    while(i != _items->end())
+    return new IntNode(symbolType != NULL ?
+        symbolType->size() * 4 : only->expType->size() * 4, expType);
+}
+
+Node* UnaryNode::optimized()
+{
+    only = static_cast<ENode*>(only->optimized());
+    if(type == TOK_PLUS)
+        return only;
+    if(!only->isConst())
+        return this;
+
+    int iValue = 0;
+    float fValue = 0;
+    if(only->isIntConst())
+        iValue = static_cast<IntNode*>(only)->value;
+    else
+        fValue = static_cast<FloatNode*>(only)->value;
+    switch(type)
     {
-        *i = (*i)->tryOptimize();
+        case TOK_TILDA:
+            return new IntNode(~iValue, expType);
+        case TOK_NOT:
+            if(only->isIntConst())
+                return new IntNode(!iValue, expType);
+            else
+                return new FloatNode(!fValue, expType);
+        case TOK_MINUS:
+            if(only->isIntConst())
+                return new IntNode(-iValue, expType);
+            else
+                return new FloatNode(-fValue, expType);
+        default: return this;
+    }
+}
+
+Node* CompoundStatement::optimized()
+{
+    locals->optimizeInitializers();
+    vector<Node*>::iterator i = items->begin();
+    while(i != items->end())
+    {
+        *i = (*i)->optimized();
         if((*i)->isJump())
         {
-            if(++i != _items->end())
-                i = _items->erase(i, _items->end());
+            if(++i != items->end())
+                i = items->erase(i, items->end());
             break;
         }
         i++;
@@ -138,9 +174,9 @@ Node* CompoundStatement::tryOptimize()
     return this;
 }
 
-Node* ExpressionStatement::tryOptimize()
+Node* ExpressionStatement::optimized()
 {
-    expr = static_cast<ENode*>(expr->tryOptimize());
+    expr = static_cast<ENode*>(expr->optimized());
     return this;
 }
 
@@ -151,32 +187,32 @@ double getConstValue(ENode* node)
         static_cast<FloatNode*>(node)->value;
 }
 
-Node* TernaryNode::tryOptimize()
+Node* TernaryNode::optimized()
 {
-    condition = static_cast<ENode*>(condition->tryOptimize());
-    thenOp = static_cast<ENode*>(thenOp->tryOptimize());
-    elseOp = static_cast<ENode*>(elseOp->tryOptimize());
+    condition = static_cast<ENode*>(condition->optimized());
+    thenOp = static_cast<ENode*>(thenOp->optimized());
+    elseOp = static_cast<ENode*>(elseOp->optimized());
     if(!condition->isConst())
         return this;
     return getConstValue(condition) != 0 ? thenOp : elseOp;
 }
 
-Node* SelectionStatement::tryOptimize()
+Node* SelectionStatement::optimized()
 {
-    cond = static_cast<ENode*>(cond->tryOptimize());
-    thenExp = thenExp->tryOptimize();
+    cond = static_cast<ENode*>(cond->optimized());
+    thenExp = thenExp->optimized();
     if(elseExp != NULL)
-        elseExp = elseExp->tryOptimize();
+        elseExp = elseExp->optimized();
     if(!cond->isConst())
         return this;
     return getConstValue(cond) != 0 ? thenExp :
         elseExp != NULL ? elseExp : new EmptyExpressionStatement();
 }
 
-Node* IterationStatement::tryOptimize()
+Node* IterationStatement::optimized()
 {
-    cond = static_cast<ENode*>(cond->tryOptimize());
-    loop = loop->tryOptimize();
+    cond = static_cast<ENode*>(cond->optimized());
+    loop = loop->optimized();
     if(!cond->isConst())
         return this;
     if(getConstValue(cond) == 0)
@@ -184,20 +220,32 @@ Node* IterationStatement::tryOptimize()
     return this;
 }
 
-Node* ForStatement::tryOptimize()
+Node* ForStatement::optimized()
 {
+    iterators->optimizeInitializers();
     if(init != NULL)
-        init = init->tryOptimize();
-    cond = cond->tryOptimize();
+        init = init->optimized();
+    cond = cond->optimized();
     if(mod != NULL)
-        mod = mod->tryOptimize();
-    loop = loop->tryOptimize();
+        mod = mod->optimized();
+    loop = loop->optimized();
     ExpressionStatement* tcond = dynamic_cast<ExpressionStatement*>(cond);
     if(tcond == NULL || !tcond->expr->isConst())
         return this;
     if(getConstValue(tcond->expr) == 0)
         return new EmptyExpressionStatement();
     return this;
+}
+
+void SymbolTable::optimizeInitializers()
+{
+    for(vector<Symbol*>::iterator i = _ordered.begin(); i != _ordered.end(); ++i)
+        if((*i)->classType == CT_VAR)
+        {
+            SymbolVariable* v = static_cast<SymbolVariable*>(*i);
+            if(v->initializer != NULL)
+                v->initializer = v->initializer->optimized();
+        }
 }
 
 }
