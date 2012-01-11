@@ -368,6 +368,7 @@ void BinaryNode::gen(AbstractGenerator& g, bool withResult)
 
 void SizeofNode::gen(AbstractGenerator& g, bool withResult)
 {
+    //this will never be used
     if(withResult)
     {
         if(symbolType != NULL)

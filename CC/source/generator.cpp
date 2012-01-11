@@ -150,7 +150,7 @@ void Generator::optimize()
         list<Command>::iterator i = codePart.begin();
         while(i != codePart.end())
         {
-            bool tryOptimize =
+            bool optimized =
                 (i == codePart.begin() ?
                     false :
                        tryUniteLabels(i)
@@ -174,9 +174,9 @@ void Generator::optimize()
                 || tryJmpLabel(i)
                 || tryImulWithImm(i)
                 ;
-            if(!tryOptimize)
+            if(!optimized)
                 i++;
-            modified = modified || tryOptimize;
+            modified = modified || optimized;
         }
     }
     list<Command>::iterator i = codePart.begin();

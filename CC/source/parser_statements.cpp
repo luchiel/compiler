@@ -63,13 +63,13 @@ CompoundStatement* Parser::parseCompoundStatement()
     if(tokenType() == TOK_L_BRACE)
     {
         CompoundStatement* node = new CompoundStatement();
-        _symbols->push(node->_locals);
+        _symbols->push(node->locals);
         _tokens->next();
         while(tokenType() != TOK_R_BRACE)
         {
             Node* bi = parseBlockItem();
             if(bi != NULL)
-                node->_items->push_back(bi);
+                node->items->push_back(bi);
         }
         _symbols->pop();
         consumeTokenOfType(TOK_R_BRACE, "'}' expected");

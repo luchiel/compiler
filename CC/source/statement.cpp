@@ -80,25 +80,25 @@ void ForStatement::out(unsigned int depth, vector<bool>* branches, int level)
 void CompoundStatement::out(unsigned int depth, vector<bool>* branches, int level)
 {
     makeNodeTop(depth, branches, "{}", level);
-    if(_locals->size() != 0)
-        _locals->out(level + 1);
-    if(_items->size() == 0)
+    if(locals->size() != 0)
+        locals->out(level + 1);
+    if(items->size() == 0)
     {
         (*branches)[depth] = true;
         return;
     }
-    for(unsigned int i = 0; i < _items->size() - 1; ++i)
-        printNodeWithIndent(depth, branches, false, (*_items)[i], level);
-    printNodeWithIndent(depth, branches, true, (*_items)[_items->size() - 1], level);
+    for(unsigned int i = 0; i < items->size() - 1; ++i)
+        printNodeWithIndent(depth, branches, false, (*items)[i], level);
+    printNodeWithIndent(depth, branches, true, (*items)[items->size() - 1], level);
 }
 
 void CompoundStatement::gen(AbstractGenerator& g, bool withResult)
 {
-    g.gen(cSub, rESP, (_locals->offset() - _locals->parent->offset()) * 4);
-    _locals->genInitLocals(g);
-    for(unsigned int i = 0; i < _items->size(); ++i)
-        (*_items)[i]->gen(g, false);
-    g.gen(cAdd, rESP, (_locals->offset() - _locals->parent->offset()) * 4);
+    g.gen(cSub, rESP, (locals->offset() - locals->parent->offset()) * 4);
+    locals->genInitLocals(g);
+    for(unsigned int i = 0; i < items->size(); ++i)
+        (*items)[i]->gen(g, false);
+    g.gen(cAdd, rESP, (locals->offset() - locals->parent->offset()) * 4);
 }
 
 void ReturnStatement::gen(AbstractGenerator& g, bool withResult)

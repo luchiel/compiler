@@ -21,7 +21,7 @@ public:
     SelectionStatement(): cond(NULL), thenExp(NULL), elseExp(NULL) {}
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
     virtual void gen(AbstractGenerator& g, bool withResult = true);
-    virtual Node* tryOptimize();
+    virtual Node* optimized();
 };
 
 class JumpStatement: public Node
@@ -57,7 +57,7 @@ public:
     ExpressionStatement(ENode* expr_): expr(expr_) {}
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
     virtual void gen(AbstractGenerator& g, bool withResult = true);
-    virtual Node* tryOptimize();
+    virtual Node* optimized();
 };
 
 class IterationStatement: public Node
@@ -69,7 +69,7 @@ public:
     IterationStatement(): type(TOK_UNDEF), loop(NULL), cond(NULL) {}
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
     virtual void gen(AbstractGenerator& g, bool withResult = true);
-    virtual Node* tryOptimize();
+    virtual Node* optimized();
 };
 
 class ForStatement: public Node
@@ -86,19 +86,19 @@ public:
         loop(NULL), init(NULL), cond(NULL), mod(NULL) {}
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
     virtual void gen(AbstractGenerator& g, bool withResult = true);
-    virtual Node* tryOptimize();
+    virtual Node* optimized();
 };
 
 class CompoundStatement: public Node
 {
 public:
-    SymbolTable* _locals;
-    vector<Node*>* _items;
-    CompoundStatement(): _locals(new SymbolTable()), _items(new vector<Node*>) {}
-    ~CompoundStatement() { delete _items; }
+    SymbolTable* locals;
+    vector<Node*>* items;
+    CompoundStatement(): locals(new SymbolTable()), items(new vector<Node*>) {}
+    ~CompoundStatement() { delete items; }
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
     virtual void gen(AbstractGenerator& g, bool withResult = true);
-    virtual Node* tryOptimize();
+    virtual Node* optimized();
 };
 
 }

@@ -24,7 +24,7 @@ public:
     virtual ~Node() {}
 
     virtual void gen(AbstractGenerator& g, bool withResult = true) {}
-    virtual Node* tryOptimize() { return this; }
+    virtual Node* optimized() { return this; }
     virtual bool isJump() { return false; }
 };
 

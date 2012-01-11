@@ -119,6 +119,7 @@ public:
 
     virtual void gen(AbstractGenerator& g, bool withResult = true);
     virtual void genLValue(AbstractGenerator& g);
+    virtual Node* optimized();
 };
 
 class SizeofNode: public UnaryNode
@@ -129,6 +130,7 @@ public:
     virtual void out(unsigned int depth, vector<bool>* branches, int level = 0);
 
     virtual void gen(AbstractGenerator& g, bool withResult = true);
+    virtual Node* optimized();
 };
 
 class BinaryNode: public ENode
@@ -142,7 +144,7 @@ public:
 
     virtual void gen(AbstractGenerator& g, bool withResult = true);
     virtual void genLValue(AbstractGenerator& g);
-    virtual Node* tryOptimize();
+    virtual Node* optimized();
 };
 
 class TernaryNode: public ENode
@@ -156,7 +158,7 @@ public:
     virtual void out(unsigned int depth, vector<bool>* branches, int level = 0);
 
     virtual void gen(AbstractGenerator& g, bool withResult = true);
-    virtual Node* tryOptimize();
+    virtual Node* optimized();
 };
 
 class AssignmentNode: public BinaryNode
@@ -165,7 +167,7 @@ public:
     AssignmentNode(TokenType type_, ENode* left_): BinaryNode(type_, left_) {}
 
     virtual void gen(AbstractGenerator& g, bool withResult = true);
-    virtual Node* tryOptimize();
+    virtual Node* optimized();
 };
 
 class ExpressionNode: public BinaryNode
@@ -185,7 +187,7 @@ public:
     virtual void out(unsigned int depth, vector<bool>* branches, int level = 0);
 
     virtual void gen(AbstractGenerator& g, bool withResult = true);
-    virtual Node* tryOptimize();
+    virtual Node* optimized();
 };
 
 }
