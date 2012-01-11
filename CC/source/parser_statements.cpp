@@ -85,8 +85,8 @@ Node* Parser::parseSelectionStatement()
         SelectionStatement* node = new SelectionStatement();
         _tokens->next();
         consumeTokenOfType(TOK_L_BRACKET, "'(' expected");
-        node->_expr = parseExpression();
-        if(_mode == PM_SYMBOLS && node->_expr->expType != _int)
+        node->cond = parseExpression();
+        if(_mode == PM_SYMBOLS && node->cond->expType != _int)
             throw makeException("expression must be of type int");
         consumeTokenOfType(TOK_R_BRACKET, "')' expected");
         node->thenExp = parseStatement();
@@ -106,16 +106,16 @@ Node* Parser::parseIterationStatement()
     if(tokenType() == TOK_WHILE)
     {
         node = new IterationStatement();
-        node->_type = tokenType();
+        node->type = tokenType();
         _tokens->next();
         consumeTokenOfType(TOK_L_BRACKET, "'(' expected");
-        node->_expr = parseExpression();
-        if(_mode == PM_SYMBOLS && node->_expr->expType != _int)
+        node->cond = parseExpression();
+        if(_mode == PM_SYMBOLS && node->cond->expType != _int)
             throw makeException("expression must be of type int");
         consumeTokenOfType(TOK_R_BRACKET, "')' expected");
 
         _jumpAllowed++;
-        node->_loop = parseStatement();
+        node->loop = parseStatement();
         _jumpAllowed--;
 
         return node;
@@ -123,17 +123,17 @@ Node* Parser::parseIterationStatement()
     else if(tokenType() == TOK_DO)
     {
         node = new IterationStatement();
-        node->_type = tokenType();
+        node->type = tokenType();
         _tokens->next();
 
         _jumpAllowed++;
-        node->_loop = parseStatement();
+        node->loop = parseStatement();
         _jumpAllowed--;
 
         consumeTokenOfType(TOK_WHILE, "'while' expected");
         consumeTokenOfType(TOK_L_BRACKET, "'(' expected");
-        node->_expr = parseExpression();
-        if(_mode == PM_SYMBOLS && node->_expr->expType != _int)
+        node->cond = parseExpression();
+        if(_mode == PM_SYMBOLS && node->cond->expType != _int)
             throw makeException("expression must be of type int");
         consumeTokenOfType(TOK_R_BRACKET, "')' expected");
         consumeTokenOfType(TOK_SEP, "';' expected");
@@ -144,16 +144,16 @@ Node* Parser::parseIterationStatement()
         ForStatement* forNode = new ForStatement();
         _tokens->next();
         consumeTokenOfType(TOK_L_BRACKET, "'(' expected");
-        _symbols->push(forNode->_iterators);
+        _symbols->push(forNode->iterators);
         if(!parseDeclaration(false))
-            forNode->_expr = parseExpressionStatement();
-        forNode->_expr2 = parseExpressionStatement();
+            forNode->init = parseExpressionStatement();
+        forNode->cond = parseExpressionStatement();
         if(tokenType() != TOK_R_BRACKET)
-            forNode->_expr3 = parseExpression();
+            forNode->mod = parseExpression();
         consumeTokenOfType(TOK_R_BRACKET, "')' expected");
 
         _jumpAllowed++;
-        forNode->_loop = parseStatement();
+        forNode->loop = parseStatement();
         _jumpAllowed--;
 
         _symbols->pop();

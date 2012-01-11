@@ -15,10 +15,10 @@ namespace LuCCompiler
 class SelectionStatement: public Node
 {
 public:
-    ENode* _expr;
+    ENode* cond;
     Node* thenExp;
     Node* elseExp;
-    SelectionStatement(): _expr(NULL), thenExp(NULL), elseExp(NULL) {}
+    SelectionStatement(): cond(NULL), thenExp(NULL), elseExp(NULL) {}
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
     virtual void gen(AbstractGenerator& g, bool withResult = true);
     virtual Node* tryOptimize();
@@ -52,8 +52,8 @@ public:
 class ExpressionStatement: public Node
 {
 public:
-    Node* _expr;
-    ExpressionStatement(Node* expr): _expr(expr) {}
+    ENode* expr;
+    ExpressionStatement(ENode* expr_): expr(expr_) {}
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
     virtual void gen(AbstractGenerator& g, bool withResult = true);
     virtual Node* tryOptimize();
@@ -62,10 +62,10 @@ public:
 class IterationStatement: public Node
 {
 public:
-    TokenType _type;
-    Node* _loop;
-    ENode* _expr;
-    IterationStatement(): _type(TOK_UNDEF), _loop(NULL), _expr(NULL) {}
+    TokenType type;
+    Node* loop;
+    ENode* cond;
+    IterationStatement(): type(TOK_UNDEF), loop(NULL), cond(NULL) {}
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
     virtual void gen(AbstractGenerator& g, bool withResult = true);
     virtual Node* tryOptimize();
@@ -74,15 +74,15 @@ public:
 class ForStatement: public Node
 {
 public:
-    SymbolTable* _iterators;
-    TokenType _type;
-    Node* _loop;
-    Node* _expr;
-    Node* _expr2;
-    Node* _expr3;
+    SymbolTable* iterators;
+    TokenType type;
+    Node* loop;
+    Node* init;
+    Node* cond;
+    Node* mod;
     ForStatement():
-        _iterators(new SymbolTable()), _type(TOK_FOR),
-        _loop(NULL), _expr(NULL), _expr2(NULL), _expr3(NULL) {}
+        iterators(new SymbolTable()), type(TOK_FOR),
+        loop(NULL), init(NULL), cond(NULL), mod(NULL) {}
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
     virtual void gen(AbstractGenerator& g, bool withResult = true);
     virtual Node* tryOptimize();

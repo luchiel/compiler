@@ -11,7 +11,7 @@ namespace LuCCompiler
 void SelectionStatement::out(unsigned int depth, vector<bool>* branches, int level)
 {
     makeNodeTop(depth, branches, "if", level);
-    printNodeWithIndent(depth, branches, false, _expr, level);
+    printNodeWithIndent(depth, branches, false, cond, level);
     printNodeWithIndent(depth, branches, elseExp == NULL, thenExp, level);
     if(elseExp != NULL)
         printNodeWithIndent(depth, branches, true, elseExp, level);
@@ -41,40 +41,40 @@ void EmptyExpressionStatement::out(unsigned int depth, vector<bool>* branches, i
 void ExpressionStatement::out(unsigned int depth, vector<bool>* branches, int level)
 {
     makeNodeTop(depth, branches, ";", level);
-    printNodeWithIndent(depth, branches, true, _expr, level);
+    printNodeWithIndent(depth, branches, true, expr, level);
 }
 
 void ExpressionStatement::gen(AbstractGenerator& g, bool withResult)
 {
-    _expr->gen(g, withResult);
+    expr->gen(g, withResult);
 }
 
 void IterationStatement::out(unsigned int depth, vector<bool>* branches, int level)
 {
-    makeNodeTop(depth, branches, _type == TOK_WHILE ? "while" : "do", level);
-    if(_type == TOK_WHILE)
+    makeNodeTop(depth, branches, type == TOK_WHILE ? "while" : "do", level);
+    if(type == TOK_WHILE)
     {
-        printNodeWithIndent(depth, branches, false, _expr, level);
-        printNodeWithIndent(depth, branches, true, _loop, level);
+        printNodeWithIndent(depth, branches, false, cond, level);
+        printNodeWithIndent(depth, branches, true, loop, level);
     }
     else
     {
-        printNodeWithIndent(depth, branches, false, _loop, level);
-        printNodeWithIndent(depth, branches, true, _expr, level);
+        printNodeWithIndent(depth, branches, false, loop, level);
+        printNodeWithIndent(depth, branches, true, cond, level);
     }
 }
 
 void ForStatement::out(unsigned int depth, vector<bool>* branches, int level)
 {
     makeNodeTop(depth, branches, "for", level);
-    if(_expr != NULL)
-        printNodeWithIndent(depth, branches, false, _expr, level);
+    if(init != NULL)
+        printNodeWithIndent(depth, branches, false, init, level);
     else
-        _iterators->out(level + 1);
-    printNodeWithIndent(depth, branches, false, _expr2, level);
-    if(_expr3 != NULL)
-        printNodeWithIndent(depth, branches, false, _expr3, level);
-    printNodeWithIndent(depth, branches, true, _loop, level);
+        iterators->out(level + 1);
+    printNodeWithIndent(depth, branches, false, cond, level);
+    if(mod != NULL)
+        printNodeWithIndent(depth, branches, false, mod, level);
+    printNodeWithIndent(depth, branches, true, loop, level);
 }
 
 void CompoundStatement::out(unsigned int depth, vector<bool>* branches, int level)
@@ -116,7 +116,7 @@ void ReturnStatement::gen(AbstractGenerator& g, bool withResult)
 
 void SelectionStatement::gen(AbstractGenerator& g, bool withResult)
 {
-    _expr->gen(g);
+    cond->gen(g);
     g.gen(cPop, rEAX);
     Argument* l1 = g.label();
     Argument* l2 = g.label();
@@ -142,17 +142,17 @@ void JumpStatement::gen(AbstractGenerator& g, bool withResult)
 
 void IterationStatement::gen(AbstractGenerator& g, bool withResult)
 {
-    if(_type == TOK_DO)
+    if(type == TOK_DO)
     {
         Argument* l1 = g.label();
         Argument* l2 = g.label(); //continue label
         Argument* l3 = g.label(); //break label
         g.genLabel(l1);
         g.pushJumpLabels(l3, l2);
-        _loop->gen(g, false);
+        loop->gen(g, false);
         g.popJumpLabels();
         g.genLabel(l2);
-        _expr->gen(g);
+        cond->gen(g);
         g.gen(cPop, rEAX);
         g.gen(cTest, rEAX, rEAX);
         g.gen(cJNZ, *l1);
@@ -163,12 +163,12 @@ void IterationStatement::gen(AbstractGenerator& g, bool withResult)
         Argument* l1 = g.label(); //continue label
         Argument* l2 = g.label(); //break label
         g.genLabel(l1);
-        _expr->gen(g);
+        cond->gen(g);
         g.gen(cPop, rEAX);
         g.gen(cTest, rEAX, rEAX);
         g.gen(cJZ, *l2);
         g.pushJumpLabels(l2, l1);
-        _loop->gen(g, false);
+        loop->gen(g, false);
         g.popJumpLabels();
         g.gen(cJmp, *l1);
         g.genLabel(l2);
@@ -177,30 +177,30 @@ void IterationStatement::gen(AbstractGenerator& g, bool withResult)
 
 void ForStatement::gen(AbstractGenerator& g, bool withResult)
 {
-    g.gen(cSub, rESP, (_iterators->offset() - _iterators->parent->offset()) * 4);
-    _iterators->genInitLocals(g);
-    if(_expr != NULL)
-        _expr->gen(g, false);
+    g.gen(cSub, rESP, (iterators->offset() - iterators->parent->offset()) * 4);
+    iterators->genInitLocals(g);
+    if(init != NULL)
+        init->gen(g, false);
     Argument* l1 = g.label();
     Argument* l2 = g.label(); //continue label
     Argument* l3 = g.label(); //break label
     g.genLabel(l1);
-    if(dynamic_cast<EmptyExpressionStatement*>(_expr2) == NULL)
+    if(dynamic_cast<EmptyExpressionStatement*>(cond) == NULL)
     {
-        _expr2->gen(g);
+        cond->gen(g);
         g.gen(cPop, rEAX);
         g.gen(cTest, rEAX, rEAX);
         g.gen(cJZ, *l3);
     }
     g.pushJumpLabels(l3, l2);
-    _loop->gen(g, false);
+    loop->gen(g, false);
     g.popJumpLabels();
     g.genLabel(l2);
-    if(_expr3 != NULL)
-        _expr3->gen(g, false);
+    if(mod != NULL)
+        mod->gen(g, false);
     g.gen(cJmp, *l1);
     g.genLabel(l3);
-    g.gen(cAdd, rESP, (_iterators->offset() - _iterators->parent->offset()) * 4);
+    g.gen(cAdd, rESP, (iterators->offset() - iterators->parent->offset()) * 4);
 }
 
 }
