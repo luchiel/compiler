@@ -97,6 +97,7 @@ public:
     virtual void gen(AbstractGenerator& g, bool withResult = true);
     virtual void genLValue(AbstractGenerator& g);
     void performCommonGenPart(AbstractGenerator& g);
+    virtual Node* optimized();
 };
 
 class CallNode: public PostfixNode

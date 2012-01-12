@@ -1,5 +1,5 @@
 void main()
 {
   printf("nya\\\nnya");
-  printf("\n\t\"")
+  printf("\n\t\"");
 }

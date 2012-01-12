@@ -31,6 +31,7 @@ void Parser::optimize()
 
 Node* AssignmentNode::optimized()
 {
+    left = static_cast<ENode*>(left->optimized());
     right = static_cast<ENode*>(right->optimized());
     return this;
 }
@@ -166,6 +167,13 @@ Node* UnaryNode::optimized()
                 return new FloatNode(-fValue, expType);
         default: return this;
     }
+}
+
+Node* PostfixNode::optimized()
+{
+    if(tail != NULL)
+        tail = static_cast<ENode*>(tail->optimized());
+    return this;
 }
 
 Node* CompoundStatement::optimized()
