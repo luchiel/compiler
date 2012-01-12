@@ -432,6 +432,61 @@ bool Generator::trySetTestJmp(list<Command>::iterator& i)
     }
 }
 
+void Generator::performConstConditionChanges(
+    list<Command>::iterator& k,
+    list<Command>::iterator& j,
+    list<Command>::iterator& i,
+    bool condition
+)
+{
+    if(condition)
+    {
+        codePart.erase(k);
+        codePart.erase(j);
+        i->command = cJmp;
+    }
+    else
+    {
+        codePart.erase(k);
+        codePart.erase(j);
+        list<Command>::iterator l(i);
+        i++;
+        codePart.erase(l);
+    }
+}
+
+bool Generator::tryConstCondition(list<Command>::iterator& i)
+{
+    //mov eax,1
+    //test    eax,eax
+    //jxx  l2
+    list<Command>::iterator j(i); j--;
+    if(j->command != cTest || j == codePart.begin() || *j->args[0] != *j->args[1])
+        return false;
+    list<Command>::iterator k(j); k--;
+    if(k->command != cMov || k->args[1]->type != atConst || *k->args[0] != *j->args[0])
+        return false;
+    int value = k->args[1]->value.constArg;
+
+    switch(i->command)
+    {
+        case cJZ:
+        case cJE:
+            performConstConditionChanges(k, j, i, value == 0); break;
+        case cJNZ:
+        case cJNE:
+            performConstConditionChanges(k, j, i, value != 0); break;
+        case cJLE: performConstConditionChanges(k, j, i, value <= 0); break;
+        case cJL:  performConstConditionChanges(k, j, i, value < 0); break;
+        case cJGE: performConstConditionChanges(k, j, i, value >= 0); break;
+        case cJG:  performConstConditionChanges(k, j, i, value > 0); break;
+        default:
+            return false;
+    }
+
+    return true;
+}
+
 bool Generator::tryLabelJmp(list<Command>::iterator& i)
 {
     if(i->command != cJmp)

@@ -33,6 +33,12 @@ private:
 
     bool isPowerOf2(int a);
     int log2(int a);
+    void performConstConditionChanges(
+        list<Command>::iterator& k,
+        list<Command>::iterator& j,
+        list<Command>::iterator& i,
+        bool condition
+    );
 
     bool tryAddSub0(list<Command>::iterator& i);
     bool tryAddSub1(list<Command>::iterator& i);
@@ -56,6 +62,7 @@ private:
     bool tryLabelJmp(list<Command>::iterator& i);
     bool tryImulWithImm(list<Command>::iterator& i);
     bool tryIdivWithImm(list<Command>::iterator& i);
+    bool tryConstCondition(list<Command>::iterator& i);
 
 public:
     Generator(SymbolTable* symbols_):
