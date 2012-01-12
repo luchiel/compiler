@@ -26,20 +26,20 @@ void Parser::checkArgumentsArithmetic(BinaryNode* node)
 
 void Parser::performImplicitCast(BinaryNode* node, bool rightOnly)
 {
-    if(isFloat(*node->left->expType))
+    if(isDouble(*node->left->expType))
     {
-        if(!isFloat(*node->right->expType))
+        if(!isDouble(*node->right->expType))
         {
-            node->right = new CastNode(_float, node->right);
-            node->right->expType = _float;
+            node->right = new CastNode(_double, node->right);
+            node->right->expType = _double;
         }
     }
-    else if(isFloat(*node->right->expType))
+    else if(isDouble(*node->right->expType))
     {
         if(rightOnly)
-            throw makeException("Cannot convert left operand to type float");
-        node->left = new CastNode(_float, node->left);
-        node->left->expType = _float;
+            throw makeException("Cannot convert left operand to type double");
+        node->left = new CastNode(_double, node->left);
+        node->left->expType = _double;
     }
     else
         node->expType = _int;
@@ -92,7 +92,7 @@ ENode* Parser::parseBinaryExpression(int priority)
                 case TOK_ASTERISK:
                 case TOK_DIV:
                     checkArgumentsArithmetic(node);
-                    node->expType = _float;
+                    node->expType = _double;
                     performImplicitCast(node);
                     break;
                 case TOK_E:
@@ -169,10 +169,10 @@ ENode* Parser::parsePrimaryExpression()
             if(_mode == PM_SYMBOLS)
                 node->expType = static_cast<SymbolType*>(getSymbol("int*"));
             break;
-        case TOK_FLOAT_CONST:
-            node = new FloatNode(_tokens->get().value.floatValue);
+        case TOK_DOUBLE_CONST:
+            node = new DoubleNode(_tokens->get().value.doubleValue);
             if(_mode == PM_SYMBOLS)
-                node->expType = _float;
+                node->expType = _double;
             break;
         case TOK_IDENT:
             if(_mode == PM_NO_SYMBOLS)
@@ -511,15 +511,15 @@ ENode* Parser::parseConditionalExpression()
             {
                 node->thenOp->expType = node->elseOp->expType = _NULL->type;
             }
-            else if(isFloat(*node->thenOp->expType) && isInt(*node->elseOp->expType))
+            else if(isDouble(*node->thenOp->expType) && isInt(*node->elseOp->expType))
             {
-                node->elseOp = new CastNode(_float, node->elseOp);
-                node->elseOp->expType = _float;
+                node->elseOp = new CastNode(_double, node->elseOp);
+                node->elseOp->expType = _double;
             }
-            else if(isFloat(*node->elseOp->expType) && isInt(*node->thenOp->expType))
+            else if(isDouble(*node->elseOp->expType) && isInt(*node->thenOp->expType))
             {
-                node->thenOp = new CastNode(_float, node->thenOp);
-                node->thenOp->expType = _float;
+                node->thenOp = new CastNode(_double, node->thenOp);
+                node->thenOp->expType = _double;
             }
             else
                 throw makeException("Incompatible types in ?:");

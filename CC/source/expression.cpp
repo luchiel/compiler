@@ -54,10 +54,10 @@ void IntNode::out(unsigned int depth, vector<bool>* branches, int level)
     printExpType(level + 1 + depth);
 }
 
-void FloatNode::out(unsigned int depth, vector<bool>* branches, int level)
+void DoubleNode::out(unsigned int depth, vector<bool>* branches, int level)
 {
     printIndent(depth, branches, level);
-    cout << (depth == 0 ? "" : "+-") << "{float " << value << "}" << endl;
+    cout << (depth == 0 ? "" : "+-") << "{double " << value << "}" << endl;
     printExpType(level + 1 + depth);
 }
 
@@ -200,11 +200,11 @@ void StringNode::gen(AbstractGenerator& g, bool withResult)
     }
 }
 
-void FloatNode::gen(AbstractGenerator& g, bool withResult)
+void DoubleNode::gen(AbstractGenerator& g, bool withResult)
 {
     if(withResult)
     {
-        string s = g.addFloatConstant(value);
+        string s = g.addDoubleConstant(value);
         //g.gen(cMovss, rXMM0, s);
         //g.gen(cSub, rESP, 4);
         //g.gen(cMovss, rESP + Offset(0), rXMM0);
@@ -331,7 +331,7 @@ void BinaryNode::gen(AbstractGenerator& g, bool withResult)
     }
     left->gen(g);
     right->gen(g);
-    if(left->expType->name == "float")
+    if(left->expType->name == "double")
     {
         switch(type)
         {
@@ -339,12 +339,12 @@ void BinaryNode::gen(AbstractGenerator& g, bool withResult)
             //case TOK_ASTERISK: g.gen(cImul, rEAX, rEBX); break;
             //case TOK_PLUS:     g.gen(cAdd, rEAX, rEBX); break;
             //case TOK_MINUS:    g.gen(cSub, rEAX, rEBX); break;
-            case TOK_L:  g.genFloatCmp(cSetL); break;
-            case TOK_G:  g.genFloatCmp(cSetG); break;
-            case TOK_LE: g.genFloatCmp(cSetLE); break;
-            case TOK_GE: g.genFloatCmp(cSetGE); break;
-            case TOK_E:  g.genFloatCmp(cSetE); break;
-            case TOK_NE: g.genFloatCmp(cSetNE); break;
+            case TOK_L:  g.genDoubleCmp(cSetL); break;
+            case TOK_G:  g.genDoubleCmp(cSetG); break;
+            case TOK_LE: g.genDoubleCmp(cSetLE); break;
+            case TOK_GE: g.genDoubleCmp(cSetGE); break;
+            case TOK_E:  g.genDoubleCmp(cSetE); break;
+            case TOK_NE: g.genDoubleCmp(cSetNE); break;
         }
     }
     else
@@ -401,7 +401,7 @@ void SizeofNode::gen(AbstractGenerator& g, bool withResult)
 void CastNode::gen(AbstractGenerator& g, bool withResult)
 {
     element->gen(g, withResult);
-    //int to float! float to int!
+    //int to double! double to int!
 }
 
 void AssignmentNode::gen(AbstractGenerator& g, bool withResult)

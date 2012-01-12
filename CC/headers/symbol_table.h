@@ -75,7 +75,7 @@ public:
 
 SymbolTableStack* initPrimarySymbolTableStack();
 
-//int -> float
+//int -> double
 //[] -> *
 
 }

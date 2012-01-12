@@ -155,7 +155,7 @@ bool SymbolTypeFunction::findCall(SymbolTypeFunction* func)
 
 bool SymbolType::operator==(Symbol& symbol)
 {
-    if(name == "float" && symbol.resolveAlias()->name == "int")
+    if(name == "double" && symbol.resolveAlias()->name == "int")
     {
         //the one that is ok for cast must be second
         static_cast<SymbolType*>(&symbol)->castTo = this;

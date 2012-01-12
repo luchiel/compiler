@@ -76,7 +76,7 @@ public:
     virtual void gen(Command com);
     virtual void genLabel(Argument* a);
     virtual string addConstant(const string& s);
-    virtual string addFloatConstant(const float& f);
+    virtual string addDoubleConstant(const double& f);
 };
 
 }

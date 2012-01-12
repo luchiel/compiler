@@ -144,7 +144,7 @@ string Generator::addConstant(const string& s)
     return r->name;
 }
 
-string Generator::addFloatConstant(const float& f)
+string Generator::addDoubleConstant(const double& f)
 {
     FData* fd = new FData("f_" + itostr(labelNum++), f);
     fdataPart.push_back(fd);

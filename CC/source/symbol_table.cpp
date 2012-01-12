@@ -214,7 +214,7 @@ SymbolTableStack* initPrimarySymbolTableStack()
     SymbolType* void_ptr = new SymbolTypePointer(void_, "void*");
 
     primarySymbolTable->addSymbol(int_, 0, 0, 0);
-    primarySymbolTable->addSymbol(new SymbolType("float"), 0, 0, 0);
+    primarySymbolTable->addSymbol(new SymbolType("double"), 0, 0, 0);
     primarySymbolTable->addSymbol(void_, 0, 0, 0);
 
     primarySymbolTable->addSymbol(new SymbolTypePointer(int_, "int*"), 0, 0, 0);

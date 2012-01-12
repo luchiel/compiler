@@ -42,16 +42,16 @@ Node* CastNode::optimized()
     ENode* rep = this;
     if(element->isIntConst())
     {
-        if(type->name == "float")
-            rep = new FloatNode(static_cast<IntNode*>(element)->value, expType);
+        if(type->name == "double")
+            rep = new DoubleNode(static_cast<IntNode*>(element)->value, expType);
         else if(type->name == "int")
             rep = element;
     }
-    else if(element->isFloatConst())
+    else if(element->isDoubleConst())
     {
         if(type->name == "int")
-            rep = new IntNode(static_cast<FloatNode*>(element)->value, expType);
-        else if(type->name == "float")
+            rep = new IntNode(static_cast<DoubleNode*>(element)->value, expType);
+        else if(type->name == "double")
             rep = element;
     }
     return rep;
@@ -77,10 +77,10 @@ Node* BinaryNode::optimized()
     if(!right->isConst()) //a - 5 - 4 ignored
         return this;
 
-    if(left->isFloatConst())
+    if(left->isDoubleConst())
     {
-        l = static_cast<FloatNode*>(left)->value;
-        r = static_cast<FloatNode*>(right)->value;
+        l = static_cast<DoubleNode*>(left)->value;
+        r = static_cast<DoubleNode*>(right)->value;
     }
     else
     {
@@ -122,10 +122,10 @@ Node* BinaryNode::optimized()
     {
         switch(type)
         {
-            case TOK_ASTERISK: return new FloatNode(l * r, expType);
-            case TOK_DIV:   return new FloatNode(l / r, expType);
-            case TOK_PLUS:  return new FloatNode(l + r, expType);
-            case TOK_MINUS: return new FloatNode(l - r, expType);
+            case TOK_ASTERISK: return new DoubleNode(l * r, expType);
+            case TOK_DIV:   return new DoubleNode(l / r, expType);
+            case TOK_PLUS:  return new DoubleNode(l + r, expType);
+            case TOK_MINUS: return new DoubleNode(l - r, expType);
         }
     }
     return this;
@@ -146,11 +146,11 @@ Node* UnaryNode::optimized()
         return this;
 
     int iValue = 0;
-    float fValue = 0;
+    double fValue = 0;
     if(only->isIntConst())
         iValue = static_cast<IntNode*>(only)->value;
     else
-        fValue = static_cast<FloatNode*>(only)->value;
+        fValue = static_cast<DoubleNode*>(only)->value;
     switch(type)
     {
         case TOK_TILDA:
@@ -159,12 +159,12 @@ Node* UnaryNode::optimized()
             if(only->isIntConst())
                 return new IntNode(!iValue, expType);
             else
-                return new FloatNode(!fValue, expType);
+                return new DoubleNode(!fValue, expType);
         case TOK_MINUS:
             if(only->isIntConst())
                 return new IntNode(-iValue, expType);
             else
-                return new FloatNode(-fValue, expType);
+                return new DoubleNode(-fValue, expType);
         default: return this;
     }
 }
@@ -204,7 +204,7 @@ double getConstValue(ENode* node)
 {
     return node->isIntConst() ?
         static_cast<IntNode*>(node)->value :
-        static_cast<FloatNode*>(node)->value;
+        static_cast<DoubleNode*>(node)->value;
 }
 
 Node* TernaryNode::optimized()

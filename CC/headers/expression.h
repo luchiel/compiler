@@ -27,8 +27,8 @@ public:
     ENode(): expType(NULL), isLValue(false), varType(VT_GLOBAL) {}
     virtual void genLValue(AbstractGenerator& g) {}
     virtual bool isIntConst() { return false; }
-    virtual bool isFloatConst() { return false; }
-    bool isConst() { return isIntConst() || isFloatConst(); }
+    virtual bool isDoubleConst() { return false; }
+    bool isConst() { return isIntConst() || isDoubleConst(); }
 };
 
 class IdentNode: public ENode
@@ -73,16 +73,16 @@ public:
     virtual void gen(AbstractGenerator& g, bool withResult = true);
 };
 
-class FloatNode: public ENode
+class DoubleNode: public ENode
 {
 public:
-    float value;
-    FloatNode(const float value_, SymbolType* expType_ = NULL):
+    double value;
+    DoubleNode(const double value_, SymbolType* expType_ = NULL):
         ENode(), value(value_) { expType = expType_; }
     virtual void out(unsigned int depth, vector<bool>* branches, int level = 0);
 
     virtual void gen(AbstractGenerator& g, bool withResult = true);
-    virtual bool isFloatConst() { return true; }
+    virtual bool isDoubleConst() { return true; }
 };
 
 class PostfixNode: public ENode

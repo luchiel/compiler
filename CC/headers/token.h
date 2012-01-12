@@ -14,7 +14,7 @@ enum TokenType
     TOK_OCT_CONST,
     TOK_DEC_CONST,
     TOK_HEX_CONST,
-    TOK_FLOAT_CONST,
+    TOK_DOUBLE_CONST,
     TOK_CHAR_CONST,
     TOK_STR_CONST,
     TOK_SEP,
@@ -80,7 +80,7 @@ enum TokenType
     TOK_RETURN,
 
     TOK_INT,
-    TOK_FLOAT,
+    TOK_DOUBLE,
     TOK_VOID,
 
     TOK_TYPEDEF,
@@ -92,7 +92,7 @@ const string TOKEN_TYPE_NAME[] =
     "OCTAL CONST",
     "DECIMAL CONST",
     "HEXADECIMAL CONST",
-    "FLOAT CONST",
+    "DOUBLE CONST",
     "CHARACTER",
     "STRING",
     "SEPARATOR",
@@ -158,7 +158,7 @@ const string TOKEN_TYPE_NAME[] =
     "return KEYWORD",
 
     "int KEYWORD",
-    "float KEYWORD",
+    "double KEYWORD",
     "void KEYWORD",
 
     "typedef KEYWORD",
@@ -175,7 +175,7 @@ public:
 
     union
     {
-        double floatValue;
+        double doubleValue;
         int intValue;
         string* strValue;
     }

@@ -251,10 +251,10 @@ bool Tokenizer::tryReadFloatPart(unsigned int& idx, bool hasIntPart)
     }
 
     idx--;
-    _current.type = TOK_FLOAT_CONST;
+    _current.type = TOK_DOUBLE_CONST;
     floatPart = intPart + floatPart;
     stringstream ss(floatPart);
-    ss >> _current.value.floatValue;
+    ss >> _current.value.doubleValue;
     return true;
 }
 
@@ -298,7 +298,7 @@ Tokenizer::Tokenizer(const string& filename):
 
     keywords["sizeof"] = TOK_SIZEOF;
     keywords["int"] = TOK_INT;
-    keywords["float"] = TOK_FLOAT;
+    keywords["double"] = TOK_DOUBLE;
     keywords["void"] = TOK_VOID;
 
     keywords["if"] = TOK_IF;
@@ -462,7 +462,7 @@ void Tokenizer::read()
             };
             if(_current.type == TOK_OPER)
                 throw makeException(j, "Unknown operation");
-            if(_current.type != TOK_FLOAT_CONST)
+            if(_current.type != TOK_DOUBLE_CONST)
                 j +=
                     TOKEN_TYPE_NAME[_current.type].size() -
                     TOKEN_TYPE_NAME[TOK_OPER].size() - 1;

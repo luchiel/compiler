@@ -50,7 +50,7 @@ void AbstractGenerator::genIntCmp(const Command& cmpcmd)
     gen(cMov, rEAX, rECX);
 }
 
-void AbstractGenerator::genFloatCmp(const Command& cmpcmd)
+void AbstractGenerator::genDoubleCmp(const Command& cmpcmd)
 {
     gen(cXor, rECX, rECX);
     gen(cMovss, rXMM0, rESP + Offset(4));

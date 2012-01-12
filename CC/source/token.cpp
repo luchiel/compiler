@@ -18,8 +18,8 @@ void Token::outputAsString(ostream& outStream)
         outStream << ", " << value.intValue;
     else if(type == TOK_STR_CONST || type == TOK_CHAR_CONST)
         outStream << ", " << *value.strValue;
-    else if(type == TOK_FLOAT_CONST)
-        outStream << ", " << value.floatValue;
+    else if(type == TOK_DOUBLE_CONST)
+        outStream << ", " << value.doubleValue;
     outStream << endl;
 }
 

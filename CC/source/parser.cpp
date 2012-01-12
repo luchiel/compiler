@@ -97,9 +97,9 @@ SymbolType* Parser::parseTypeSpecifier()
         case TOK_INT:
             _tokens->next();
             return _int;
-        case TOK_FLOAT:
+        case TOK_DOUBLE:
             _tokens->next();
-            return _float;
+            return _double;
         case TOK_VOID:
             _tokens->next();
             return static_cast<SymbolType*>(getSymbol("void"));

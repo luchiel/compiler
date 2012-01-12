@@ -40,7 +40,7 @@ public:
     union
     {
         int intInit;
-        float floatInit;
+        double doubleInit;
     }
     init;
     Data(const string& name_, const int size_): name(name_), size(size_) { init.intInit = 0; }
@@ -60,8 +60,8 @@ class FData
 {
 public:
     string name;
-    float value;
-    FData(const string& name_, const float& value_): name(name_), value(value_) {}
+    double value;
+    FData(const string& name_, const double& value_): name(name_), value(value_) {}
     void out();
 };
 
@@ -73,7 +73,7 @@ public:
     union
     {
         int constArg;
-        float constArgF;
+        double constArgF;
         AsmRegister regArg;
         string* sArg;
     }
@@ -82,7 +82,7 @@ public:
     Argument(ArgType type_): type(type_), offset(-1) {}
     Argument(int v_): type(atConst), offset(-1) { value.constArg = v_; }
     Argument(unsigned int v_): type(atConst), offset(-1) { value.constArg = v_; }
-    Argument(float v_): type(atConstF), offset(-1) { value.constArgF = v_; }
+    Argument(double v_): type(atConstF), offset(-1) { value.constArgF = v_; }
 
     Argument(string v_, ArgType type_): type(type_), offset(-1)
         { value.sArg = new string(v_); }
@@ -141,10 +141,10 @@ public:
     virtual void gen(Command com) {}
     virtual void genLabel(Argument* a) {}
     virtual string addConstant(const string& s) { return ""; }
-    virtual string addFloatConstant(const float& f) { return ""; }
+    virtual string addDoubleConstant(const double& f) { return ""; }
 
     void genIntCmp(const Command& cmpcmd);
-    void genFloatCmp(const Command& cmpcmd);
+    void genDoubleCmp(const Command& cmpcmd);
     Argument* label();
 
     void pushJumpLabels(Argument* breakA, Argument* continueA);

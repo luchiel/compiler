@@ -26,7 +26,7 @@ private:
     bool _optimized;
     ParseMode _mode;
     SymbolType* _int;
-    SymbolType* _float;
+    SymbolType* _double;
     SymbolVariable* _NULL;
     SymbolType* _expectedReturnType;
     int _jumpAllowed;
@@ -43,7 +43,7 @@ private:
     void safeAddSymbol(Symbol* symbol);
     bool isArithmetic(SymbolType& type);
     bool isInt(SymbolType& type);
-    bool isFloat(SymbolType& type);
+    bool isDouble(SymbolType& type);
     void checkArgumentsArithmetic(BinaryNode* node);
     void performImplicitCast(BinaryNode* node, bool rightOnly = false);
 

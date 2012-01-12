@@ -47,7 +47,7 @@ void Parser::safeAddSymbol(Symbol* symbol)
 
 bool Parser::isArithmetic(SymbolType& type)
 {
-    return isInt(type) || isFloat(type);
+    return isInt(type) || isDouble(type);
 }
 
 bool Parser::isInt(SymbolType& type)
@@ -55,9 +55,9 @@ bool Parser::isInt(SymbolType& type)
     return *_int == type;
 }
 
-bool Parser::isFloat(SymbolType& type)
+bool Parser::isDouble(SymbolType& type)
 {
-    return *_float == type;
+    return *_double == type;
 }
 
 void Parser::out()
@@ -78,7 +78,7 @@ Parser::Parser(Tokenizer* tokens, bool tagOptimized):
     _symbols = initPrimarySymbolTableStack();
     _root = NULL;
     _int = static_cast<SymbolType*>(getSymbol("int"));
-    _float = static_cast<SymbolType*>(getSymbol("float"));
+    _double = static_cast<SymbolType*>(getSymbol("double"));
     _NULL = static_cast<SymbolVariable*>(getSymbol("NULL"));
     _expectedReturnType = NULL;
     _jumpAllowed = 0;
