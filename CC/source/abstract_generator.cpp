@@ -173,7 +173,34 @@ void Data::out()
 
 void RData::out()
 {
-    cout << name << " db \"" << value << "\",0\n";
+    unsigned int i = 0;
+    unsigned int start = 0;
+    cout << name << " db ";
+    while(i < value.size())
+    {
+        switch(value[i])
+        {
+            case '\n':
+            case '\'':
+            case '\"':
+            case '\?':
+            case '\\':
+            case '\a':
+            case '\b':
+            case '\f':
+            case '\r':
+            case '\v':
+                if(i - start > 0)
+                    cout << "\"" << value.substr(start, i - start) << "\",";
+                cout << int(value[i]) << ",";
+                start = i + 1;
+                break;
+        }
+        i++;
+    }
+    if(i - start > 0)
+        cout << "\"" << value.substr(start, i - start) << "\",";
+    cout << "0\n";
 }
 
 void FData::out()
