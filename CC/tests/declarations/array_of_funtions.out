@@ -1,5 +1,5 @@
 type <int>
-type <float>
+type <double>
 type <void>
 type <int*>
 	pointer to <int>
@@ -16,7 +16,7 @@ function a
 	returns pointer to array [
 				{int 10}
 					type <int>
-			] of <float>
+			] of <double>
 	arguments
 		variable b of type <int>
 	{{}}
@@ -24,7 +24,7 @@ function b
 	returns array [
 			{int 10}
 				type <int>
-		] of pointer to <float>
+		] of pointer to <double>
 	arguments
 		variable b of type <int>
 	{{}}
@@ -32,7 +32,7 @@ function c
 	returns array [
 			{int 10}
 				type <int>
-		] of pointer to <float>
+		] of pointer to <double>
 	arguments
 		variable b of type <int>
 	{{}}
@@ -41,7 +41,7 @@ type <0>
 			returns array [
 					{int 10}
 						type <int>
-				] of <float>
+				] of <double>
 			arguments
 				variable b of type <int>
 variable d of type <0>

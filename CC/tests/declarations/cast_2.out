@@ -1,5 +1,5 @@
 type <int>
-type <float>
+type <double>
 type <void>
 type <int*>
 	pointer to <int>
@@ -17,11 +17,11 @@ function main
 	arguments
 		<no args>
 	{{}}
-		variable g of type <float> initialized by
+		variable g of type <double> initialized by
 			{cast}
-				type <float>
+				type <double>
 			| 
-			+-<float>
+			+-<double>
 			| 
 			+-{cast}
 					type <int>

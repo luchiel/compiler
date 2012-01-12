@@ -1,5 +1,5 @@
 type <int>
-type <float>
+type <double>
 type <void>
 type <int*>
 	pointer to <int>
@@ -28,5 +28,5 @@ function main
 	      | 
 	      +-<int>
 	      | 
-	      +-{float 5.6}
-						type <float>
+	      +-{double 5.6}
+						type <double>

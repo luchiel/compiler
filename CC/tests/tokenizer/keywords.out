@@ -8,8 +8,8 @@
 (1, 26)		while KEYWORD		while
 (1, 32)		struct KEYWORD		struct
 (2, 1)		int KEYWORD		int
-(2, 5)		float KEYWORD		float
-(2, 11)		void KEYWORD		void
+(2, 5)		double KEYWORD		double
+(2, 12)		void KEYWORD		void
 (3, 1)		break KEYWORD		break
 (3, 7)		continue KEYWORD		continue
 (3, 16)		return KEYWORD		return

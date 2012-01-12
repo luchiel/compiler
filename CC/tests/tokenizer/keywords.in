@@ -1,4 +1,4 @@
 if then else ELSE for do while struct
-int float void
+int double void
 break continue return
 sizeof

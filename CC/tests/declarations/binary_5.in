@@ -1,5 +1,5 @@
 void main()
 {
-float a, b;
+double a, b;
 a > b || a <= b == 1;
 }

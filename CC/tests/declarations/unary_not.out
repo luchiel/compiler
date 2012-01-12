@@ -1,5 +1,5 @@
 type <int>
-type <float>
+type <double>
 type <void>
 type <int*>
 	pointer to <int>
@@ -23,9 +23,9 @@ function main
 					type <int>
 			] of <int>
 		variable a of type <0>
-		variable b of type <float> initialized by
-			{float 6.7}
-				type <float>
+		variable b of type <double> initialized by
+			{double 6.7}
+				type <double>
 	| 
 	+-{;}
 	| | 
@@ -45,4 +45,4 @@ function main
 				type <int>
 	    | 
 	    +-{b}
-					type <float>
+					type <double>

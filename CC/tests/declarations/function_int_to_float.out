@@ -1,5 +1,5 @@
 type <int>
-type <float>
+type <double>
 type <void>
 type <int*>
 	pointer to <int>
@@ -15,7 +15,7 @@ function printf
 function f
 	returns type <void>
 	arguments
-		variable f1 of type <float>
+		variable f1 of type <double>
 function main
 	returns type <void>
 	arguments
@@ -31,12 +31,12 @@ function main
 					function f
 						returns type <void>
 						arguments
-							variable f1 of type <float>
+							variable f1 of type <double>
 	    | 
 	    +-{cast}
-					type <float>
+					type <double>
 	      | 
-	      +-<float>
+	      +-<double>
 	      | 
 	      +-{int 5}
 						type <int>

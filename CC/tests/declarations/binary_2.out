@@ -1,5 +1,5 @@
 type <int>
-type <float>
+type <double>
 type <void>
 type <int*>
 	pointer to <int>
@@ -19,29 +19,29 @@ function main
 	{{}}
 		variable a of type <int>
 		type <0>
-			pointer to <float>
+			pointer to <double>
 		variable b of type <0>
 		type <1>
-			pointer to <float>
+			pointer to <double>
 		variable c of type <1>
 	| 
 	+-{;}
 	  | 
 	  +-{=}
 				type <0>
-					pointer to <float>
+					pointer to <double>
 	    | 
 	    +-{b}
 					type <0>
-						pointer to <float>
+						pointer to <double>
 	    | 
 	    +-{+}
 					type <1>
-						pointer to <float>
+						pointer to <double>
 	      | 
 	      +-{c}
 						type <1>
-							pointer to <float>
+							pointer to <double>
 	      | 
 	      +-{*}
 						type <int>

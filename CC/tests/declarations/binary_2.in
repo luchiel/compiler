@@ -1,7 +1,7 @@
 void main()
 {
 int a;
-float* b;
-float* c;
+double* b;
+double* c;
 b = c + 6;
 }

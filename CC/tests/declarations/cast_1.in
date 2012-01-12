@@ -1,6 +1,6 @@
 void main()
 {
 int* i;
-float j[4];
+double j[4];
 i = (int*)j;
 }

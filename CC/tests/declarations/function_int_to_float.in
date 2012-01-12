@@ -1,4 +1,4 @@
-void f(float f1);
+void f(double f1);
 
 void main()
 {

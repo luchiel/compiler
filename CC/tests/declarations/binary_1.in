@@ -1,6 +1,6 @@
 void main()
 {
 int a;
-float b;
+double b;
 b = a + 5 * 6;
 }

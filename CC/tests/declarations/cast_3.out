@@ -1,5 +1,5 @@
 type <int>
-type <float>
+type <double>
 type <void>
 type <int*>
 	pointer to <int>
@@ -52,19 +52,19 @@ function main
 			array [
 				{int 5}
 					type <int>
-			] of <float>
+			] of <double>
 		type <2>
 			array [
 				{int 5}
 					type <int>
-			] of <float>
+			] of <double>
 		variable c of type <2> initialized by
 			{cast}
 				type <1>
 					array [
 						{int 5}
 							type <int>
-					] of <float>
+					] of <double>
 			| 
 			+-<1>
 			| 

@@ -1,6 +1,6 @@
 void main()
 {
 void* a;
-float* b;
+double* b;
 a = b;
 }

@@ -1,5 +1,5 @@
 type <int>
-type <float>
+type <double>
 type <void>
 type <int*>
 	pointer to <int>
@@ -16,5 +16,5 @@ type <0>
 	array [
 		{int 10}
 			type <int>
-	] of pointer to pointer to <float>
+	] of pointer to pointer to <double>
 variable b of type <0>

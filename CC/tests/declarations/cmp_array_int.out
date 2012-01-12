@@ -1,5 +1,5 @@
 type <int>
-type <float>
+type <double>
 type <void>
 type <int*>
 	pointer to <int>
@@ -21,7 +21,7 @@ function main
 			array [
 				{int 4}
 					type <int>
-			] of <float>
+			] of <double>
 		variable a of type <0>
 		variable b of type <int>
 	| 
@@ -31,22 +31,22 @@ function main
 				type <int>
 	    | 
 	    +-{[]}
-					type <float>
+					type <double>
 	    | | 
 	    | +-{a}
 						type <0>
 							array [
 								{int 4}
 									type <int>
-							] of <float>
+							] of <double>
 	    | | 
 	    | +-{int 0}
 						type <int>
 	    | 
 	    +-{cast}
-					type <float>
+					type <double>
 	      | 
-	      +-<float>
+	      +-<double>
 	      | 
 	      +-{b}
 						type <int>

@@ -1,2 +1,2 @@
-typedef float aa[10];
+typedef double aa[10];
 void main() { int *a; aa b; *a; *b;}

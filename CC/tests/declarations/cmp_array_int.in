@@ -1,6 +1,6 @@
 void main()
 {
-float a[4];
+double a[4];
 int b;
 a[0] == b;
 }

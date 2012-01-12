@@ -1,1 +1,1 @@
-int main(){ float g = (float)(int)5;}
+int main(){ double g = (double)(int)5;}

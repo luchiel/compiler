@@ -1,5 +1,5 @@
 type <int>
-type <float>
+type <double>
 type <void>
 type <int*>
 	pointer to <int>
@@ -18,20 +18,20 @@ function main
 		<no args>
 	{{}}
 		variable a of type <int>
-		variable b of type <float>
+		variable b of type <double>
 	| 
 	+-{;}
 	  | 
 	  +-{/=}
-				type <float>
+				type <double>
 	    | 
 	    +-{b}
-					type <float>
+					type <double>
 	    | 
 	    +-{cast}
-					type <float>
+					type <double>
 	      | 
-	      +-<float>
+	      +-<double>
 	      | 
 	      +-{a}
 						type <int>

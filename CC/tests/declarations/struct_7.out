@@ -1,5 +1,5 @@
 type <int>
-type <float>
+type <double>
 type <void>
 type <int*>
 	pointer to <int>
@@ -17,7 +17,7 @@ type <0>
 		tag a
 		type <1>
 			array [
-			] of pointer to <float>
+			] of pointer to <double>
 		variable r of type <1>
 		type <2>
 			struct 2

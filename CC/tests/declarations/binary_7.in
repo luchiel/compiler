@@ -1,7 +1,7 @@
 void main()
 {
 int* a;
-float b;
-float c[4];
+double b;
+double c[4];
 a && b || c;
 }

@@ -1,5 +1,5 @@
 struct a
 {
-    float *r[];
+    double *r[];
     struct { int g; } f;
 } b[10];

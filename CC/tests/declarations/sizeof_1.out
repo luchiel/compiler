@@ -1,5 +1,5 @@
 type <int>
-type <float>
+type <double>
 type <void>
 type <int*>
 	pointer to <int>
@@ -21,4 +21,4 @@ function main
 			{sizeof}
 				type <int>
 			| 
-			+-<float>
+			+-<double>
