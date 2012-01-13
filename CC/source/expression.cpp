@@ -330,10 +330,10 @@ void BinaryNode::gen(AbstractGenerator& g, bool withResult)
 
         switch(type)
         {
-            //case TOK_DIV:      g.gen(cDivsd, rEAX, rEBX); break;
-            //case TOK_ASTERISK: g.gen(cMulsd, rEAX, rEBX); break;
+            case TOK_DIV:      g.gen(cDivsd, rEAX, rEBX); break;
+            case TOK_ASTERISK: g.gen(cMulsd, rEAX, rEBX); break;
             case TOK_PLUS:     g.gen(cAddsd, rXMM0, rXMM1); break;
-            //case TOK_MINUS:    g.gen(cSubsd, rEAX, rEBX); break;
+            case TOK_MINUS:    g.gen(cSubsd, rEAX, rEBX); break;
             case TOK_L:  g.genDoubleCmp(cSetL/*1*/); break;
             case TOK_G:  g.genDoubleCmp(cSetG/*6*/); break;
             case TOK_LE: g.genDoubleCmp(cSetLE/*2*/); break;

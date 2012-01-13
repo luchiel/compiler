@@ -144,6 +144,9 @@ void Command::out()
         cmdNames[cCmpsd] = new string("xmm_cmpsd");
         cmdNames[cComisd] = new string("comisd");
         cmdNames[cAddsd] = new string("addsd");
+        cmdNames[cAddsd] = new string("subsd");
+        cmdNames[cAddsd] = new string("mulsd");
+        cmdNames[cAddsd] = new string("divsd");
     }
     cout << '\t' << *cmdNames[command] << '\t';
     for(unsigned int i = 0; i < args.size(); ++i)
