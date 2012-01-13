@@ -49,4 +49,4 @@ function main
 	        +-{int 6}
 							type <int>
 	        | 
-	        +-{int 4}
+	        +-{int 8}
