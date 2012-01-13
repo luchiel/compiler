@@ -140,39 +140,42 @@ void JumpStatement::gen(AbstractGenerator& g, bool withResult)
         g.gen(cJmp, g.returnLabel());
 }
 
+void LoopStatement::genCheckCondition(AbstractGenerator& g, Node* cond)
+{
+    cond->gen(g);
+    g.gen(cPop, rEAX);
+    g.gen(cTest, rEAX, rEAX);
+}
+
+void LoopStatement::genLoop(AbstractGenerator& g)
+{
+    g.pushJumpLabels(breakLabel, continueLabel);
+    loop->gen(g, false);
+    g.popJumpLabels();
+}
+
 void IterationStatement::gen(AbstractGenerator& g, bool withResult)
 {
+    continueLabel = g.label();
+    breakLabel = g.label();
     if(type == TOK_DO)
     {
-        Argument* l1 = g.label();
-        Argument* l2 = g.label(); //continue label
-        Argument* l3 = g.label(); //break label
-        g.genLabel(l1);
-        g.pushJumpLabels(l3, l2);
-        loop->gen(g, false);
-        g.popJumpLabels();
-        g.genLabel(l2);
-        cond->gen(g);
-        g.gen(cPop, rEAX);
-        g.gen(cTest, rEAX, rEAX);
-        g.gen(cJNZ, *l1);
-        g.genLabel(l3);
+        Argument* startLabel = g.label();
+        g.genLabel(startLabel);
+        genLoop(g);
+        g.genLabel(continueLabel);
+        genCheckCondition(g, cond);
+        g.gen(cJNZ, *startLabel);
     }
     else
     {
-        Argument* l1 = g.label(); //continue label
-        Argument* l2 = g.label(); //break label
-        g.genLabel(l1);
-        cond->gen(g);
-        g.gen(cPop, rEAX);
-        g.gen(cTest, rEAX, rEAX);
-        g.gen(cJZ, *l2);
-        g.pushJumpLabels(l2, l1);
-        loop->gen(g, false);
-        g.popJumpLabels();
-        g.gen(cJmp, *l1);
-        g.genLabel(l2);
+        g.genLabel(continueLabel);
+        genCheckCondition(g, cond);
+        g.gen(cJZ, *breakLabel);
+        genLoop(g);
+        g.gen(cJmp, *continueLabel);
     }
+    g.genLabel(breakLabel);
 }
 
 void ForStatement::gen(AbstractGenerator& g, bool withResult)
@@ -181,25 +184,21 @@ void ForStatement::gen(AbstractGenerator& g, bool withResult)
     iterators->genInitLocals(g);
     if(init != NULL)
         init->gen(g, false);
-    Argument* l1 = g.label();
-    Argument* l2 = g.label(); //continue label
-    Argument* l3 = g.label(); //break label
-    g.genLabel(l1);
+    Argument* startLabel = g.label();
+    continueLabel = g.label();
+    breakLabel = g.label();
+    g.genLabel(startLabel);
     if(dynamic_cast<EmptyExpressionStatement*>(cond) == NULL)
     {
-        cond->gen(g);
-        g.gen(cPop, rEAX);
-        g.gen(cTest, rEAX, rEAX);
-        g.gen(cJZ, *l3);
+        genCheckCondition(g, cond);
+        g.gen(cJZ, *breakLabel);
     }
-    g.pushJumpLabels(l3, l2);
-    loop->gen(g, false);
-    g.popJumpLabels();
-    g.genLabel(l2);
+    genLoop(g);
+    g.genLabel(continueLabel);
     if(mod != NULL)
         mod->gen(g, false);
-    g.gen(cJmp, *l1);
-    g.genLabel(l3);
+    g.gen(cJmp, *startLabel);
+    g.genLabel(breakLabel);
     g.gen(cAdd, rESP, (iterators->offset() - iterators->parent->offset()) * 4);
 }
 

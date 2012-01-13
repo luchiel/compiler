@@ -6,6 +6,7 @@
 #include "node.h"
 #include "expression.h"
 #include "symbol_table.h"
+#include "abstract_generator.h"
 
 using namespace std;
 
@@ -60,30 +61,42 @@ public:
     virtual Node* optimized();
 };
 
-class IterationStatement: public Node
+class LoopStatement: public Node
 {
+protected:
+    Argument* breakLabel;
+    Argument* continueLabel;
+    void genCheckCondition(AbstractGenerator& g, Node* cond);
+    void genLoop(AbstractGenerator& g);
+
 public:
     TokenType type;
     Node* loop;
+    LoopStatement():
+        breakLabel(NULL), continueLabel(NULL),
+        type(TOK_UNDEF), loop(NULL) {}
+};
+
+class IterationStatement: public LoopStatement
+{
+public:
     ENode* cond;
-    IterationStatement(): type(TOK_UNDEF), loop(NULL), cond(NULL) {}
+    IterationStatement(): LoopStatement(), cond(NULL) {}
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
     virtual void gen(AbstractGenerator& g, bool withResult = true);
     virtual Node* optimized();
 };
 
-class ForStatement: public Node
+class ForStatement: public LoopStatement
 {
 public:
     SymbolTable* iterators;
-    TokenType type;
-    Node* loop;
-    Node* init;
     Node* cond;
+    Node* init;
     Node* mod;
     ForStatement():
-        iterators(new SymbolTable()), type(TOK_FOR),
-        loop(NULL), init(NULL), cond(NULL), mod(NULL) {}
+        LoopStatement(), iterators(new SymbolTable()), cond(NULL),
+        init(NULL), mod(NULL) { type = TOK_FOR; }
     virtual void out(unsigned int depth, vector<bool>* branches, int indent = 0);
     virtual void gen(AbstractGenerator& g, bool withResult = true);
     virtual Node* optimized();
