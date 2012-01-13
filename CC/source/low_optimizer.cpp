@@ -142,23 +142,30 @@ bool Generator::tryMakeOpWithImm(list<Command>::iterator& i)
     }
 }
 
-bool Generator::tryRemoveUselessMovLea(list<Command>::iterator& i)
+bool Generator::tryRemoveUselessMovLeaXor(list<Command>::iterator& i)
 {
-    if(i->command != cMov && i->command != cLea || i->args[0]->offset != -1)
+    if
+    (
+           i->command != cMov
+        && i->command != cLea
+        && (i->command != cXor || *i->args[0] != *i->args[1])
+        || i->args[0]->offset != -1
+    )
         return false;
-    list<Command>::iterator j(i);
-    j++;
+
+    list<Command>::iterator j(i); j++;
     bool found = false;
     for(; j != codePart.end() && !found; ++j)
         for(int k = j->args.size() - 1; k >= 0; --k)
             if(equalUpToOffset(*i->args[0], *j->args[k]))
             {
-                if
-                (
-                       k > 0
-                    || j->command != cPop && j->command != cMov && j->command != cLea
-                    || i->args[0]->offset != j->args[k]->offset
-                )
+                if(j->args[k]->offset != -1)
+                    return false;
+                if(j->command == cXor && *j->args[0] != *j->args[1])
+                    return false;
+                if(k > 0)
+                    return false;
+                if(j->command != cPop && j->command != cMov && j->command != cLea)
                     return false;
                 found = true;
                 break;

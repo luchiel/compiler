@@ -191,7 +191,7 @@ void Generator::optimize()
                 || tryAddSub0(i)
                 || tryAddSub1(i)
                 || tryMovSelf(i)
-                || tryRemoveUselessMovLea(i)
+                || tryRemoveUselessMovLeaXor(i)
                 || tryJmpLabel(i)
                 || tryImulWithImm(i)
                 ;
