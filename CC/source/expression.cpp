@@ -25,7 +25,6 @@ void ENode::makeNodeTop(
     printExpType(level + 1 + depth);
 }
 
-
 void IdentNode::out(unsigned int depth, vector<bool>* branches, int level)
 {
     printIndent(depth, branches, level);
@@ -158,7 +157,7 @@ void IdentNode::gen(AbstractGenerator& g, bool withResult)
     {
         case VT_LOCAL:  g.gen(cLea, rEAX, rEBP + Offset(-var->offset * 4)); break;
         case VT_PARAM:  g.gen(cLea, rEAX, rEBP + Offset((var->offset + 3) * 4)); break;
-        case VT_GLOBAL: g.gen(cMov, rEAX, "v_" + var->name + Offset(0)); break;
+        case VT_GLOBAL: g.gen(cMov, rEAX, "v_" + var->name); break;
     }
     if(withResult)
         for(int i = v->type->size() - 1; i >= 0; --i)
@@ -198,9 +197,9 @@ void DoubleNode::gen(AbstractGenerator& g, bool withResult)
     if(withResult)
     {
         string s = g.addDoubleConstant(value);
-        g.gen(cMovsd, rXMM0, s);
+        g.gen(cMovsd, rXMM0, s + Offset(0) + swQword);
         g.gen(cSub, rESP, 8);
-        g.gen(cMovsd, rESP + Offset(0), rXMM0);
+        g.gen(cMovsd, rESP + Offset(0) + swQword, rXMM0);
     }
 }
 
@@ -237,7 +236,7 @@ void CallNode::gen(AbstractGenerator& g, bool withResult)
     for(int j = params.size() - 1; j >= 0; --j)
         params[j]->gen(g);
 
-    g.gen(cCall, isPrintf ? "crt_printf" : "f_" + only->expType->name);
+    g.gen(cCall, "f_" + only->expType->name);
 
     if(!isPrintf)
     {

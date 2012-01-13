@@ -133,9 +133,7 @@ void Tester::runFile(string& testBlock)
             restoreStreams();
             string redirect("1>2>" + _currentTest + ".log");
             string exeFile(_currentTest + ".exe ");
-            system((
-                "ml.exe /coff " + _currentTest + ".asm " +
-                "/Fe" + exeFile + redirect).c_str());
+            system(("fasm " + _currentTest + ".asm").c_str());
             if(ifstream(exeFile.c_str()) != NULL)
                 system((exeFile + redirect).c_str());
             testsCount++;

@@ -84,12 +84,9 @@ void Command::out()
         cout << ":\n";
         return;
     }
-    else if(command == cProc || command == cEndp)
+    else if(command == cRet)
     {
-        if(command == cProc) cout << '\n';
-        args[0]->out();
-        cout << (command == cProc ? " proc\n" : " endp\n");
-        if(command == cEndp) cout << '\n';
+        cout << "\tret\n\n";
         return;
     }
     if(cmdNames.size() == 0)
@@ -114,9 +111,9 @@ void Command::out()
         cmdNames[cSar] = new string("sar");
         cmdNames[cLabel] = new string(":");
         cmdNames[cCall] = new string("call");
-        cmdNames[cProc] = new string("proc");
-        cmdNames[cEndp] = new string("endp");
-        cmdNames[cRet] = new string("ret");
+        //cmdNames[cProc] = new string("proc");
+        //cmdNames[cEndp] = new string("endp");
+        //cmdNames[cRet] = new string("ret");
         cmdNames[cCdq] = new string("cdq");
         cmdNames[cTest] = new string("test");
         cmdNames[cCmp] = new string("cmp");
@@ -140,8 +137,8 @@ void Command::out()
         cmdNames[cJNZ] = new string("jnz");
         cmdNames[cJmp] = new string("jmp");
 
-        cmdNames[cMovsd] = new string("xmm_movsd");
-        cmdNames[cCmpsd] = new string("xmm_cmpsd");
+        cmdNames[cMovsd] = new string("movsd");
+        cmdNames[cCmpsd] = new string("cmpsd");
         cmdNames[cComisd] = new string("comisd");
         cmdNames[cAddsd] = new string("addsd");
         cmdNames[cAddsd] = new string("subsd");
@@ -238,45 +235,52 @@ Argument* AbstractGenerator::label()
 
 void Argument::out()
 {
+    if(regNames.size() == 0)
+    {
+        regNames[rEAX] = new string("eax");
+        regNames[rEBX] = new string("ebx");
+        regNames[rECX] = new string("ecx");
+        regNames[rEDX] = new string("edx");
+        regNames[rESI] = new string("esi");
+        regNames[rEDI] = new string("edi");
+        regNames[rESP] = new string("esp");
+        regNames[rEBP] = new string("ebp");
+        regNames[rCL] = new string("cl");
+
+        regNames[rXMM0] = new string("xmm0");
+        regNames[rXMM1] = new string("xmm1");
+    }
+
     switch(type)
     {
-        case atReg:
-            if(regNames.size() == 0)
+        case atLabel: cout << *value.sArg; break;
+        case atConst: cout << value.constArg; break;
+        default:
+            if(offset != -1)
+                cout << (size == swDword ? "dword" : "qword") << " [";
+            
+            if(type == atReg)
+                cout << *regNames[value.regArg];
+            else
             {
-                regNames[rEAX] = new string("eax");
-                regNames[rEBX] = new string("ebx");
-                regNames[rECX] = new string("ecx");
-                regNames[rEDX] = new string("edx");
-                regNames[rESI] = new string("esi");
-                regNames[rEDI] = new string("edi");
-                regNames[rESP] = new string("esp");
-                regNames[rEBP] = new string("ebp");
-                regNames[rCL] = new string("cl");
-
-                regNames[rXMM0] = new string("xmm0");
-                regNames[rXMM1] = new string("xmm1");
+                if((*value.sArg) == "f_printf")
+                    cout << '[' << *value.sArg << ']';
+                else
+                    cout << *value.sArg;
             }
-            if(offset != -1) cout << "dword ptr [";
-            cout << *regNames[value.regArg];
             if(offset != -1)
             {
                 if(offset != 0)
                     cout << (offset > 0 ? "+" : "") << offset;
                 cout << ']';
             }
-            return;
-        case atLabel:
-            cout << *value.sArg;
-            return;
-        case atConst:
-            cout << value.constArg;
-            break;
-        case atMem:
-            if((*value.sArg)[0] != 'f' && *value.sArg != "crt_printf")
-                cout << "offset ";
-            cout << *value.sArg;
-            break;
     }
+}
+
+Argument& Argument::operator+(SizeInWords size_)
+{
+    size = size_;
+    return *this;
 }
 
 bool Argument::operator==(const Argument& a)

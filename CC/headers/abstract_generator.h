@@ -24,7 +24,7 @@ enum AsmCommand
     cCmp, cTest,
     cJE, cJNE, cJL, cJG, cJLE, cJGE, cJZ, cJNZ, cJmp,
     cSetE, cSetNE, cSetL, cSetG, cSetLE, cSetGE, cSetZ, cSetNZ,
-    cLabel, cCall, cProc, cEndp, cRet,
+    cLabel, cCall, cRet,
 
     cMovsd, cAddsd, cSubsd, cMulsd, cDivsd, cCmpsd, cComisd,
     cCvtsi2sd, cCvtsd2si,
@@ -65,11 +65,15 @@ public:
     void out();
 };
 
+enum SizeInWords { swDword, swQword };
+
 class Argument
 {
 public:
     ArgType type;
     int offset;
+    SizeInWords size;
+
     union
     {
         int constArg;
@@ -77,24 +81,29 @@ public:
         string* sArg;
     }
     value;
-    Argument(AsmRegister r_): type(atReg), offset(-1) { value.regArg = r_; }
-    Argument(ArgType type_): type(type_), offset(-1) {}
-    Argument(int v_): type(atConst), offset(-1) { value.constArg = v_; }
-    Argument(unsigned int v_): type(atConst), offset(-1) { value.constArg = v_; }
+    Argument(AsmRegister r_):
+        type(atReg), offset(-1), size(swDword) { value.regArg = r_; }
+    Argument(ArgType type_):
+        type(type_), offset(-1), size(swDword) {}
+    Argument(int v_):
+        type(atConst), offset(-1), size(swDword) { value.constArg = v_; }
+    Argument(unsigned int v_):
+        type(atConst), offset(-1), size(swDword) { value.constArg = v_; }
 
-    Argument(string v_, ArgType type_): type(type_), offset(-1)
+    Argument(string v_, ArgType type_): type(type_), offset(-1), size(swDword)
         { value.sArg = new string(v_); }
-    Argument(string v_): offset(-1)
+    Argument(string v_): offset(-1), size(swDword)
     {
         value.sArg = new string(v_);
         type = v_[0] == 'l' ? atLabel : atMem; //!f -> offset
     }
-    Argument(const Argument& a): type(a.type), offset(a.offset), value(a.value) {}
+    Argument(const Argument& a): type(a.type), offset(a.offset), size(a.size), value(a.value) {}
 
     virtual void out();
     bool operator==(const Argument& a);
     bool operator!=(const Argument& a) { return !(*this == a); }
     friend bool equalUpToOffset(const Argument& a, const Argument& b);
+    Argument& operator+(SizeInWords size_);
 };
 
 class Offset

@@ -50,6 +50,7 @@ bool Generator::tryAddSub1(list<Command>::iterator& i)
 {
     if(isAddSubWithImm(*i, 1, false))
     {
+        delete i->args[i->args.size() - 1];
         i->args.pop_back();
         i->command = i->command == cAdd ? cInc : cDec;
         return true;
@@ -295,7 +296,7 @@ bool Generator::tryLiftPop(list<Command>::iterator& i)
             }
             break;
         default:
-            //cLabel, cProc, cRet, cCall, cEndp, cPop, cPush,
+            //cLabel, cRet, cCall, cPop, cPush,
             //cJE, cJNE, cJL, cJG, cJLE, cJGE, cJZ, cJNZ, cJmp,
             //to upper 1: pop may be unexpected, complicated
             //to lower 1: pop does not change flags, so probably allowed

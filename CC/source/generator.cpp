@@ -32,7 +32,8 @@ void Generator::genCode(SymbolTypeFunction* f)
 
     genReturnLabel();
 
-    gen(cProc, "f_" + f->name);
+    //gen(cProc, "f_" + f->name);
+    gen(cLabel, "f_" + f->name);
     gen(cPush, rEBP);
     gen(cMov, rEBP, rESP);
 
@@ -44,7 +45,7 @@ void Generator::genCode(SymbolTypeFunction* f)
     gen(cMov, rESP, rEBP);
     gen(cPop, rEBP);
     gen(cRet);
-    gen(cEndp, "f_" + f->name);
+    //gen(cEndp, "f_" + f->name);
 
     popReturnLabel();
 }
@@ -72,15 +73,11 @@ void Generator::genData(const SymbolTable& t)
 void Generator::out()
 {
     cout <<
-        ".686\n.xmm\n.model flat, stdcall\n"
-        "include \\masm32\\include\\msvcrt.inc\n"
-        "include \\masm32\\include\\kernel32.inc\n"
-        "includelib \\masm32\\lib\\kernel32.lib\n"
-        "includelib \\masm32\\lib\\msvcrt.lib\n\n"
+        "format PE console\n"
+        "entry main\n\n"
+        "include '\\fasm\\include\\win32a.inc'\n";
 
-        "ExitProcess proto :DWORD\n";
-
-    cout << "\n.data\n";
+    cout << "\nsection '.data' data readable writeable\n";
     for(unsigned int i = 0; i < dataPart.size(); ++i)
         dataPart[i]->out();
     for(unsigned int i = 0; i < rdataPart.size(); ++i)
@@ -88,21 +85,16 @@ void Generator::out()
     for(unsigned int i = 0; i < fdataPart.size(); ++i)
         fdataPart[i]->out();
 
-    cout <<
-        "\nxmm_movsd macro ops:vararg\n"
-        "local beg_instr\n"
-        "local end_instr\n"
-        "beg_instr: movss &ops\n"
-        "end_instr: org beg_instr\n"
-        "db 0F2h\n"
-        "org end_instr\n"
-        "endm\n";
-
-    cout << "\n.code\n";
+    cout << "\nsection '.code' code executable\n";
     for(list<Command>::iterator j = codePart.begin(); j != codePart.end(); ++j)
         j->out();
 
-    cout << "call ExitProcess\n\nend main" << endl;
+    cout <<
+        "stdcall [ExitProcess],0\n\n"
+        "section '.idata' import data readable\n\n"
+        "library kernel32,'kernel32.dll', msvcrt,'msvcrt.dll'\n"
+        "import msvcrt, f_printf,'printf'\n"
+        "import kernel32, ExitProcess,'ExitProcess'" << endl;
 }
 
 void Generator::generate(bool doOptimize)
