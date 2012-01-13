@@ -187,9 +187,9 @@ Node* CompoundStatement::optimized()
         {
             if(++i != items->end())
                 i = items->erase(i, items->end());
-            break;
         }
-        i++;
+        else
+            i++;
     }
     return this;
 }

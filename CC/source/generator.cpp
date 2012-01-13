@@ -87,6 +87,17 @@ void Generator::out()
         rdataPart[i]->out();
     for(unsigned int i = 0; i < fdataPart.size(); ++i)
         fdataPart[i]->out();
+
+    cout <<
+        "\nxmm_movsd macro ops:vararg\n"
+        "local beg_instr\n"
+        "local end_instr\n"
+        "beg_instr: movss &ops\n"
+        "end_instr: org beg_instr\n"
+        "db 0F2h\n"
+        "org end_instr\n"
+        "endm\n";
+
     cout << "\n.code\n";
     for(list<Command>::iterator j = codePart.begin(); j != codePart.end(); ++j)
         j->out();

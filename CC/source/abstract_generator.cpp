@@ -50,13 +50,18 @@ void AbstractGenerator::genIntCmp(const Command& cmpcmd)
     gen(cMov, rEAX, rECX);
 }
 
-void AbstractGenerator::genDoubleCmp(const Command& cmpcmd)
+void AbstractGenerator::genDoubleCmp(const Command& cmpcmd)//const int cmp)
 {
     gen(cXor, rECX, rECX);
-    gen(cMovss, rXMM0, rESP + Offset(4));
-    gen(cComiss, rXMM0, rESP + Offset(0));
+    //thanks to masm32
+    gen(cComisd, rXMM0, rXMM1);
+    //gen(cCmpsd, rXMM1, rESP + Offset(0), cmp);
+    //gen(cMovsd);
+    //gen(cMovsd, rXMM0, rESP + Offset(0));
+    //gen(cComisd, rXMM1, rXMM0);//rESP + Offset(0));
     gen(cmpcmd, rCL);
     gen(cMov, rEAX, rECX);
+    //end thanks to masm32
 }
 
 void AbstractGenerator::pushJumpLabels(Argument* breakA, Argument* continueA)
@@ -135,8 +140,10 @@ void Command::out()
         cmdNames[cJNZ] = new string("jnz");
         cmdNames[cJmp] = new string("jmp");
 
-        cmdNames[cMovss] = new string("movss");
-        cmdNames[cComiss] = new string("comiss");
+        cmdNames[cMovsd] = new string("xmm_movsd");
+        cmdNames[cCmpsd] = new string("xmm_cmpsd");
+        cmdNames[cComisd] = new string("comisd");
+        cmdNames[cAddsd] = new string("addsd");
     }
     cout << '\t' << *cmdNames[command] << '\t';
     for(unsigned int i = 0; i < args.size(); ++i)
@@ -205,7 +212,7 @@ void RData::out()
 
 void FData::out()
 {
-    cout << name << " dd " << value << "\n";
+    cout << name << " dq " << value << "\n";
 }
 
 Argument operator+(Argument arg, Offset o)
@@ -244,6 +251,7 @@ void Argument::out()
                 regNames[rCL] = new string("cl");
 
                 regNames[rXMM0] = new string("xmm0");
+                regNames[rXMM1] = new string("xmm1");
             }
             if(offset != -1) cout << "dword ptr [";
             cout << *regNames[value.regArg];
@@ -259,9 +267,6 @@ void Argument::out()
             return;
         case atConst:
             cout << value.constArg;
-            break;
-        case atConstF:
-            cout << value.constArgF;
             break;
         case atMem:
             if((*value.sArg)[0] != 'f' && *value.sArg != "crt_printf")
@@ -287,7 +292,6 @@ bool equalUpToOffset(const Argument& a, const Argument& b)
                    (a.value.regArg == rECX || a.value.regArg == rCL)
                 && (b.value.regArg == rECX || b.value.regArg == rCL);
         case atConst: return b.value.constArg == a.value.constArg;
-        case atConstF: return b.value.constArgF == a.value.constArgF;
         default: return *b.value.sArg == *a.value.sArg;
     }
 }

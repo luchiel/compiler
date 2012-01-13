@@ -1,0 +1,4 @@
+void main()
+{
+printf("%.2f", 4.5);
+}

@@ -26,11 +26,11 @@ enum AsmCommand
     cSetE, cSetNE, cSetL, cSetG, cSetLE, cSetGE, cSetZ, cSetNZ,
     cLabel, cCall, cProc, cEndp, cRet,
 
-    cMovss, cAddss, cSubss, cMulss, cDivss, cComiss,
-    cCvtsi2ss, cCvtss2si,
+    cMovsd, cAddsd, cSubsd, cMulsd, cDivsd, cCmpsd, cComisd,
+    cCvtsi2sd, cCvtsd2si,
 };
 
-enum ArgType { atReg, atMem, atConst, atLabel, atConstF };
+enum ArgType { atReg, atMem, atConst, atLabel };
 
 class Data
 {
@@ -73,7 +73,6 @@ public:
     union
     {
         int constArg;
-        double constArgF;
         AsmRegister regArg;
         string* sArg;
     }
@@ -82,7 +81,6 @@ public:
     Argument(ArgType type_): type(type_), offset(-1) {}
     Argument(int v_): type(atConst), offset(-1) { value.constArg = v_; }
     Argument(unsigned int v_): type(atConst), offset(-1) { value.constArg = v_; }
-    Argument(double v_): type(atConstF), offset(-1) { value.constArgF = v_; }
 
     Argument(string v_, ArgType type_): type(type_), offset(-1)
         { value.sArg = new string(v_); }

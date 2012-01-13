@@ -153,11 +153,12 @@ bool Generator::tryRemoveUselessMovLea(list<Command>::iterator& i)
         for(int k = j->args.size() - 1; k >= 0; --k)
             if(equalUpToOffset(*i->args[0], *j->args[k]))
             {
-                if(k > 0)
-                    return false;
-                if(j->command != cPop && j->command != cMov && j->command != cLea)
-                    return false;
-                if(i->args[0]->offset != j->args[k]->offset)
+                if
+                (
+                       k > 0
+                    || j->command != cPop && j->command != cMov && j->command != cLea
+                    || i->args[0]->offset != j->args[k]->offset
+                )
                     return false;
                 found = true;
                 break;
@@ -177,8 +178,7 @@ bool Generator::tryRemoveUselessMovLea(list<Command>::iterator& i)
 
 bool Generator::tryUniteLabels(list<Command>::iterator& i)
 {
-    list<Command>::iterator j(i);
-    j--; //control begin outside
+    list<Command>::iterator j(i); j--;
     if(i->command != cLabel || j->command != cLabel || *j->args[0]->value.sArg == "main")
         return false;
     for(list<Command>::iterator k = codePart.begin(); k != codePart.end(); ++k)
