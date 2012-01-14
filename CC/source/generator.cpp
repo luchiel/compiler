@@ -182,9 +182,7 @@ void Generator::optimize()
                     || tryOtherLeaMov(i)
                     //|| tryIdivWithImm(i)
                     || tryConstCondition(i)
-                    || tryUniteDoubleMovMov(i)
                     || tryUniteDoublePushPop(i)
-                    || tryLiftSubESPImm(i)
                 )
                 || tryAddSub0(i)
                 || tryAddSub1(i)
@@ -202,6 +200,8 @@ void Generator::optimize()
     while(i != codePart.end())
     {
         tryMov0(i);
+        if(i != codePart.begin() && tryLiftSubESPImm(i))
+            tryUniteAddSub(i);
         i++;
     }
 }
