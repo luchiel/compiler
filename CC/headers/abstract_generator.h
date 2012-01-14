@@ -31,6 +31,7 @@ enum AsmCommand
 };
 
 enum ArgType { atReg, atMem, atConst, atLabel };
+enum DataType { dtInt, dtDouble };
 
 class Data
 {
@@ -43,7 +44,10 @@ public:
         double doubleInit;
     }
     init;
-    Data(const string& name_, const int size_): name(name_), size(size_) { init.intInit = 0; }
+    DataType initType;
+
+    Data(const string& name_, const int size_):
+        name(name_), size(size_), initType(dtInt) { init.intInit = 0; }
     void out();
 };
 

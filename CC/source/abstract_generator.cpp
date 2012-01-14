@@ -176,11 +176,20 @@ bool Command::operator==(Command c)
 
 void Data::out()
 {
-    cout << name << " dd ";
-    if(size == 1)
-        cout << init.intInit << "\n";
+    //assume only single initializers & dtDouble checked only for singles
+    if(initType == dtDouble)
+    {
+        cout << name << " dq ";
+        cout << showpoint << init.doubleInit << "\n";
+    }
     else
-        cout << size << " dup(0)\n";
+    {
+        cout << name << " dd ";
+        if(size == 1)
+            cout << init.intInit << "\n";
+        else
+            cout << size << " dup(0)\n";
+    }
 }
 
 void RData::out()

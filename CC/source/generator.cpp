@@ -32,7 +32,6 @@ void Generator::genCode(SymbolTypeFunction* f)
 
     genReturnLabel();
 
-    //gen(cProc, "f_" + f->name);
     gen(cLabel, "f_" + f->name);
     gen(cPush, rEBP);
     gen(cMov, rEBP, rESP);
@@ -45,7 +44,6 @@ void Generator::genCode(SymbolTypeFunction* f)
     gen(cMov, rESP, rEBP);
     gen(cPop, rEBP);
     gen(cRet);
-    //gen(cEndp, "f_" + f->name);
 
     popReturnLabel();
 }
@@ -64,8 +62,16 @@ void Generator::genData(const SymbolTable& t)
         Data* d = new Data("v_" + var->name, var->type->size());
         dataPart.push_back(d);
 
-        if(var->initializer != NULL && static_cast<ENode*>(var->initializer)->isIntConst())
-            d->init.intInit = static_cast<IntNode*>(var->initializer)->value;
+        if(var->initializer != NULL)
+        {
+            if(static_cast<ENode*>(var->initializer)->isIntConst())
+                d->init.intInit = static_cast<IntNode*>(var->initializer)->value;
+            else if(static_cast<ENode*>(var->initializer)->isDoubleConst())
+            {
+                d->initType = dtDouble;
+                d->init.doubleInit = static_cast<DoubleNode*>(var->initializer)->value;
+            }
+        }
         //elses currently not supported
     }
 }

@@ -28,6 +28,7 @@ public:
     virtual void genLValue(AbstractGenerator& g) {}
     virtual bool isIntConst() { return false; }
     virtual bool isDoubleConst() { return false; }
+    virtual bool isNULL() { return false; }
     bool isConst() { return isIntConst() || isDoubleConst(); }
 };
 
@@ -42,6 +43,7 @@ public:
 
     virtual void gen(AbstractGenerator& g, bool withResult = true);
     virtual void genLValue(AbstractGenerator& g);
+    virtual bool isNULL() { return var->name == "NULL"; }
 };
 
 class StringNode: public ENode
