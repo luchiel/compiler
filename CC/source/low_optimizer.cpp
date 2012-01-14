@@ -592,4 +592,28 @@ bool Generator::tryIdivWithImm(list<Command>::iterator& i)
     return true;
 }
 
+bool Generator::tryUniteDoubleMovMov(list<Command>::iterator& i)
+{
+/*
+    movsd   qword [esp],xmm0
+    movsd   xmm0,qword [esp]
+*/
+    return false;
+    list<Command>::iterator j(i); j--;
+    if
+    (
+        j->command == cMovsd && i->command == cMovsd &&
+        *j->args[0] == *i->args[1] && *j->args[1] == *i->args[0] &&
+        i->args[0]->offset == -1
+    )
+    {
+        codePart.erase(j);
+        j = i;
+        i++;
+        codePart.erase(j);
+        return true;
+    }
+    return false;
+}
+
 }

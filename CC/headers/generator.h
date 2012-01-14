@@ -63,6 +63,7 @@ private:
     bool tryImulWithImm(list<Command>::iterator& i);
     bool tryIdivWithImm(list<Command>::iterator& i);
     bool tryConstCondition(list<Command>::iterator& i);
+    bool tryUniteDoubleMovMov(list<Command>::iterator& i);
 
 public:
     Generator(SymbolTable* symbols_):

@@ -153,13 +153,23 @@ void IdentNode::gen(AbstractGenerator& g, bool withResult)
     }
     SymbolVariable* v = static_cast<SymbolVariable*>(var);
 
+    int od = expType->name == "double" ? 1 : 0;
+
     switch(v->varType)
     {
-        case VT_LOCAL:  g.gen(cLea, rEAX, rEBP + Offset(-var->offset * 4)); break;
-        case VT_PARAM:  g.gen(cLea, rEAX, rEBP + Offset((var->offset + 3) * 4)); break;
+        case VT_LOCAL:  g.gen(cLea, rEAX, rEBP + Offset(-(var->offset + od) * 4)); break;
+        case VT_PARAM:  g.gen(cLea, rEAX, rEBP + Offset((var->offset + od + 3) * 4)); break;
         case VT_GLOBAL: g.gen(cMov, rEAX, "v_" + var->name); break;
     }
-    if(withResult)
+    if(!withResult)
+        return;
+
+    if(od)
+    {
+        g.gen(cMovsd, rXMM0, rEAX + Offset(0) + swQword);
+        g.genDoublePush(rXMM0);
+    }
+    else
         for(int i = v->type->size() - 1; i >= 0; --i)
             g.gen(cPush, rEAX + Offset(i * 4 * (varType == VT_LOCAL ? -1 : 1)));
 }
@@ -257,11 +267,18 @@ void UnaryNode::gen(AbstractGenerator& g, bool withResult)
     if(type == TOK_ASTERISK)
     {
         only->genLValue(g);
+
         g.gen(cPop, rEAX);
         if(!only->expType->isArray())
             g.gen(cMov, rEAX, rEAX + Offset(0));
         if(withResult)
-            g.gen(cPush, rEAX + Offset(0));
+            if(expType->name == "double")
+            {
+                g.gen(cMovsd, rXMM0, rEAX + Offset(0) + swQword);
+                g.genDoublePush(rXMM0);
+            }
+            else
+                g.gen(cPush, rEAX + Offset(0));
         return;
     }
     else if(type == TOK_AMP)
@@ -272,46 +289,95 @@ void UnaryNode::gen(AbstractGenerator& g, bool withResult)
         return;
     }
     only->gen(g);
-    g.gen(cPop, rEAX);
-    switch(type)
+    if(only->expType->name == "double")
     {
-        case TOK_INC:
-        case TOK_DEC:
-            only->genLValue(g);
-            g.gen(cPop, rEBX);
-            g.gen(type == TOK_INC ? cInc : cDec, rEBX + Offset(0));
-            g.gen(cMov, rEAX, rEBX + Offset(0));
-            break;
-        case TOK_NOT:
-            g.gen(cXor, rECX, rECX);
-            g.gen(cTest, rEAX, rEAX);
-            g.gen(cSetZ, rCL);
-            g.gen(cMov, rEAX, rECX);
-            break;
-        case TOK_TILDA: g.gen(cNot, rEAX); break;
-        case TOK_MINUS: g.gen(cNeg, rEAX); break;
-        case TOK_PLUS:  break;
+        g.genDoublePop(rXMM0);
+        switch(type)
+        {
+            case TOK_NOT:
+                g.gen(cXor, rECX, rECX);
+                g.gen(cComisd, rXMM0, string("d_zero") + Offset(0) + swQword);
+                g.gen(cSetZ, rCL);
+                if(withResult)
+                    g.gen(cPush, rECX);
+                return;
+            case TOK_INC:
+            case TOK_DEC:
+                only->genLValue(g);
+                g.gen(cPop, rEBX);
+                g.gen(
+                    type == TOK_INC ? cAddsd : cSubsd,
+                    rXMM0, string("d_one") + Offset(0) + swQword
+                );
+                g.gen(cMovsd, rEBX + Offset(0) + swQword, rXMM0);
+                break;
+            case TOK_MINUS:
+                g.gen(cMulsd, rXMM0, string("d_minus_one") + Offset(0) + swQword);
+                break;
+        }
+        if(withResult)
+            g.genDoublePush(rXMM0);
     }
-    if(withResult)
-        g.gen(cPush, rEAX);
+    else
+    {
+        g.gen(cPop, rEAX);
+        switch(type)
+        {
+            case TOK_INC:
+            case TOK_DEC:
+                only->genLValue(g);
+                g.gen(cPop, rEBX);
+                g.gen(type == TOK_INC ? cInc : cDec, rEBX + Offset(0));
+                g.gen(cMov, rEAX, rEBX + Offset(0));
+                break;
+            case TOK_NOT:
+                g.gen(cXor, rECX, rECX);
+                g.gen(cTest, rEAX, rEAX);
+                g.gen(cSetZ, rCL);
+                g.gen(cMov, rEAX, rECX);
+                break;
+            case TOK_TILDA: g.gen(cNot, rEAX); break;
+            case TOK_MINUS: g.gen(cNeg, rEAX); break;
+        }
+        if(withResult)
+            g.gen(cPush, rEAX);
+    }
+}
+
+void genCmp0Int(AbstractGenerator& g)
+{
+    g.gen(cPop, rEAX);
+    g.gen(cXor, rECX, rECX);
+    g.gen(cTest, rEAX, rEAX);
+}
+
+void genCmp0Double(AbstractGenerator& g)
+{
+    g.gen(cMovsd, rXMM0, rESP + Offset(0) + swQword);
+    g.gen(cXor, rECX, rECX);
+    g.gen(cComisd, rXMM0, string("d_zero") + Offset(0) + swQword);
 }
 
 void BinaryNode::gen(AbstractGenerator& g, bool withResult)
 {
+    bool leftIsDouble = left->expType->name == "double";
     if(type == TOK_LOGICAL_AND || type == TOK_LOGICAL_OR)
     {
         left->gen(g);
-        g.gen(cPop, rEAX);
-        g.gen(cXor, rECX, rECX);
-        g.gen(cTest, rEAX, rEAX);
+        if(leftIsDouble)
+            genCmp0Double(g);
+        else
+            genCmp0Int(g);
+
         g.gen(cSetNZ, rCL);
         Argument* a = g.label();
         g.gen(type == TOK_LOGICAL_AND ? cJZ : cJNZ, *a);
 
         right->gen(g);
-        g.gen(cPop, rEAX);
-        g.gen(cXor, rECX, rECX);
-        g.gen(cTest, rEAX, rEAX);
+        if(right->expType->name == "double")
+            genCmp0Double(g);
+        else
+            genCmp0Int(g);
         g.gen(cSetNZ, rCL);
 
         g.genLabel(a);
@@ -321,24 +387,34 @@ void BinaryNode::gen(AbstractGenerator& g, bool withResult)
     }
     left->gen(g);
     right->gen(g);
-    if(left->expType->name == "double")
+    if(leftIsDouble)
     {
-        g.gen(cMovsd, rXMM0, rESP + Offset(8));
-        g.gen(cMovsd, rXMM1, rESP + Offset(0));
+        g.gen(cMovsd, rXMM1, rESP + Offset(0) + swQword);
+        g.gen(cMovsd, rXMM0, rESP + Offset(8) + swQword);
         g.gen(cAdd, rESP, 16);
 
         switch(type)
         {
-            case TOK_DIV:      g.gen(cDivsd, rEAX, rEBX); break;
-            case TOK_ASTERISK: g.gen(cMulsd, rEAX, rEBX); break;
-            case TOK_PLUS:     g.gen(cAddsd, rXMM0, rXMM1); break;
-            case TOK_MINUS:    g.gen(cSubsd, rEAX, rEBX); break;
-            case TOK_L:  g.genDoubleCmp(cSetL/*1*/); break;
-            case TOK_G:  g.genDoubleCmp(cSetG/*6*/); break;
-            case TOK_LE: g.genDoubleCmp(cSetLE/*2*/); break;
-            case TOK_GE: g.genDoubleCmp(cSetGE/*5*/); break;
-            case TOK_E:  g.genDoubleCmp(cSetE/*0*/); break;
-            case TOK_NE: g.genDoubleCmp(cSetNE/*4*/); break;
+            case TOK_L:  g.genDoubleCmp(cSetL); break;
+            case TOK_G:  g.genDoubleCmp(cSetG); break;
+            case TOK_LE: g.genDoubleCmp(cSetLE); break;
+            case TOK_GE: g.genDoubleCmp(cSetGE); break;
+            case TOK_E:  g.genDoubleCmp(cSetE); break;
+            case TOK_NE: g.genDoubleCmp(cSetNE); break;
+            default:
+                switch(type)
+                {
+                    case TOK_DIV:      g.gen(cDivsd, rXMM0, rXMM1); break;
+                    case TOK_ASTERISK: g.gen(cMulsd, rXMM0, rXMM1); break;
+                    case TOK_PLUS:     g.gen(cAddsd, rXMM0, rXMM1); break;
+                    case TOK_MINUS:    g.gen(cSubsd, rXMM0, rXMM1); break;
+                }
+                if(withResult)
+                {
+                    g.gen(cSub, rESP, 8);
+                    g.gen(cMovsd, rESP + Offset(0) + swQword, rXMM0);
+                }
+                return;
         }
     }
     else
@@ -399,6 +475,36 @@ void CastNode::gen(AbstractGenerator& g, bool withResult)
 
 void AssignmentNode::gen(AbstractGenerator& g, bool withResult)
 {
+    if(left->expType->name == "double")
+    {
+        left->genLValue(g);
+        right->gen(g);
+
+        if(type != TOK_ASSIGN)
+        {
+            left->gen(g);
+            g.genDoublePop(rXMM0);
+            g.genDoublePop(rXMM1);
+
+            switch(type)
+            {
+                case TOK_ADD_ASSIGN: g.gen(cAddsd, rXMM0, rXMM1); break;
+                case TOK_SUB_ASSIGN: g.gen(cSubsd, rXMM0, rXMM1); break;
+                case TOK_MUL_ASSIGN: g.gen(cMulsd, rXMM0, rXMM1); break;
+                case TOK_DIV_ASSIGN: g.gen(cDivsd, rXMM0, rXMM1); break;
+            }
+        }
+        else
+            g.genDoublePop(rXMM0);
+
+        g.gen(cPop, rEAX);
+        g.gen(cMovsd, rEAX + Offset(0) + swQword, rXMM0);
+        if(withResult)
+            g.genDoublePush(rXMM0);
+
+        return;
+    }
+
     if
     (
         type == TOK_ADD_ASSIGN || type == TOK_SUB_ASSIGN ||
@@ -436,7 +542,6 @@ void AssignmentNode::gen(AbstractGenerator& g, bool withResult)
     right->gen(g);
     g.gen(cPop, rEBX);
     g.gen(cPop, rEAX);
-    //float currently ignored
     switch(type)
     {
         case TOK_MUL_ASSIGN:
@@ -487,17 +592,15 @@ void IdentNode::genLValue(AbstractGenerator& g)
 {
     assert(isLValue);
     SymbolVariable* v = static_cast<SymbolVariable*>(var);
+
+    int od = expType->name == "double" ? 1 : 0;
+    SizeInWords sw = od == 1 ? swQword : swDword;
+
     switch(v->varType)
     {
-        case VT_LOCAL:
-            g.gen(cLea, rEAX, rEBP + Offset(-var->offset * 4));
-            break;
-        case VT_PARAM:
-            g.gen(cLea, rEAX, rEBP + Offset((var->offset + 3) * 4));
-            break;
-        case VT_GLOBAL:
-            g.gen(cPush, "v_" + var->name);
-            return;
+        case VT_LOCAL: g.gen(cLea, rEAX, rEBP + Offset(-(var->offset + od) * 4) + sw); break;
+        case VT_PARAM: g.gen(cLea, rEAX, rEBP + Offset((var->offset + od + 3) * 4) + sw); break;
+        case VT_GLOBAL: g.gen(cPush, "v_" + var->name); return;
     }
     g.gen(cPush, rEAX);
 }
@@ -526,8 +629,8 @@ void PostfixNode::performCommonGenPart(AbstractGenerator& g)
             s->calculateOffsets();
             only->genLValue(g);
             g.gen(cPop, rEAX);
-            //if(type == TOK_ARROW)
-            //    g.gen(cMov, rEAX, rEAX + Offset(0));
+            if(type == TOK_ARROW && !only->expType->isArray())
+                g.gen(cMov, rEAX, rEAX + Offset(0));
             g.gen(
                 only->varType == VT_LOCAL ? cSub : cAdd,
                 rEAX, static_cast<IdentNode*>(tail)->var->offset * 4

@@ -84,6 +84,9 @@ void Generator::out()
         rdataPart[i]->out();
     for(unsigned int i = 0; i < fdataPart.size(); ++i)
         fdataPart[i]->out();
+    cout << "d_zero dq 0.0\n";
+    cout << "d_one dq 1.0\n";
+    cout << "d_minus_one dq -1.0\n";
 
     cout << "\nsection '.code' code executable\n";
     for(list<Command>::iterator j = codePart.begin(); j != codePart.end(); ++j)
@@ -149,7 +152,7 @@ string Generator::addConstant(const string& s)
 
 string Generator::addDoubleConstant(const double& f)
 {
-    FData* fd = new FData("f_" + itostr(labelNum++), f);
+    FData* fd = new FData("d_" + itostr(labelNum++), f);
     fdataPart.push_back(fd);
     return fd->name;
 }
@@ -179,6 +182,7 @@ void Generator::optimize()
                     || tryOtherLeaMov(i)
                     //|| tryIdivWithImm(i)
                     || tryConstCondition(i)
+                    || tryUniteDoubleMovMov(i)
                 )
                 || tryAddSub0(i)
                 || tryAddSub1(i)

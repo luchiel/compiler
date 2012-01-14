@@ -150,6 +150,8 @@ public:
     virtual string addConstant(const string& s) { return ""; }
     virtual string addDoubleConstant(const double& f) { return ""; }
 
+    void genDoublePush(AsmRegister reg);
+    void genDoublePop(AsmRegister reg);
     void genIntCmp(const Command& cmpcmd);
     void genDoubleCmp(const Command& cmpcmd);
     Argument* label();

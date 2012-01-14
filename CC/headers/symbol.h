@@ -55,7 +55,7 @@ public:
     virtual SymbolType* getUndefined() { return NULL; }
     virtual bool isUndefined() { return false; }
     virtual bool operator==(Symbol& symbol);
-    virtual unsigned int size() { return name == "double" ? 2 : 1; }
+    virtual unsigned int size() { return name == "double" ? 2 : name == "void" ? 0 : 1; }
 };
 
 class SymbolTypeAlias: public SymbolType

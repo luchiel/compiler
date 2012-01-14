@@ -42,6 +42,18 @@ AsmCommand Command::reverse()
     }
 }
 
+void AbstractGenerator::genDoublePush(AsmRegister reg)
+{
+    gen(cSub, rESP, 8);
+    gen(cMovsd, rESP + Offset(0) + swQword, reg);
+}
+
+void AbstractGenerator::genDoublePop(AsmRegister reg)
+{
+    gen(cMovsd, reg, rESP + Offset(0) + swQword);
+    gen(cAdd, rESP, 8);
+}
+
 void AbstractGenerator::genIntCmp(const Command& cmpcmd)
 {
     gen(cXor, rECX, rECX);
@@ -50,18 +62,12 @@ void AbstractGenerator::genIntCmp(const Command& cmpcmd)
     gen(cMov, rEAX, rECX);
 }
 
-void AbstractGenerator::genDoubleCmp(const Command& cmpcmd)//const int cmp)
+void AbstractGenerator::genDoubleCmp(const Command& cmpcmd)
 {
     gen(cXor, rECX, rECX);
-    //thanks to masm32
     gen(cComisd, rXMM0, rXMM1);
-    //gen(cCmpsd, rXMM1, rESP + Offset(0), cmp);
-    //gen(cMovsd);
-    //gen(cMovsd, rXMM0, rESP + Offset(0));
-    //gen(cComisd, rXMM1, rXMM0);//rESP + Offset(0));
     gen(cmpcmd, rCL);
     gen(cMov, rEAX, rECX);
-    //end thanks to masm32
 }
 
 void AbstractGenerator::pushJumpLabels(Argument* breakA, Argument* continueA)
@@ -141,9 +147,9 @@ void Command::out()
         cmdNames[cCmpsd] = new string("cmpsd");
         cmdNames[cComisd] = new string("comisd");
         cmdNames[cAddsd] = new string("addsd");
-        cmdNames[cAddsd] = new string("subsd");
-        cmdNames[cAddsd] = new string("mulsd");
-        cmdNames[cAddsd] = new string("divsd");
+        cmdNames[cSubsd] = new string("subsd");
+        cmdNames[cMulsd] = new string("mulsd");
+        cmdNames[cDivsd] = new string("divsd");
     }
     cout << '\t' << *cmdNames[command] << '\t';
     for(unsigned int i = 0; i < args.size(); ++i)
@@ -212,7 +218,7 @@ void RData::out()
 
 void FData::out()
 {
-    cout << name << " dq " << value << "\n";
+    cout << name << " dq " << showpoint << value << "\n";
 }
 
 Argument operator+(Argument arg, Offset o)
