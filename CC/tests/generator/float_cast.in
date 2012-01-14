@@ -1,0 +1,6 @@
+void main()
+{
+double x;
+x = 3;
+printf("%.2f", x);
+}

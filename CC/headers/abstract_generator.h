@@ -26,7 +26,7 @@ enum AsmCommand
     cSetE, cSetNE, cSetL, cSetG, cSetLE, cSetGE, cSetZ, cSetNZ,
     cLabel, cCall, cRet,
 
-    cMovsd, cAddsd, cSubsd, cMulsd, cDivsd, cCmpsd, cComisd,
+    cMovsd, cAddsd, cSubsd, cMulsd, cDivsd, cComisd,
     cCvtsi2sd, cCvtsd2si,
 };
 

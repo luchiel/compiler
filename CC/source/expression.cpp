@@ -489,7 +489,18 @@ void SizeofNode::gen(AbstractGenerator& g, bool withResult)
 void CastNode::gen(AbstractGenerator& g, bool withResult)
 {
     element->gen(g, withResult);
-    //int to double! double to int!
+    if(expType->name == "int" && element->expType->name == "double")
+    {
+        g.genDoublePop(rXMM0);
+        g.gen(cCvtsd2si, rEAX, rXMM0);
+        g.gen(cPush, rEAX);
+    }
+    else if(expType->name == "double" && element->expType->name == "int")
+    {
+        g.gen(cPop, rEAX);
+        g.gen(cCvtsi2sd, rXMM0, rEAX);
+        g.genDoublePush(rXMM0);
+    }
 }
 
 void AssignmentNode::gen(AbstractGenerator& g, bool withResult)

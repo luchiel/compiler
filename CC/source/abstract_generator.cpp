@@ -117,9 +117,6 @@ void Command::out()
         cmdNames[cSar] = new string("sar");
         cmdNames[cLabel] = new string(":");
         cmdNames[cCall] = new string("call");
-        //cmdNames[cProc] = new string("proc");
-        //cmdNames[cEndp] = new string("endp");
-        //cmdNames[cRet] = new string("ret");
         cmdNames[cCdq] = new string("cdq");
         cmdNames[cTest] = new string("test");
         cmdNames[cCmp] = new string("cmp");
@@ -144,12 +141,14 @@ void Command::out()
         cmdNames[cJmp] = new string("jmp");
 
         cmdNames[cMovsd] = new string("movsd");
-        cmdNames[cCmpsd] = new string("cmpsd");
         cmdNames[cComisd] = new string("comisd");
         cmdNames[cAddsd] = new string("addsd");
         cmdNames[cSubsd] = new string("subsd");
         cmdNames[cMulsd] = new string("mulsd");
         cmdNames[cDivsd] = new string("divsd");
+
+        cmdNames[cCvtsd2si] = new string("cvtsd2si");
+        cmdNames[cCvtsi2sd] = new string("cvtsi2sd");
     }
     cout << '\t' << *cmdNames[command] << '\t';
     for(unsigned int i = 0; i < args.size(); ++i)

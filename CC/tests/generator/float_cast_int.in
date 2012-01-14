@@ -1,0 +1,7 @@
+void main()
+{
+int x;
+double y; y = 4.7;
+x = (int)y;
+printf("%d", x);
+}
