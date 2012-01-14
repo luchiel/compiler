@@ -65,6 +65,7 @@ private:
     bool tryConstCondition(list<Command>::iterator& i);
     bool tryUniteDoubleMovMov(list<Command>::iterator& i);
     bool tryUniteDoublePushPop(list<Command>::iterator& i);
+    bool tryLiftSubESPImm(list<Command>::iterator& i);
 
 public:
     Generator(SymbolTable* symbols_):

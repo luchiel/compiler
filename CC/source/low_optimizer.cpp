@@ -255,8 +255,7 @@ bool Generator::tryLiftPop(list<Command>::iterator& i)
 {
     if(i->command != cPop)
         return false;
-    list<Command>::iterator j(i);
-    j--;
+    list<Command>::iterator j(i); j--;
     switch(j->command)
     {
         case cCdq:
@@ -296,7 +295,7 @@ bool Generator::tryLiftPop(list<Command>::iterator& i)
                     (
                           (*k)->type == atReg && (*k)->offset != -1
                         || **k == *i->args[0]
-                        || (*k)->type == atReg && (*k)->value.regArg == rESP
+                        || (*k)->isESP()
                     )
                         return false;
                 swapListItems(i, j);
@@ -309,6 +308,57 @@ bool Generator::tryLiftPop(list<Command>::iterator& i)
             //to lower 1: pop does not change flags, so probably allowed
             //cSetE, cSetNE, cSetL, cSetG, cSetLE, cSetGE, cSetZ, cSetNZ,
             //cTest, cCmp, cComisd //always followed by jmp/set
+            return false;
+    }
+    return true;
+}
+
+bool Generator::tryLiftSubESPImm(list<Command>::iterator& i)
+{
+    //return false;
+    if
+    (
+           i->command != cSub || !i->args[0]->isESP()
+        || i->args[0]->offset != -1 || i->args[1]->type != atConst
+    )
+        return false;
+    list<Command>::iterator j(i); j--;
+    switch(j->command)
+    {
+        case cCdq:
+            swapListItems(i, j);
+            break;
+        case cInc:
+        case cDec:
+        case cNeg:
+        case cAdd:
+        case cSub:
+        case cImul:
+        case cOr:
+        case cXor:
+        case cAnd:
+        case cNot:
+        case cMov:
+        case cLea:
+        case cShl:
+        case cShr:
+        case cMovsd:
+        case cAddsd:
+        case cSubsd:
+        case cMulsd:
+        case cDivsd:
+        case cCvtsi2sd:
+        case cCvtsd2si:
+            for(vector<Argument*>::iterator k = j->args.begin(); k != j->args.end(); ++k)
+                if
+                (
+                      (*k)->type == atReg && (*k)->offset != -1
+                    || (*k)->isESP() || (*k)->isEBP()
+                )
+                    return false;
+            swapListItems(i, j);
+            break;
+        default:
             return false;
     }
     return true;
@@ -614,12 +664,12 @@ bool Generator::tryUniteDoublePushPop(list<Command>::iterator& i)
     (
         //sub esp, const; add esp, const;
         i->command == cAdd && l->command == cSub &&
-        i->args[0]->type == atReg && i->args[0]->value.regArg == rESP &&
+        i->args[0]->isESP() &&
         i->args[0]->offset == -1 &&
         *i->args[0] == *l->args[0] && *i->args[1] == *l->args[1] &&
         //movsd x, y; movsd y, x;
         j->command == cMovsd && k->command == cMovsd &&
-        k->args[0]->type == atReg && k->args[0]->value.regArg == rESP &&
+        k->args[0]->isESP() &&
         *j->args[0] == *k->args[1] && *j->args[1] == *k->args[0]        
     )
     {

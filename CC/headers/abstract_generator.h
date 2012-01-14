@@ -100,6 +100,8 @@ public:
     Argument(const Argument& a): type(a.type), offset(a.offset), size(a.size), value(a.value) {}
 
     virtual void out();
+    bool isESP() { return type == atReg && value.regArg == rESP; }
+    bool isEBP() { return type == atReg && value.regArg == rEBP; }
     bool operator==(const Argument& a);
     bool operator!=(const Argument& a) { return !(*this == a); }
     friend bool equalUpToOffset(const Argument& a, const Argument& b);
