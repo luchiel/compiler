@@ -278,6 +278,13 @@ bool Generator::tryLiftPop(list<Command>::iterator& i)
         case cLea:
         case cShl:
         case cShr:
+        case cMovsd:
+        case cAddsd:
+        case cSubsd:
+        case cMulsd:
+        case cDivsd:
+        case cCvtsi2sd:
+        case cCvtsd2si:
             if(*i->args[0] == *j->args[0])
                 codePart.erase(j);
             else
@@ -287,7 +294,7 @@ bool Generator::tryLiftPop(list<Command>::iterator& i)
                 for(vector<Argument*>::iterator k = j->args.begin(); k != j->args.end(); ++k)
                     if
                     (
-                          (*k)->offset != -1
+                          (*k)->type == atReg && (*k)->offset != -1
                         || **k == *i->args[0]
                         || (*k)->type == atReg && (*k)->value.regArg == rESP
                     )
@@ -301,7 +308,7 @@ bool Generator::tryLiftPop(list<Command>::iterator& i)
             //to upper 1: pop may be unexpected, complicated
             //to lower 1: pop does not change flags, so probably allowed
             //cSetE, cSetNE, cSetL, cSetG, cSetLE, cSetGE, cSetZ, cSetNZ,
-            //cTest, cCmp //always followed by jmp/set
+            //cTest, cCmp, cComisd //always followed by jmp/set
             return false;
     }
     return true;
@@ -590,6 +597,41 @@ bool Generator::tryIdivWithImm(list<Command>::iterator& i)
     codePart.erase(l);
 
     return true;
+}
+
+bool Generator::tryUniteDoublePushPop(list<Command>::iterator& i)
+{
+/*
+    sub     esp, 8
+    movsd   qword [esp],xmm0
+    movsd   xmm0,qword [esp]
+    add     esp, 8
+*/
+    list<Command>::iterator j(i); j--; if(j == codePart.begin()) return false;
+    list<Command>::iterator k(j); k--; if(k == codePart.begin()) return false;
+    list<Command>::iterator l(k); l--;
+    if
+    (
+        //sub esp, const; add esp, const;
+        i->command == cAdd && l->command == cSub &&
+        i->args[0]->type == atReg && i->args[0]->value.regArg == rESP &&
+        i->args[0]->offset == -1 &&
+        *i->args[0] == *l->args[0] && *i->args[1] == *l->args[1] &&
+        //movsd x, y; movsd y, x;
+        j->command == cMovsd && k->command == cMovsd &&
+        k->args[0]->type == atReg && k->args[0]->value.regArg == rESP &&
+        *j->args[0] == *k->args[1] && *j->args[1] == *k->args[0]        
+    )
+    {
+        codePart.erase(l);
+        codePart.erase(k);
+        codePart.erase(j);
+        j = i;
+        i++;
+        codePart.erase(j);
+        return true;
+    }
+    return false;   
 }
 
 bool Generator::tryUniteDoubleMovMov(list<Command>::iterator& i)
