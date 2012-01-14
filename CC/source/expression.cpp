@@ -219,12 +219,31 @@ void PostfixNode::gen(AbstractGenerator& g, bool withResult)
     {
         case TOK_INC:
         case TOK_DEC:
-            only->genLValue(g);
-            g.gen(cPop, rEBX);
-            g.gen(cMov, rEAX, rEBX + Offset(0));
-            g.gen(type == TOK_INC ? cInc : cDec, rEBX + Offset(0));
-            if(withResult)
-                g.gen(cPush, rEAX);
+            if(expType->name == "double")
+            {
+                only->gen(g);
+                only->genLValue(g);
+                g.gen(cPop, rEBX);
+                g.genDoublePop(rXMM0);
+                g.gen(cMovsd, rXMM1, rXMM0);
+
+                g.gen(
+                    type == TOK_INC ? cAddsd : cSubsd,
+                    rXMM0, string("d_one") + Offset(0) + swQword
+                );
+                g.gen(cMovsd, rEBX + Offset(0) + swQword, rXMM0);
+                if(withResult)
+                    g.genDoublePush(rXMM1);
+            }
+            else
+            {
+                only->genLValue(g);
+                g.gen(cPop, rEBX);
+                g.gen(cMov, rEAX, rEBX + Offset(0));
+                g.gen(type == TOK_INC ? cInc : cDec, rEBX + Offset(0));
+                if(withResult)
+                    g.gen(cPush, rEAX);
+            }
             return;
         default:
             performCommonGenPart(g);
