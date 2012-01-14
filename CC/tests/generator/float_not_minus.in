@@ -1,0 +1,6 @@
+void main()
+{
+double i;
+i = 3.4;
+printf("%d %.1f %d", !i, -i, !0.0);
+}

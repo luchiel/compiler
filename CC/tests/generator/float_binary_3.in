@@ -1,0 +1,8 @@
+void main()
+{
+double a;
+a = 5.678;
+struct {int x;} *b;
+printf("%d", a == 5.678 || b->x == 5);
+printf("%d", a == 4.0 && b->x);
+}

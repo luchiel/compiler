@@ -1,0 +1,20 @@
+struct point { double x, y; } a;
+
+void sety(struct point *b)
+{
+  b->y = 4.4;
+}
+
+void setyy(double *z)
+{
+  *z = 4.5;
+}
+
+void main()
+{
+a.x = 6.9;
+sety(&a);
+printf("%.1f, %.1f\n", a.x, a.y);
+setyy(&a.y);
+printf("%.1f, %.1f", a.x, a.y);
+}
