@@ -94,6 +94,7 @@ void Generator::out()
 
     cout <<
         "main:\n"
+        "\tsub\tesp," << main->type->size() * 4 << "\n"
         "\tcall f_main\n"
         "stdcall [ExitProcess],0\n\n"
         "section '.idata' import data readable\n\n"
