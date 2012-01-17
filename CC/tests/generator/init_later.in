@@ -1,0 +1,8 @@
+int a = 5;
+
+void main()
+{
+a = 7;
+int c = a;
+printf("%d", c);
+}
