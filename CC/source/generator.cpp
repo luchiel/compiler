@@ -54,7 +54,7 @@ void Generator::genData(SymbolTable& t)
         Data* d = new Data("v_" + var->name, var->type->size());
         dataPart.push_back(d);
 
-        if(var->initializer != NULL)
+        if(dynamic_cast<ENode*>(var->initializer) != NULL)
         {
             if(static_cast<ENode*>(var->initializer)->isIntConst())
                 d->init.intInit = static_cast<IntNode*>(var->initializer)->value;
@@ -66,7 +66,7 @@ void Generator::genData(SymbolTable& t)
             else
                 throw NotSupported("Initializer not constant");
         }
-        //elses currently not supported
+        //else currently not supported
     }
 }
 

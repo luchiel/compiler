@@ -67,9 +67,13 @@ CompoundStatement* Parser::parseCompoundStatement()
         _tokens->next();
         while(tokenType() != TOK_R_BRACE)
         {
+            initialized.clear();
             Node* bi = parseBlockItem();
             if(bi != NULL)
                 node->items->push_back(bi);
+            else
+                for(unsigned int i = 0; i < initialized.size(); ++i)
+                    node->items->push_back(new InitStatement(initialized[i]));
         }
         _symbols->pop();
         consumeTokenOfType(TOK_R_BRACE, "'}' expected");

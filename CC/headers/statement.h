@@ -102,6 +102,15 @@ public:
     virtual Node* optimized();
 };
 
+class InitStatement: public Node
+{
+public:
+    SymbolVariable* var;
+    InitStatement(SymbolVariable* s_): var(s_) {}
+    virtual void gen(AbstractGenerator& g, bool withResult = true);
+    virtual Node* optimized();
+};
+
 class CompoundStatement: public Node
 {
 public:

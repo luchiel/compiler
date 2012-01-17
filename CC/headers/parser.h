@@ -32,6 +32,7 @@ private:
     int _jumpAllowed;
 
     set<SymbolTypeFunction*>* usedFunctions;
+    vector<SymbolVariable*> initialized;
 
     TokenType tokenType() { return _tokens->get().type; }
 

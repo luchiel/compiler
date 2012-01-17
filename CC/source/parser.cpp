@@ -321,9 +321,12 @@ void Parser::addParsedSymbols(SymbolType* type, Node* initializer, bool isTypede
             if(*type == *getSymbol("void"))
                 throw makeException("Variable declared as void");
             safeAddSymbol(type);
-            addSymbol(new SymbolVariable(
+            SymbolVariable* var = new SymbolVariable(
                 type, _varName, initializer, _symbols->isGlobal() ? VT_GLOBAL : VT_LOCAL
-            ));
+            );
+            addSymbol(var);
+            if(!_symbols->isGlobal() && dynamic_cast<ENode*>(initializer) != NULL)
+                initialized.push_back(var);
         }
         else
         {
