@@ -176,6 +176,13 @@ Node* PostfixNode::optimized()
     return this;
 }
 
+Node* InitStatement::optimized()
+{
+    if(!var->used)
+        return new ExpressionStatement(static_cast<ENode*>(var->initializer));
+    return this;
+}
+
 Node* CompoundStatement::optimized()
 {
     locals->eraseNotUsedVariables();
