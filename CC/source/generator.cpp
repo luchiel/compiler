@@ -20,14 +20,6 @@ void Generator::genCode(SymbolTypeFunction* f)
         main = f;
         return;
     }
-    else if(f->name == "main")
-    {
-        genReturnLabel();
-        genLabel(new Argument(f->name, atLabel));
-        f->body->gen(*this);
-        genLabel(&returnLabel());
-        return;
-    }
     currentParamSize = f->args->offset();
 
     genReturnLabel();
@@ -36,10 +28,8 @@ void Generator::genCode(SymbolTypeFunction* f)
     gen(cPush, rEBP);
     gen(cMov, rEBP, rESP);
 
-    gen(cSub, rEBP, 4);
     f->body->gen(*this);
     genLabel(&returnLabel());
-    gen(cAdd, rEBP, 4);
 
     gen(cMov, rESP, rEBP);
     gen(cPop, rEBP);
@@ -99,6 +89,8 @@ void Generator::out()
         j->out();
 
     cout <<
+        "main:\n"
+        "\tcall f_main\n"
         "stdcall [ExitProcess],0\n\n"
         "section '.idata' import data readable\n\n"
         "library kernel32,'kernel32.dll', msvcrt,'msvcrt.dll'\n"

@@ -87,6 +87,9 @@ ENode* Parser::parseBinaryExpression(int priority)
 
                         node->expType = node->left->expType;
                         node->varType = node->left->varType;
+
+                        if(node->varType == VT_LOCAL)
+                            node->type = node->type == TOK_PLUS ? TOK_MINUS : TOK_PLUS;
                         break;
                     }
                 case TOK_ASTERISK:

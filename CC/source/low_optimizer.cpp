@@ -151,6 +151,7 @@ bool Generator::tryRemoveUselessMovLeaXor(list<Command>::iterator& i)
         && i->command != cLea
         && (i->command != cXor || *i->args[0] != *i->args[1])
         || i->args[0]->offset != -1
+        || i->args[0]->isESP()
     )
         return false;
 

@@ -157,8 +157,8 @@ void IdentNode::gen(AbstractGenerator& g, bool withResult)
 
     switch(v->varType)
     {
-        case VT_LOCAL:  g.gen(cLea, rEAX, rEBP + Offset(-(var->offset + od) * 4)); break;
-        case VT_PARAM:  g.gen(cLea, rEAX, rEBP + Offset((var->offset + od + 3) * 4)); break;
+        case VT_LOCAL:  g.gen(cLea, rEAX, rEBP + Offset(-(var->offset + od + 1) * 4)); break;
+        case VT_PARAM:  g.gen(cLea, rEAX, rEBP + Offset((var->offset + od + 2) * 4)); break;
         case VT_GLOBAL: g.gen(cMov, rEAX, "v_" + var->name); break;
     }
     if(!withResult)
@@ -628,8 +628,8 @@ void IdentNode::genLValue(AbstractGenerator& g)
 
     switch(v->varType)
     {
-        case VT_LOCAL: g.gen(cLea, rEAX, rEBP + Offset(-(var->offset + od) * 4) + sw); break;
-        case VT_PARAM: g.gen(cLea, rEAX, rEBP + Offset((var->offset + od + 3) * 4) + sw); break;
+        case VT_LOCAL: g.gen(cLea, rEAX, rEBP + Offset(-(var->offset + od + 1) * 4) + sw); break;
+        case VT_PARAM: g.gen(cLea, rEAX, rEBP + Offset((var->offset + od + 2) * 4) + sw); break;
         case VT_GLOBAL: g.gen(cPush, "v_" + var->name); return;
     }
     g.gen(cPush, rEAX);
@@ -647,7 +647,7 @@ void PostfixNode::performCommonGenPart(AbstractGenerator& g)
             g.gen(cPop, rEAX);
             t = static_cast<TypedSymbolType*>(only->expType);
             g.gen(cImul, rEBX, t->type->size() * 4);
-            g.gen(cAdd, rEAX, rEBX);
+            g.gen(varType == VT_LOCAL ? cSub : cAdd, rEAX, rEBX);
             break;
         case TOK_DOT:
         case TOK_ARROW:

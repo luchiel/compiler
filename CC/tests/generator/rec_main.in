@@ -1,0 +1,11 @@
+int i = 0;
+
+int main()
+{
+if(i == 1)
+  return 5;
+i++;
+i = main();
+printf("%d", i);
+return 0;
+}

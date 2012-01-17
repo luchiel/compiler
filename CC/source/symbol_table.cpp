@@ -132,15 +132,15 @@ void SymbolTable::genInitLocals(AbstractGenerator& g)
                         static_cast<DoubleNode*>(var->initializer)->value
                     );
                     g.gen(cMovsd, rXMM0, s + Offset(0) + swQword);
-                    g.gen(cMovsd, rEBP + Offset(-(var->offset + 1) * 4) + swQword, rXMM0);
+                    g.gen(cMovsd, rEBP + Offset(-(var->offset + 2) * 4) + swQword, rXMM0);
                 }
                 else if(static_cast<ENode*>(var->initializer)->isIntConst())
                     g.gen(
-                        cMov, rEBP + Offset(-var->offset * 4),
+                        cMov, rEBP + Offset(-(var->offset + 1) * 4),
                         static_cast<IntNode*>(var->initializer)->value
                     );
                 else if(static_cast<ENode*>(var->initializer)->isNULL())
-                    g.gen(cMov, rEBP + Offset(-var->offset * 4), 0);
+                    g.gen(cMov, rEBP + Offset(-(var->offset + 1) * 4), 0);
             }
         }
 }

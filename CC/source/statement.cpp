@@ -105,7 +105,7 @@ void ReturnStatement::gen(AbstractGenerator& g, bool withResult)
 {
     expr->gen(g);
     g.gen(cMov, rEAX, rEBP);
-    g.gen(cAdd, rEAX, 4 * (g.currentParamSize + 3));
+    g.gen(cAdd, rEAX, 4 * (g.currentParamSize + 2));
     for(unsigned int i = 0; i < expr->expType->size(); ++i)
     {
         g.gen(cPop, rEBX);
