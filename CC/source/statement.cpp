@@ -202,4 +202,22 @@ void ForStatement::gen(AbstractGenerator& g, bool withResult)
     g.gen(cAdd, rESP, (iterators->offset() - iterators->parent->offset()) * 4);
 }
 
+void InitStatement::gen(AbstractGenerator& g, bool withResult)
+{
+    if(static_cast<ENode*>(var->initializer)->isConst())
+        return;
+    var->initializer->gen(g);
+    if(var->type->name == "double")
+    {
+        g.genDoublePop(rXMM0);
+        g.gen(cMovsd, rEBP + Offset(-(var->offset + 2) * 4) + swQword, rXMM0);
+    }
+    else
+        for(unsigned int i = 0; i < var->type->size(); ++i)
+        {
+            g.gen(cPop, rEBX);
+            g.gen(cMov, rEBP + Offset(-(var->offset + i + 1) * 4), rEBX);
+        }
+}
+
 }

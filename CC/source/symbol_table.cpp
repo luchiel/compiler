@@ -124,7 +124,7 @@ void SymbolTable::genInitLocals(AbstractGenerator& g)
         if((*this)[i]->classType == CT_VAR)
         {
             SymbolVariable* var = static_cast<SymbolVariable*>((*this)[i]);
-            if(var->initializer != NULL)
+            if(dynamic_cast<ENode*>(var->initializer) != NULL)
             {
                 if(static_cast<ENode*>(var->initializer)->isDoubleConst())
                 {
@@ -141,22 +141,9 @@ void SymbolTable::genInitLocals(AbstractGenerator& g)
                     );
                 else if(static_cast<ENode*>(var->initializer)->isNULL())
                     g.gen(cMov, rEBP + Offset(-(var->offset + 1) * 4), 0);
-                else
-                {
-                    var->initializer->gen(g);
-                    if(var->type->name == "double")
-                    {
-                        g.genDoublePop(rXMM0);
-                        g.gen(cMovsd, rEBP + Offset(-(var->offset + 2) * 4) + swQword, rXMM0);
-                    }
-                    else
-                        for(unsigned int i = 0; i < var->type->size(); ++i)
-                        {
-                            g.gen(cPop, rEBX);
-                            g.gen(cMov, rEBP + Offset(-(var->offset + i + 1) * 4), rEBX);
-                        }
-                }
+                //else wait for init node
             }
+            //else not supported
         }
 }
 
