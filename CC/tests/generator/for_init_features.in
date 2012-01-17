@@ -1,0 +1,24 @@
+int g;
+
+void main()
+{
+int a[7];
+a[0] = 1; a[1] = 7; a[2] = 4;
+a[3] = 2; a[4] = -1; a[5] = -9;
+a[6] = 7;
+
+for(int i = 0, not_used_2 = g++; i < 7; ++i)
+{
+  for(int j = i + 1, not_used = 100500; j < 7; ++j)
+  {
+    if(a[i] > a[j])
+    {
+      int k; k = a[i]; a[i] = a[j]; a[j] = k;
+    }
+  }
+}
+printf("%d ", g);
+
+for(int i = 0; i < 7; ++i)
+  printf("%d ", a[i]);
+}
