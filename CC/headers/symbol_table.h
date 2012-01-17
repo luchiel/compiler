@@ -32,6 +32,7 @@ public:
     vector<Symbol*>::iterator begin() { return _ordered.begin(); }
     vector<Symbol*>::iterator end() { return _ordered.end(); }
     void erase(vector<Symbol*>::iterator& i);
+    void eraseNotUsedVariables();
 
     unsigned int size() const { return _ordered.size(); }
     unsigned int offset();

@@ -178,6 +178,7 @@ Node* PostfixNode::optimized()
 
 Node* CompoundStatement::optimized()
 {
+    locals->eraseNotUsedVariables();
     locals->optimizeInitializers();
     vector<Node*>::iterator i = items->begin();
     while(i != items->end())
@@ -255,6 +256,13 @@ Node* ForStatement::optimized()
     if(getConstValue(tcond->expr) == 0)
         return new EmptyExpressionStatement();
     return this;
+}
+
+void SymbolTable::eraseNotUsedVariables()
+{
+    for(vector<Symbol*>::iterator i = _ordered.begin(); i != _ordered.end(); ++i)
+        if((*i)->classType == CT_VAR && !static_cast<SymbolVariable*>(*i)->used)
+            erase(i);
 }
 
 void SymbolTable::optimizeInitializers()

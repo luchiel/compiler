@@ -38,8 +38,10 @@ void Generator::genCode(SymbolTypeFunction* f)
     popReturnLabel();
 }
 
-void Generator::genData(const SymbolTable& t)
+void Generator::genData(SymbolTable& t)
 {
+    if(doOptimize)
+        t.eraseNotUsedVariables();
     for(unsigned int j = 0; j < t.size(); ++j)
     {
         if(t[j]->classType != CT_VAR)
@@ -98,7 +100,7 @@ void Generator::out()
         "import kernel32, ExitProcess,'ExitProcess'" << endl;
 }
 
-void Generator::generate(bool doOptimize)
+void Generator::generate()
 {
     genData(*symbols);
     if(main == NULL)

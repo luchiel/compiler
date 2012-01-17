@@ -375,7 +375,6 @@ bool Parser::parseDeclaration(bool definitionAllowed)
         _expectedReturnType = function->type;
         _symbols->push(function->args);
         function->body = parseCompoundStatement();
-        function->localizeSymbols();
         _symbols->pop();
         usedFunctions = NULL;
 

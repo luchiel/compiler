@@ -25,8 +25,9 @@ private:
     list<Command> codePart;
 
     bool modified;
+    bool doOptimize;
 
-    void genData(const SymbolTable& t);
+    void genData(SymbolTable& t);
     void genCode(SymbolTypeFunction* f);
 
     void optimize();
@@ -68,9 +69,10 @@ private:
     bool tryLiftSubESPImm(list<Command>::iterator& i);
 
 public:
-    Generator(SymbolTable* symbols_):
-        AbstractGenerator(), symbols(symbols_), main(NULL), modified(true) {}
-    void generate(bool doOptimize = false);
+    Generator(SymbolTable* symbols_, bool doOptimize_ = false):
+        AbstractGenerator(), symbols(symbols_), main(NULL),
+        modified(true), doOptimize(doOptimize_) {}
+    void generate();
     void out();
 
     virtual void gen(Command com, Argument a1, Argument a2, Argument a3);

@@ -188,8 +188,10 @@ ENode* Parser::parsePrimaryExpression()
                 node = new IdentNode(_tokens->get().text, v);
                 if(v->classType == CT_VAR)
                 {
-                    node->expType = static_cast<SymbolVariable*>(v)->type;
-                    node->varType = static_cast<SymbolVariable*>(v)->varType;
+                    SymbolVariable* var = static_cast<SymbolVariable*>(v);
+                    node->expType = var->type;
+                    node->varType = var->varType;
+                    var->used = true;
                 }
                 else
                 {

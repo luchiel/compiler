@@ -90,12 +90,13 @@ public:
     Node* initializer;
     SymbolType* type;
     VariableType varType;
+    bool used;
 
     SymbolVariable(SymbolType* type_, string name_, VariableType varType_ = VT_LOCAL):
-        Symbol(name_), initializer(NULL), type(type_), varType(varType_)
+        Symbol(name_), initializer(NULL), type(type_), varType(varType_), used(false)
         { classType = CT_VAR; }
     SymbolVariable(SymbolType* type_, string name_, Node* initializer_, VariableType varType_ = VT_LOCAL):
-        Symbol(name_), initializer(initializer_), type(type_), varType(varType_)
+        Symbol(name_), initializer(initializer_), type(type_), varType(varType_), used(false)
         { classType = CT_VAR; }
     virtual void out(int indent, bool noFirst = true);
 
