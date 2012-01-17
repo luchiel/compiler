@@ -141,6 +141,21 @@ void SymbolTable::genInitLocals(AbstractGenerator& g)
                     );
                 else if(static_cast<ENode*>(var->initializer)->isNULL())
                     g.gen(cMov, rEBP + Offset(-(var->offset + 1) * 4), 0);
+                else
+                {
+                    var->initializer->gen(g);
+                    if(var->type->name == "double")
+                    {
+                        g.genDoublePop(rXMM0);
+                        g.gen(cMovsd, rEBP + Offset(-(var->offset + 2) * 4) + swQword, rXMM0);
+                    }
+                    else
+                        for(unsigned int i = 0; i < var->type->size(); ++i)
+                        {
+                            g.gen(cPop, rEBX);
+                            g.gen(cMov, rEBP + Offset(-(var->offset + i + 1) * 4), rEBX);
+                        }
+                }
             }
         }
 }

@@ -63,6 +63,8 @@ void Generator::genData(SymbolTable& t)
                 d->initType = dtDouble;
                 d->init.doubleInit = static_cast<DoubleNode*>(var->initializer)->value;
             }
+            else
+                throw NotSupported("Initializer not constant");
         }
         //elses currently not supported
     }

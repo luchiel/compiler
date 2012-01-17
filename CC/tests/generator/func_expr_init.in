@@ -1,0 +1,17 @@
+int five()
+{
+return 5;
+}
+
+double five_dot_one()
+{
+return 5.1;
+}
+
+void main()
+{
+int a = five();
+int b = a + 1;
+double c = five_dot_one();
+printf("%d%d%.1f", a, b, c);
+}
