@@ -184,7 +184,7 @@ Node* InitStatement::optimized()
         if(init->isConst())
             return new EmptyExpressionStatement();
         else
-            return new ExpressionStatement(init);
+            return new ExpressionStatement(static_cast<ENode*>(init->optimized()));
     }
     return this;
 }
