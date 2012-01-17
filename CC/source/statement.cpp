@@ -95,7 +95,6 @@ void CompoundStatement::out(unsigned int depth, vector<bool>* branches, int leve
 void CompoundStatement::gen(AbstractGenerator& g, bool withResult)
 {
     g.gen(cSub, rESP, (locals->offset() - locals->parent->offset()) * 4);
-    locals->genInitLocals(g);
     for(unsigned int i = 0; i < items->size(); ++i)
         (*items)[i]->gen(g, false);
     g.gen(cAdd, rESP, (locals->offset() - locals->parent->offset()) * 4);
@@ -181,7 +180,6 @@ void IterationStatement::gen(AbstractGenerator& g, bool withResult)
 void ForStatement::gen(AbstractGenerator& g, bool withResult)
 {
     g.gen(cSub, rESP, (iterators->offset() - iterators->parent->offset()) * 4);
-    iterators->genInitLocals(g);
     if(init != NULL)
         init->gen(g, false);
     Argument* startLabel = g.label();
@@ -204,20 +202,42 @@ void ForStatement::gen(AbstractGenerator& g, bool withResult)
 
 void InitStatement::gen(AbstractGenerator& g, bool withResult)
 {
-    if(static_cast<ENode*>(var->initializer)->isConst())
-        return;
-    var->initializer->gen(g);
-    if(var->type->name == "double")
+    if(static_cast<ENode*>(var->initializer)->isDoubleConst())
     {
-        g.genDoublePop(rXMM0);
+        string s = g.addDoubleConstant(
+            static_cast<DoubleNode*>(var->initializer)->value
+        );
+        g.gen(cMovsd, rXMM0, s + Offset(0) + swQword);
         g.gen(cMovsd, rEBP + Offset(-(var->offset + 2) * 4) + swQword, rXMM0);
     }
+    else if(static_cast<ENode*>(var->initializer)->isIntConst())
+        g.gen(
+            cMov, rEBP + Offset(-(var->offset + 1) * 4),
+            static_cast<IntNode*>(var->initializer)->value
+        );
+    else if(static_cast<ENode*>(var->initializer)->isNULL())
+        g.gen(cMov, rEBP + Offset(-(var->offset + 1) * 4), 0);
     else
-        for(unsigned int i = 0; i < var->type->size(); ++i)
+    {
+        var->initializer->gen(g);
+        if(var->type->name == "double")
         {
-            g.gen(cPop, rEBX);
-            g.gen(cMov, rEBP + Offset(-(var->offset + i + 1) * 4), rEBX);
+            g.genDoublePop(rXMM0);
+            g.gen(cMovsd, rEBP + Offset(-(var->offset + 2) * 4) + swQword, rXMM0);
         }
+        else
+            for(unsigned int i = 0; i < var->type->size(); ++i)
+            {
+                g.gen(cPop, rEBX);
+                g.gen(cMov, rEBP + Offset(-(var->offset + i + 1) * 4), rEBX);
+            }
+    }
+}
+
+void PackedInitStatement::gen(AbstractGenerator& g, bool withResult)
+{
+    for(unsigned int i = 0; i < inits.size(); ++i)
+        inits[i]->gen(g);
 }
 
 }

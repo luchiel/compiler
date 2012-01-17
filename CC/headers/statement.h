@@ -111,6 +111,15 @@ public:
     virtual Node* optimized();
 };
 
+class PackedInitStatement: public Node
+{
+public:
+    vector<Node*> inits;
+    PackedInitStatement() {}
+    virtual void gen(AbstractGenerator& g, bool withResult = true);
+    virtual Node* optimized();
+};
+
 class CompoundStatement: public Node
 {
 public:

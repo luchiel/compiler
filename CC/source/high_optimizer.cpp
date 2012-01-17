@@ -179,7 +179,20 @@ Node* PostfixNode::optimized()
 Node* InitStatement::optimized()
 {
     if(!var->used)
-        return new ExpressionStatement(static_cast<ENode*>(var->initializer));
+    {
+        ENode* init = static_cast<ENode*>(var->initializer);
+        if(init->isConst())
+            return new EmptyExpressionStatement();
+        else
+            return new ExpressionStatement(init);
+    }
+    return this;
+}
+
+Node* PackedInitStatement::optimized()
+{
+    for(unsigned int i = 0; i < inits.size(); ++i)
+        inits[i] = inits[i]->optimized();
     return this;
 }
 
@@ -250,6 +263,7 @@ Node* IterationStatement::optimized()
 
 Node* ForStatement::optimized()
 {
+    iterators->eraseNotUsedVariables();
     iterators->optimizeInitializers();
     if(init != NULL)
         init = init->optimized();

@@ -149,8 +149,18 @@ Node* Parser::parseIterationStatement()
         _tokens->next();
         consumeTokenOfType(TOK_L_BRACKET, "'(' expected");
         _symbols->push(forNode->iterators);
+
+        initialized.clear();
         if(!parseDeclaration(false))
             forNode->init = parseExpressionStatement();
+        else
+        {
+            PackedInitStatement* packed = new PackedInitStatement();
+            forNode->init = packed;
+            for(unsigned int i = 0; i < initialized.size(); ++i)
+                packed->inits.push_back(new InitStatement(initialized[i]));
+        }
+
         forNode->cond = parseExpressionStatement();
         if(tokenType() != TOK_R_BRACKET)
             forNode->mod = parseExpression();

@@ -118,36 +118,6 @@ unsigned int SymbolTable::offset()
     return _offset;
 }
 
-void SymbolTable::genInitLocals(AbstractGenerator& g)
-{
-    for(unsigned int i = 0; i < size(); ++i)
-        if((*this)[i]->classType == CT_VAR)
-        {
-            SymbolVariable* var = static_cast<SymbolVariable*>((*this)[i]);
-            if(dynamic_cast<ENode*>(var->initializer) != NULL)
-            {
-                if(static_cast<ENode*>(var->initializer)->isDoubleConst())
-                {
-                    string s = g.addDoubleConstant(
-                        static_cast<DoubleNode*>(var->initializer)->value
-                    );
-                    g.gen(cMovsd, rXMM0, s + Offset(0) + swQword);
-                    g.gen(cMovsd, rEBP + Offset(-(var->offset + 2) * 4) + swQword, rXMM0);
-                }
-                else if(static_cast<ENode*>(var->initializer)->isIntConst())
-                    g.gen(
-                        cMov, rEBP + Offset(-(var->offset + 1) * 4),
-                        static_cast<IntNode*>(var->initializer)->value
-                    );
-                else if(static_cast<ENode*>(var->initializer)->isNULL())
-                    g.gen(cMov, rEBP + Offset(-(var->offset + 1) * 4), 0);
-                //else wait for init node
-            }
-            //else not supported
-        }
-}
-
-
 void SymbolTable::erase(vector<Symbol*>::iterator& i)
 {
     _symbols.erase(_symbols.find(make_pair((*i)->name, NT_NAME)));
