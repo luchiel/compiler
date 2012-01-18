@@ -23,11 +23,13 @@ enum AsmCommand
     cOr, cXor, cAnd, cNot, cShl, cShr, cSar,
     cCmp, cTest,
     cJE, cJNE, cJL, cJG, cJLE, cJGE, cJZ, cJNZ, cJmp,
+    cJA, cJB, cJAE, cJBE,
     cSetE, cSetNE, cSetL, cSetG, cSetLE, cSetGE, cSetZ, cSetNZ,
+    cSetA, cSetB, cSetAE, cSetBE,
     cLabel, cCall, cRet,
 
     cMovsd, cAddsd, cSubsd, cMulsd, cDivsd, cComisd,
-    cCvtsi2sd, cCvtsd2si,
+    cCvtsi2sd, cCvttsd2si,
 };
 
 enum ArgType { atReg, atMem, atConst, atLabel };

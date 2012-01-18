@@ -284,7 +284,7 @@ bool Generator::tryLiftPop(list<Command>::iterator& i)
         case cMulsd:
         case cDivsd:
         case cCvtsi2sd:
-        case cCvtsd2si:
+        case cCvttsd2si:
             if(*i->args[0] == *j->args[0])
                 codePart.erase(j);
             else
@@ -349,7 +349,7 @@ bool Generator::tryLiftSubESPImm(list<Command>::iterator& i)
         case cMulsd:
         case cDivsd:
         case cCvtsi2sd:
-        case cCvtsd2si:
+        case cCvttsd2si:
             for(vector<Argument*>::iterator k = j->args.begin(); k != j->args.end(); ++k)
                 if
                 (

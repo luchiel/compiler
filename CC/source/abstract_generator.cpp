@@ -22,6 +22,10 @@ AsmCommand Command::corresponding()
         case cSetGE: return cJGE;
         case cSetZ:  return cJZ;
         case cSetNZ: return cJNZ;
+        case cSetA:  return cJA;
+        case cSetB:  return cJB;
+        case cSetAE: return cJAE;
+        case cSetBE:  return cJBE;
         default: assert(false);
     }
 }
@@ -38,6 +42,10 @@ AsmCommand Command::reverse()
         case cSetGE: return cJL;
         case cSetZ:  return cJNZ;
         case cSetNZ: return cJZ;
+        case cSetA:  return cJBE;
+        case cSetB:  return cJAE;
+        case cSetAE: return cJB;
+        case cSetBE:  return cJA;
         default: assert(false);
     }
 }
@@ -130,6 +138,11 @@ void Command::out()
         cmdNames[cSetZ] = new string("setz");
         cmdNames[cSetNZ] = new string("setnz");
 
+        cmdNames[cSetA] = new string("seta");
+        cmdNames[cSetB] = new string("setb");
+        cmdNames[cSetAE] = new string("setae");
+        cmdNames[cSetBE] = new string("setbe");
+
         cmdNames[cJE] = new string("je");
         cmdNames[cJNE] = new string("jne");
         cmdNames[cJL] = new string("jl");
@@ -140,6 +153,11 @@ void Command::out()
         cmdNames[cJNZ] = new string("jnz");
         cmdNames[cJmp] = new string("jmp");
 
+        cmdNames[cJA] = new string("ja");
+        cmdNames[cJB] = new string("jb");
+        cmdNames[cJAE] = new string("jae");
+        cmdNames[cJBE] = new string("jbe");
+
         cmdNames[cMovsd] = new string("movsd");
         cmdNames[cComisd] = new string("comisd");
         cmdNames[cAddsd] = new string("addsd");
@@ -147,7 +165,7 @@ void Command::out()
         cmdNames[cMulsd] = new string("mulsd");
         cmdNames[cDivsd] = new string("divsd");
 
-        cmdNames[cCvtsd2si] = new string("cvtsd2si");
+        cmdNames[cCvttsd2si] = new string("cvttsd2si");
         cmdNames[cCvtsi2sd] = new string("cvtsi2sd");
     }
     cout << '\t' << *cmdNames[command] << '\t';

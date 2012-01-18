@@ -226,7 +226,7 @@ void InitStatement::gen(AbstractGenerator& g, bool withResult)
             g.gen(cMovsd, rEBP + Offset(-(var->offset + 2) * 4) + swQword, rXMM0);
         }
         else
-            for(unsigned int i = 0; i < var->type->size(); ++i)
+            for(int i = 0; i < var->type->size(); ++i)
             {
                 g.gen(cPop, rEBX);
                 g.gen(cMov, rEBP + Offset(-(var->offset + i + 1) * 4), rEBX);

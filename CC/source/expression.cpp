@@ -158,7 +158,7 @@ void IdentNode::gen(AbstractGenerator& g, bool withResult)
     switch(v->varType)
     {
         case VT_LOCAL:  g.gen(cLea, rEAX, rEBP + Offset(-(var->offset + od + 1) * 4)); break;
-        case VT_PARAM:  g.gen(cLea, rEAX, rEBP + Offset((var->offset + od + 2) * 4)); break;
+        case VT_PARAM:  g.gen(cLea, rEAX, rEBP + Offset((var->offset + 2) * 4)); break;
         case VT_GLOBAL: g.gen(cMov, rEAX, "v_" + var->name); break;
     }
     if(!withResult)
@@ -414,10 +414,10 @@ void BinaryNode::gen(AbstractGenerator& g, bool withResult)
 
         switch(type)
         {
-            case TOK_L:  g.genDoubleCmp(cSetL); break;
-            case TOK_G:  g.genDoubleCmp(cSetG); break;
-            case TOK_LE: g.genDoubleCmp(cSetLE); break;
-            case TOK_GE: g.genDoubleCmp(cSetGE); break;
+            case TOK_L:  g.genDoubleCmp(cSetB); break;
+            case TOK_G:  g.genDoubleCmp(cSetA); break;
+            case TOK_LE: g.genDoubleCmp(cSetBE); break;
+            case TOK_GE: g.genDoubleCmp(cSetAE); break;
             case TOK_E:  g.genDoubleCmp(cSetE); break;
             case TOK_NE: g.genDoubleCmp(cSetNE); break;
             default:
@@ -492,7 +492,7 @@ void CastNode::gen(AbstractGenerator& g, bool withResult)
     if(expType->name == "int" && element->expType->name == "double")
     {
         g.genDoublePop(rXMM0);
-        g.gen(cCvtsd2si, rEAX, rXMM0);
+        g.gen(cCvttsd2si, rEAX, rXMM0);
         g.gen(cPush, rEAX);
     }
     else if(expType->name == "double" && element->expType->name == "int")
@@ -629,7 +629,7 @@ void IdentNode::genLValue(AbstractGenerator& g)
     switch(v->varType)
     {
         case VT_LOCAL: g.gen(cLea, rEAX, rEBP + Offset(-(var->offset + od + 1) * 4) + sw); break;
-        case VT_PARAM: g.gen(cLea, rEAX, rEBP + Offset((var->offset + od + 2) * 4) + sw); break;
+        case VT_PARAM: g.gen(cLea, rEAX, rEBP + Offset((var->offset + 2) * 4) + sw); break;
         case VT_GLOBAL: g.gen(cPush, "v_" + var->name); return;
     }
     g.gen(cPush, rEAX);
