@@ -1,0 +1,10 @@
+double f(double x) { return x*x - 5; }
+
+int main() {
+  double a = 0.0, b = 5.0;
+  while (b - a > 1e-10) {
+    double x = (a + b) / 2;
+    if (f(x) < 0) a = x; else b = x;
+    printf("%.11f\n", x);
+  }
+}
